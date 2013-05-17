@@ -1,9 +1,13 @@
 // api/controllers/AuthController.js
 
+var passwordHash = require('password-hash');
+
 var AuthController = {
 
 	index: function(req, res) {
-		res.view();
+		res.view({
+			layout: "minLayout"
+		})
 
 
 
@@ -16,38 +20,51 @@ var AuthController = {
 		var emailParam = req.param('email');
 		var passwordParam = req.param('password');
 
-		console.log(usernameParam);
-		console.log(emailParam);
-		console.log(passwordParam);
-
-
-
 		// No username/password entered
 		if (!(usernameParam && emailParam && passwordParam)) {
-			// res.send("No username, emaill or password specified!", 500);
-			console.log("No username, emaill or password specified!");
-			// TODO: redirect, storing an error in the session
-			res.view();
+			// res.send("No username, emaill or password specified!"
+			res.view({
+				layout: "minLayout",
+				error: "No username, emaill or password specified!"
+			})
+
 		} else {
-			User.create({
-				username: usernameParam,
-				email: emailParam,
-				password: passwordParam
+			User.find({
+				username: usernameParam
 			}).done(function(err, user) {
+				if (err || !user) {
+					User.create({
+						username: usernameParam,
+						email: emailParam,
+						password: passwordHash.generate(passwordParam),
+                        administrator: false
+					}).done(function(err, user) {
 
-				// Error handling
-				if (err) {
-					return console.log(err);
-
-					// The User was created successfully!
+						// Error handling
+						if (err) {
+							res.view({
+								layout: "minLayout",
+								error: err
+							})
+							// The User was created successfully!
+						} else {
+							req.session.authenticated = true;
+							req.session.user = user;
+							// console.log("User created:", user);
+							//console.log(user);
+							res.redirect('/')
+						}
+					});
 				} else {
-					req.session.authenticated = true;
-					req.session.User = user;
-					console.log("User created:", user);
-					res.redirect('/');
+					//console.log("Utilisateur déja existant");
+					res.view({
+						layout: "minLayout",
+						error: "Username already used !"
+					})
 				}
 			});
-			res.view();
+
+
 		}
 	},
 
@@ -61,58 +78,57 @@ var AuthController = {
 
 	login: function(req, res) {
 
+		if (req.method == "GET") {
+			res.view({
+				layout: "minLayout",
+				error: ""
+			})
+		} else if (req.method == "POST") {
+			// Get password and username from request
+            var arr = [];
+            JSON.stringify(req.body).replace(/["{}]/g, '').split(',').forEach(function(elem) {
+                arr.push(elem.split(':')[0]);
+            });
+
+            console.log(arr);
 
 
-		// Get password and username from request
-		var usernameParam = req.param('username');
-		var passwordParam = req.param('password');
-
-
-
-		// No username/password entered
-		if (!(usernameParam && passwordParam)) {
-			console.log("No username or password specified!");
-			// res.send("No username or password specified!", 500);
-			// TODO: redirect, storing an error in the session
-			res.view();
-		} else {
-			// Lookup the username/password combination
-			User.find({
-				username: usernameParam
-			}).done(function(err, user) {
-
-
-
-				// Login failed, incorrect username/password combination
-				if (err || !user) {
-
-
-					console.log("Invalid username !");
-					// res.send("Invalid username and password combination!", 500);
-					// TODO: redirect, storing an error in the session
-					res.view();
-				}
-
-				// Login succeeded
-				if (user) {
-
-					if (user.password == passwordParam) {
-						console.log('Utilisateur trouvé et mdp correct : ' + user.username);
-						req.session.authenticated = true;
-						req.session.User = user;
-
-						// Redirect to protected area
-						res.redirect('/');
-					} else {
-						console.log('Mot de passe incorrect');
-						res.view();
+            var usernameParam = req.param('username');
+			var passwordParam = req.param('password');
+			// No username/password entered
+			if (!(usernameParam || passwordParam)) {
+				res.view({
+					layout: "minLayout",
+					error: "No username or password specified !"
+				})
+			} else {
+				// Lookup the username/password combination
+				User.find({
+					username: usernameParam
+				}).done(function(err, user) {
+					// Login failed, incorrect username/password combination
+					if (err || !user) {
+						res.view({
+							layout: "minLayout",
+							error: "Invalid username !"
+						})
 					}
-
-				}
-			});
+					// Login succeeded
+					if (user) {
+						if (passwordHash.verify(passwordParam, user.password )) {
+							req.session.authenticated = true;
+							req.session.user = user;
+							res.redirect('/');
+						} else {
+							res.view({
+								layout: "minLayout",
+								error: "Invalid password !"
+							})
+						}
+					}
+				});
+			}
 		}
-
-
 	}
 
 };

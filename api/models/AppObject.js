@@ -1,16 +1,12 @@
 /*---------------------
-	:: User
+	:: AppObject
 	-> model
 ---------------------*/
 module.exports = {
 
-	attributes: {
-
+	attributes	: {
 		name: 'string',
-		email: 'string',
-		password: 'string',
-        administrator: 'boolean'
-
+		value: 'string'
 	}
 
 };

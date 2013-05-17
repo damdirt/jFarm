@@ -21,34 +21,81 @@
 //   - if no view OR model exists, Sails will respond with a 404.
 //
 module.exports.routes = {
-	
+
 	// To route the home page to the "index" action of the "home" controller:
-	'/' : {
-		controller	: 'dashboard',
-		action		: 'home'
+	'/': {
+		controller: 'dashboard',
+		action: 'home'
 	},
 
-	'/home' : {
-		controller	: 'dashboard',
-		action		: 'home'
+	'/home': {
+		controller: 'dashboard',
+		action: 'home'
 	},
 
 	// If you want to set up a route only for a particular HTTP method/verb 
 	// (GET, POST, PUT, DELETE) you can specify the verb before the path:
-	'/login' : {
-	    controller : 'auth',
-	    action		: 'login'
-	  },
+	'/login': {
+		controller: 'auth',
+		action: 'login'
+	},
 
-	 '/signup' : {
-	    controller : 'auth',
-	    action		: 'signup'
-	  },
+	'/signup': {
+		controller: 'auth',
+		action: 'signup'
+	},
 
-	  '/logout' : {
-	    controller : 'auth',
-	    action		: 'logout'
-	  }
+	'/logout': {
+		controller: 'auth',
+		action: 'logout'
+	},
+
+	'/me': {
+		controller: 'user',
+		action: 'profile'
+	},
+
+	'/pwd': {
+		controller: 'user',
+		action: 'changePwd'
+	},
+
+    '/getYard': {
+        controller: 'user',
+        action: 'getYard'
+    },
+
+    '/settings': {
+        controller: 'settings',
+        action: 'index'
+    },
+
+    '/settings/appobject/createEdit': {
+        controller: 'appObject',
+        action: 'createEdit'
+    },
+
+    '/settings/appobject': {
+        controller: 'appObject',
+        action: 'index'
+    },
+
+    '/player': {
+	    controller: 'player',
+	    action: 'builder'
+    },
+
+    '/appobject/edit/:name': {
+		controller	: 'appObject',
+		action		: 'edit'
+	},
+
+	'/appobject/delete/:id': {
+		controller	: 'appObject',
+		action		: 'delete'
+	}
+
+
 
 	// Keep in mind default routes exist for each of your controllers
 	// So if you have a UserController with an action called "juggle" 

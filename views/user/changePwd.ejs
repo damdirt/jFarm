@@ -1,0 +1,17 @@
+<div id="main">
+	<h2>Change your password</h2>
+	<div id="login-error">
+		<%- responseMessage %></div>
+	<form action="/pwd" method="post">
+		<div id="error"></div>
+		<input id="password" type="password" name="password" placeholder="Password" class="input-block-level">
+		<input id="checkPassword" type="password" name="checkPassword" placeholder="Password" class="input-block-level">
+		<button id="btn-login" type="submit" class="btn btn-large btn-primary">Login</button>
+	</form>
+	<script>
+		var socket = io.connect('http://localhost:1337');
+		socket.on('changePwd', function (data) {
+		    alert(data.result)
+		  });
+</script>
+</div>

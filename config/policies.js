@@ -12,5 +12,11 @@ module.exports.policies = {
 	'auth':
 	{
 		'*': true
-	}
+	}  ,
+
+  'dashboard': {
+      'gameSettings': 'administrator'
+  }
+
+
 };

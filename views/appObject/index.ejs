@@ -1,0 +1,28 @@
+<div id="main">
+	<h2>App Objects</h2>
+	<hr/>
+	<br />
+	<form action="/settings/appobject/createEdit" method="post" id="appObject_form" class="standard-form">
+		<input type="hidden" value="create" id="method" name="method" />
+		<input type="hidden" value="" id="id" name="id" />
+		<div class="controls">
+			<label for="name">name</label>
+			<input id="name" name="name" type="text" placeholder="name" class="boot-input" required></div>
+		<div class="controls">
+			<label for="value">value</label>
+			<textarea id="value" name="value"  ></textarea>
+		</div>
+		<button type="submit" class="btn-flat btn-flat-green">Save object</button>
+	</form>
+	<div id="appObject_list">
+		<ul>
+			<% _.each(appObjects, function (obj) { %>
+			<li>
+				<%= obj.name %> 
+				<a href="javascript:void(0)" class="action-get" data-id="<%= obj.id %>" data-url="/appobject/find/">Edit</a> | 
+				<a href="javascript:void(0)" class="action-delete" data-id="<%= obj.id %>" data-url="/appobject/destroy/">Delete</a>
+			</li>
+			<% }) %>
+		</ul>
+	</div>
+</div>
