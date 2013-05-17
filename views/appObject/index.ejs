@@ -1,20 +1,23 @@
-<div id="main">
-	<h2>App Objects</h2>
-	<hr/>
-	<br />
-	<form action="/settings/appobject/createEdit" method="post" id="appObject_form" class="standard-form">
-		<input type="hidden" value="create" id="method" name="method" />
-		<input type="hidden" value="" id="id" name="id" />
-		<div class="controls">
-			<label for="name">name</label>
-			<input id="name" name="name" type="text" placeholder="name" class="boot-input" required></div>
-		<div class="controls">
-			<label for="value">value</label>
-			<textarea id="value" name="value"  ></textarea>
-		</div>
-		<button type="submit" class="btn-flat btn-flat-green">Save object</button>
-	</form>
-	<div id="appObject_list">
+<div class="content clear-fix">
+	<h1 class="title">App objects<span class="line"></span></h1>
+	<div class="col pull-left w300">
+		<h2 class="title">Form<span class="line"></span></h2>
+		<form action="/settings/appobject/createEdit" method="post" id="appObject_form" class="standard-form">
+			<input type="hidden" value="create" id="method" name="method" />
+			<input type="hidden" value="" id="id" name="id" />
+			<div class="controls">
+				<label for="name">name</label>
+				<input id="name" name="name" type="text" placeholder="name" class="boot-input" required></div>
+			<div class="controls">
+				<label for="value">value</label>
+				<textarea id="value" name="value" required="true"></textarea>
+			</div>
+			<hr>
+			<button type="submit" class="btn-flat btn-flat-green">Save object</button>
+		</form>
+	</div>
+	<div class="col pull-left w300">
+		<h2 class="title">Actions<span class="line"></span></h2>
 		<ul>
 			<% _.each(appObjects, function (obj) { %>
 			<li>

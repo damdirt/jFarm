@@ -146,5 +146,8 @@
 			sheetengine.calc.calculateAllSheets(true);
 			sheetengine.drawing.drawScene();
 
-			$("#userLabel").text("Username : " + username);
+			if(username)
+				$("#userLabel").text("Username : " + username);
+			else
+				$("#userLabel").text("Username : your username");
 		}
