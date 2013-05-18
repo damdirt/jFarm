@@ -1,13 +1,10 @@
-
-<section>
-	<div class="buttons clear-fix">
-	   <button class="button pull-left"><img src="images/arrow-circle.png" alt=""></button>
-	   <button class="button pull-left"><img src="images/down.png" alt=""></button>
-	   <button class="button pull-left">?</button>
-	   <button class="button pull-left">?</button>
-	</div>
-	<canvas id="maincanvas"></canvas>
-</section>
+<div class="buttons clear-fix">
+   <button class="button pull-left"><img src="images/arrow-circle.png" alt=""></button>
+   <button class="button pull-left"><img src="images/down.png" alt=""></button>
+   <button class="button pull-left">?</button>
+   <button class="button pull-left">?</button>
+</div>
+<canvas id="maincanvas"></canvas>
 <script>
 var socket = io.connect('http://localhost:1337');
 socket.request('/getYard',{}, function (response) {
