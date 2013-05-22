@@ -13,7 +13,7 @@ $(document).ready(function() {
 
 	// DISPLAY SUB NAV
 	$("nav.sub").hide();
-	$("nav.main ul a").on('click', function() {
+	$("nav.main ul a:not(:first)").on('click', function() {
 		var tab = $(this),
 			index = tab.parent().index(),
 			content = $("nav.sub").eq(index),
