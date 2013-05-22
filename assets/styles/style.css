@@ -103,6 +103,14 @@ h2.title {
     width: 300px;
 }
 
+.w500 {
+    width: 500px;
+}
+
+.p10 {
+    padding: 10px;
+}
+
 .clear-fix:after {
     content: ".";
     clear: both;
@@ -184,34 +192,121 @@ li.sep {
     margin-left: 25px;
 }
 
-/* Bottom nav */
+/* Bottom */
 
 footer {
     position: relative;
-    margin-top: -30px; /* negative value of footer height */
-    height: 30px;
+    margin-top: -40px; /* negative value of footer height */
+    height: 40px;
     clear:both;
+    background-color: #3C454F;
+    color: #FFFFFF;
 }
 
-footer > nav {
-	width: 100%;
-	height: 30px;
-	background-color: #3C454F;
+footer p {
+    margin: 0;
+    padding: 0;
+    line-height: 40px;
 }
 
-footer > nav ul li {
-	float: left;
+.round {
+    width: 20px;
+    height: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    background-color: #e83c3c;
+    float: right;
+    margin-right: 10px;
+    margin-top: 10px;
+    box-shadow: 1px 1px 8px #333333;
+    cursor: pointer;
+    display: none;
 }
 
-footer > nav ul li a {
-	color: #FFFFFF;
+.game .round {
     display: block;
-    padding: 6px 21.5px;
-    text-decoration: none;
 }
 
-footer > nav ul li a:hover {
-	background-color: #495461;
+.off {
+    background-color: #7EBD26;
+}
+
+.content-actions {
+    background-color: #3C454F;
+    position: absolute;
+    bottom: 40px;
+    width: 1380px;
+    color: #FFFFFF;
+}
+
+.content-actions .block:first-child {
+    margin-right: 80px;
+}
+
+#main-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 108px;
+    border: 48px solid #2f2f2f;
+    background-color: #fc3e6b;
+    margin-top: 10px;
+}
+
+.health {
+    font-size: 28pt;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.title-b {
+    color: #7EBD26;
+    font-size: 12pt;
+}
+
+.hr-b {
+    background-color: #7EBD26;
+    margin: 0;
+}
+
+#labels {
+    position: absolute;
+    width: 215px;
+    height: 215px;
+    transition: all 600ms ease-in-out;
+    margin-top: -200px;
+}
+
+label[for=home] {
+    background: url('http://www.brkcan.net/fun/codepen/circlemenu/home.png') no-repeat top center;
+    transform:rotateZ(0deg);
+}
+
+label[for=user] {
+    background: url('http://www.brkcan.net/fun/codepen/circlemenu/user.png') no-repeat top center;
+    transform:rotateZ(-90deg);
+}
+
+label[for=setting] {
+    background: url('http://www.brkcan.net/fun/codepen/circlemenu/setting.png') no-repeat top center;
+    transform:rotateZ(90deg);
+}
+
+label[for=share] {
+    background: url('http://www.brkcan.net/fun/codepen/circlemenu/share.png') no-repeat top center;
+    transform:rotateZ(180deg);
+}
+
+.label-b {
+    cursor: pointer;
+    display: block;
+    height: 23px;
+    left: 71px;
+    position: absolute;
+    top: 46px;
+    transform-origin: 50% 313% 0;
+    width: 23px;
 }
 
 /* Map */
@@ -333,7 +428,9 @@ section {
 .standard-form textarea {
     float: right;
     width: 180px;
+    max-width: 180px;
     height: 100px;
+    min-height: 100px;
     margin-bottom: 20px !important;
     border: 1px solid #E5E5E5;
     color: #58595B;
@@ -359,6 +456,34 @@ section {
     padding: 20px 40px 140px;
 }
 
+.content a {
+    text-decoration: none;
+    color: #58595B;
+}
+
+.objects-list {
+    min-height: 195px;
+}
+
+.object-line {
+    padding: 10px 0;
+    width: 100%;
+}
+
+.object-line:first-child {
+    padding-top: 0;
+}
+
+.object-line .object-cell {
+    display: inline;
+    display: table-cell;
+    padding-right: 5px;
+}
+
+.object-line .object-cell:first-child {
+    width: 225px;
+}
+
 #userLabel {
     border: 1px solid #E5E5E5;
     color: #7EBD26;
@@ -369,4 +494,36 @@ section {
 #appObject_list{
     float:left;
     margin-left:50px;
+}
+
+/* Pagination */
+
+.page_navigation {
+    padding-top: 10px;
+}
+
+.page_navigation a {
+    padding: 2px 5px;
+    font-size: 10pt;
+    border: 1px solid #FFFFFF;
+    color: #FFFFFF;
+    -webkit-transition: all 0.30s ease-in-out 0s;
+    -moz-transition: all 0.30s ease-in-out 0s;
+    -ms-transition: all 0.30s ease-in-out 0s;
+    -o-transition: all 0.30s ease-in-out 0s;
+    transition: all 0.30s ease-in-out 0s;
+    cursor: pointer;
+    background-color: #E5E5E5;
+}
+
+.page_navigation a:hover {
+    background-color: #7ebd26;
+}
+
+.page_navigation a.active_page,a.next_link,a.last_link,a.first_link,a.previous_link {
+    background-color: #7ebd26;
+}
+
+.page_navigation a.no_more {
+    background-color: #E5E5E5;
 }

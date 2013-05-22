@@ -5,9 +5,36 @@
    <button class="button pull-left">?</button>
 </div>
 <canvas id="maincanvas"></canvas>
+<div class="content-actions clear-fix">
+	<div class="p10 clear-fix">
+		<div class="block pull-left w500">
+			<div class="title-b">Tile :</div>
+			<hr class="hr-b">
+		</div>
+		<div class="block pull-left">
+			<div id="main-circle">
+				<div class="health">79</div>
+			</div>
+			<div id="labels">
+	            <label for="home" class="label-b"></label>
+	            <label for="user" class="label-b"></label>
+	            <label for="setting" class="label-b"></label>
+	            <label for="share" class="label-b"></label>
+	        </div>
+		</div>
+		<div class="block pull-right w500">
+			<div class="title-b">Inventory</div>
+			<hr class="hr-b">
+		</div>
+	</div>
+</div>
 <script>
-var socket = io.connect('http://localhost:1337');
-socket.request('/getYard',{}, function (response) {
-console.log(response.values);
-});
+	var socket = io.connect('http://localhost:1337');
+	socket.request('/getYard',{}, function (response) {
+	console.log(response.values);
+	});
+
+	$(document).ready(function() {
+		$("html").addClass("game");
+	});
 </script>

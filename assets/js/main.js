@@ -72,7 +72,7 @@ $(document).ready(function() {
 		});
 	});
 
-	// delete process
+	// DELETE PROCESS
 	$(".action-delete").on('click', function() {
 		if (confirm('Confirm remove ?')) {
 			var $this = $(this),
@@ -110,4 +110,18 @@ $(document).ready(function() {
 			});
 	});
 
+	// PAGINATION LISTS
+	$('.pag-objects').pajinate({
+		items_per_page : 5
+	});
+
+	// FOOTER ON/OFF
+	$(".round").on('click', function() {
+		var fActions = $(".content-actions");
+		fActions.animate({
+			height: 'toggle'
+		},1000, function(){
+			$(".round").toggleClass('off');
+		});
+	});
 });

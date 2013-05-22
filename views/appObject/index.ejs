@@ -17,15 +17,25 @@
 		</form>
 	</div>
 	<div class="col pull-left w300">
-		<h2 class="title">Actions<span class="line"></span></h2>
-		<ul>
-			<% _.each(appObjects, function (obj) { %>
-			<li>
-				<%= obj.name %> 
-				<a href="javascript:void(0)" class="action-get" data-id="<%= obj.id %>" data-url="/appobject/find/">Edit</a> | 
-				<a href="javascript:void(0)" class="action-delete" data-id="<%= obj.id %>" data-url="/appobject/destroy/">Delete</a>
-			</li>
-			<% }) %>
-		</ul>
+		<h2 class="title">Objects<span class="line"></span></h2>
+		<div class="pag-objects">
+			<div class="objects-list">
+				<% _.each(appObjects, function (obj) { %>
+				<div class="object-line">
+					<div class="object-cell">
+						<%= obj.name %> 
+					</div>
+					<div class="object-cell">
+						<a href="javascript:void(0)" class="action-get" data-id="<%= obj.id %>" data-url="/appobject/find/">Edit</a>
+					</div>
+					<div class="object-cell">
+						<a href="javascript:void(0)" class="action-delete" data-id="<%= obj.id %>" data-url="/appobject/destroy/">Delete</a>
+					</div>
+				</div>
+				<% }) %>
+			</div>
+			<hr>
+			<div class="page_navigation"></div>
+		</div>
 	</div>
 </div>

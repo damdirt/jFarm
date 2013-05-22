@@ -1,12 +1,21 @@
-<div id="main">
-	<h2>Change your password</h2>
+<div class="content clear-fix">
+	<h2 class="title">Change your password<span class="line"></span></h2>
 	<div id="login-error">
 		<%- responseMessage %></div>
-	<form action="/pwd" method="post">
+	<form action="/pwd" method="post" class="standard-form">
 		<div id="error"></div>
-		<input id="password" type="password" name="password" placeholder="Password" class="input-block-level">
-		<input id="checkPassword" type="password" name="checkPassword" placeholder="Password" class="input-block-level">
-		<button id="btn-login" type="submit" class="btn btn-large btn-primary">Login</button>
+		<div class="controls">
+			<label>Password</label>
+			<input id="password" type="password" name="password" placeholder="Password">
+		</div>
+		<div class="controls">
+			<label>Password again</label>
+			<input id="checkPassword" type="password" name="checkPassword" placeholder="Password">
+		</div>
+		<hr>
+        <div class="controls">
+			<button id="btn-login" type="submit" class="btn-flat btn-flat-green">Login</button>
+		</div>
 	</form>
 	<script>
 		var socket = io.connect('http://localhost:1337');
