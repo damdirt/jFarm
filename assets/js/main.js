@@ -15,7 +15,7 @@ $(document).ready(function() {
 	$("nav.sub").hide();
 	$("nav.main ul a:not(:first)").on('click', function() {
 		var tab = $(this),
-			index = tab.parent().index(),
+			index = tab.parent().index()-1,
 			content = $("nav.sub").eq(index),
 			contents = $('nav.sub:visible');
 		if (content.is(':visible')) {
