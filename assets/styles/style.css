@@ -18,7 +18,7 @@ body {
     background-color: #EEEEEE;
     color: #58595B;
     font-family: "PT Sans";
-    width: 1380px;
+    width: 1200px;
     margin: 0 auto;
 }
 
@@ -104,7 +104,7 @@ h2.title {
 }
 
 .w500 {
-    width: 500px;
+    width: 480px;
 }
 
 .p10 {
@@ -131,7 +131,7 @@ h2.title {
 /* Top nav */
 
 header {
-    width: 1380px;
+    width: 1200px;
 }
 
 header > nav {
@@ -167,7 +167,7 @@ header > nav.sub {
 	background-color: #495461;
     height: 60px;
     position: absolute;
-    width: 1380px;
+    width: 1200px;
     z-index: 20;
 }
 
@@ -181,7 +181,7 @@ header > nav.sub ul li a.active {
 
 header > nav.sub:last-child {
     height: auto;
-    margin-left: 1180px;
+    margin-left: 1000px;
     position: absolute;
     width: 200px;
 }
@@ -236,7 +236,7 @@ footer p {
     background-color: #3C454F;
     position: absolute;
     bottom: 40px;
-    width: 1370px;
+    width: 1190px;
     color: #FFFFFF;
 }
 
@@ -246,7 +246,7 @@ footer p {
 }
 
 .content-actions .block:first-child {
-    margin-right: 100px;
+    margin-right: 10px;
 }
 
 .content-actions #playercanvas {
@@ -286,9 +286,9 @@ footer p {
     background-color: #495461;
     box-shadow: 1px 1px 8px #333333;
     display: none;
-    margin-top: -310px;
+    margin-top: -300px;
     min-height: 260px;
-    padding: 20px;
+    padding: 15px;
     position: absolute;
     right: 0;
     width: 360px;
