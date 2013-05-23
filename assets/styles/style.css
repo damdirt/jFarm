@@ -236,8 +236,13 @@ footer p {
     background-color: #3C454F;
     position: absolute;
     bottom: 40px;
-    width: 1380px;
+    width: 1370px;
     color: #FFFFFF;
+}
+
+.borders-action {
+    border-left: 5px solid #52A8EC;
+    border-right: 5px solid #7EBD26;
 }
 
 .content-actions .block:first-child {
@@ -245,14 +250,6 @@ footer p {
 }
 
 .content-actions #playercanvas {
-    position: absolute;
-}
-
-.content-actions .playerLabel {
-    color: #7EBD26;
-    font-family: 'PT Sans';
-    padding: 8px;
-    z-index: 10;
     position: absolute;
 }
 
@@ -328,9 +325,18 @@ footer p {
 }
 
 .title-b {
-    color: #7EBD26;
     font-size: 12pt;
+}
+
+.content-actions .block:first-child .title-b {
+    color: #52A8EC;
     margin-bottom: 10px;
+}
+
+.content-actions .block:last-child .title-b {
+    color: #7EBD26;
+    z-index: 10;
+    position: absolute;
 }
 
 .hr-b {
