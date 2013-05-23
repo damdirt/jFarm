@@ -1,6 +1,6 @@
 		var canvasElement = document.getElementById('playercanvas');
 		sheetengine.scene.init(canvasElement, {
-			w: 500,
+			w: 300,
 			h: 500
 		});
 
@@ -14,8 +14,8 @@
 			betaD: 0,
 			gammaD: 0
 		}, {
-			w: 200,
-			h: 200
+			w: 150,
+			h: 150
 		});
 		basesheet.color = '#7EBD26';
 
@@ -66,7 +66,7 @@
 				w: 10,
 				h: 16
 			});
-			leg1.context.fillStyle = cPants;
+			leg1.context.fillStyle = '#0000ff';
 			leg1.context.fillRect(0, 0, 10, 20);
 			var leg2 = new sheetengine.Sheet({
 				x: 6,
@@ -80,7 +80,7 @@
 				w: 10,
 				h: 16
 			});
-			leg2.context.fillStyle = cPants;
+			leg2.context.fillStyle = '#0000ff';
 			leg2.context.fillRect(0, 0, 10, 20);
 
 			// define character object
@@ -102,19 +102,19 @@
 			var ctx = body.context;
 
 			// head
-			ctx.fillStyle = cSkin;
+			ctx.fillStyle = '#ffff00';
 			ctx.fillRect(4, 4, 14, 8);
-			ctx.fillStyle = cHair;
+			ctx.fillStyle = '#555500';
 			ctx.fillRect(4, 0, 14, 4);
 			ctx.fillRect(4, 4, 2, 2);
 			ctx.fillRect(16, 4, 2, 2);
 
 			// body
-			ctx.fillStyle = cShirt;
+			ctx.fillStyle = '#ff00ff';
 			ctx.fillRect(0, 12, 22, 14);
 
 			// hands
-			ctx.fillStyle = cSkin;
+			ctx.fillStyle = '#ffff00';
 			ctx.fillRect(0, 22, 2, 4);
 			ctx.fillRect(20, 22, 2, 4);
 

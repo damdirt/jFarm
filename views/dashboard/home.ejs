@@ -1,40 +1,93 @@
-<div class="buttons clear-fix">
-   <button class="button pull-left"><img src="images/arrow-circle.png" alt=""></button>
-   <button class="button pull-left"><img src="images/down.png" alt=""></button>
-   <button class="button pull-left">?</button>
-   <button class="button pull-left">?</button>
-</div>
 <canvas id="maincanvas"></canvas>
 <div class="content-actions clear-fix">
 	<div class="p10 clear-fix">
 		<div class="block pull-left w500">
-			<div class="title-b">Tile :</div>
-			<hr class="hr-b">
+			<div class="title-b">Tile</div>
+			<button type="button" class="btn-flat btn-flat-blue">Actions</button>
+			<div class="min-block">
+				<span><strong>Owner :</strong> username</span><br />
+				<span><strong>State :</strong> test</span><br />
+				<span><strong>Occupied :</strong> true</span><br />
+				<span><strong>Humidity :</strong> 50%</span><br />
+				<span><strong>Fertility :</strong> 50%</span><br />
+			</div>
 		</div>
 		<div class="block pull-left">
 			<div id="main-circle">
 				<div class="health">79</div>
 			</div>
+			<input type="radio" name="item" class="item" id="home" checked="checked">
+            <input type="radio" name="item" class="item" id="user">
+            <input type="radio" name="item" class="item" id="setting">
+			<input type="radio" name="item" class="item" id="share">
 			<div id="labels">
 	            <label for="home" class="label-b"></label>
 	            <label for="user" class="label-b"></label>
 	            <label for="setting" class="label-b"></label>
 	            <label for="share" class="label-b"></label>
 	        </div>
+	        <div id="tooltip-b">
+	        	<span>98/127</span>
+	        	<span>55/127</span>
+	        	<span>112/127</span>
+	        	<span>76/127</span>
+	        </div>
 		</div>
-		<div class="block pull-right w500">
-			<div class="title-b">Inventory</div>
-			<hr class="hr-b">
+		<div class="block pull-right w500 clear-fix">
+			<div class="modal">
+				<h3>Weapons</h3>
+				<div class="clear-fix">
+					<div class="img pull-left">
+						<img src="images/fourche.png" alt="weapon" class="weapon">
+					</div>
+					<div class="img pull-left">
+						<img src="images/bat.png" alt="weapon" class="weapon">
+					</div>
+					<div class="img pull-left">
+						<img src="images/tronconneuse.png" alt="weapon" class="weapon">
+					</div>
+					<div class="img pull-left">
+						<img src="images/ak47.png" alt="weapon" class="weapon">
+					</div>
+				</div>
+				<h3>Accessories</h3>
+				<div class="clear-fix">
+					<div class="img pull-left">
+						<img src="images/arrosoir.png" alt="accessories" class="accesory">
+					</div>
+				</div>
+			</div>
+			<div class="pull-left">
+				<span class="playerLabel"><strong>Username</strong></span>
+				<canvas id="playercanvas" width="220" height="220"></canvas>
+			</div>
+			<div class="pull-right">
+				<div class="clear-fix">
+					<div class="buttons pull-right">
+					   <button class="button pull-left"><img src="images/arrow-circle.png" alt=""></button>
+					   <button class="button pull-left"><img src="images/down.png" alt=""></button>
+					   <button class="button pull-left">?</button>
+					   <button class="button pull-left">?</button>
+					</div>
+				</div>
+				<div class="content-b">
+					<div class="clear-fix">
+						<button type="button" class="btn-flat btn-flat-green pull-right popup">Inventory</button>
+					</div>
+					<div class="min-block">
+						<span><strong>Level :</strong> 27</span><br />
+						<span><strong>Alliance :</strong> test</span><br />
+						<span><strong>Tiles :</strong> 18</span><br />
+						<span><strong>Ghost mode :</strong> off</span>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
 <script>
-	var socket = io.connect('http://localhost:1337');
-	socket.request('/getYard',{}, function (response) {
-	console.log(response.values);
-	});
-
 	$(document).ready(function() {
 		$("html").addClass("game");
 	});
 </script>
+<script src="js/playerShow.js"></script>

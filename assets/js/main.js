@@ -124,4 +124,23 @@ $(document).ready(function() {
 			$(".round").toggleClass('off');
 		});
 	});
+
+	// TOOLTIP FOOTER
+	$("#tooltip-b span:not(:first)").hide();
+	$("#labels label").on('mouseover click',function(){
+		var tab = $(this),
+		    index = tab.index(),
+		    content = $("#tooltip-b span").eq(index),
+		    contents = content.siblings();
+
+		tab.addClass("current").parent()
+		    .siblings().removeClass('current');
+		content.show();
+		contents.hide();
+	});
+
+	// POPUP
+	$(".popup").on('click', function() {
+		$(".modal").toggle();
+	});
 });
