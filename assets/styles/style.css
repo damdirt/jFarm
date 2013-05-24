@@ -348,6 +348,10 @@ footer p {
     position: absolute;
     width: 170px;
     height: 170px;
+    -webkit-transition: all 600ms ease-in-out;
+    -moz-transition: all 600ms ease-in-out;
+    -ms-transition: all 600ms ease-in-out;
+    -o-transition: all 600ms ease-in-out;
     transition: all 600ms ease-in-out;
     margin-top: -200px;
 }
@@ -358,6 +362,10 @@ footer p {
     margin: 0px;
     padding: 0px;
     opacity: 0;
+    -webkit-transform-origin: 50% 330%;
+    -moz-transform-origin: 50% 330%;
+    -ms-transform-origin: 50% 330%;
+    -o-transform-origin: 50% 330%;
     transform-origin: 50% 330%;
 }
 
@@ -369,33 +377,51 @@ footer p {
     position: absolute;
     top: 46px;
     width: 23px;
+    -webkit-transform-origin: 50% 313%;
+    -moz-transform-origin: 50% 313%;
+    -ms-transform-origin: 50% 313%;
+    -o-transform-origin: 50% 313%;
     transform-origin: 50% 313%;
 }
 
-label[for=home] {
+label[for=buildings] {
     background: url('http://www.brkcan.net/fun/codepen/circlemenu/home.png') no-repeat top center;
+    -webkit-transform:rotateZ(0deg);
+    -moz-transform:rotateZ(0deg);
+    -ms-transform:rotateZ(0deg);
+    -o-transform:rotateZ(0deg);
     transform:rotateZ(0deg);
 }
 
-label[for=user] {
+label[for=life] {
     background: url('http://www.brkcan.net/fun/codepen/circlemenu/user.png') no-repeat top center;
+    -webkit-transform:rotateZ(-90deg);
+    -moz-transform:rotateZ(-90deg);
+    -ms-transform:rotateZ(-90deg);
+    -o-transform:rotateZ(-90deg);
     transform:rotateZ(-90deg);
 }
 
-label[for=setting] {
-    background: url('http://www.brkcan.net/fun/codepen/circlemenu/setting.png') no-repeat top center;
+label[for=tiles] {
+    background: url('../../images/life.png') no-repeat top center;
+    -webkit-transform:rotateZ(90deg);
+    -moz-transform:rotateZ(90deg);
+    -ms-transform:rotateZ(90deg);
+    -o-transform:rotateZ(90deg);
     transform:rotateZ(90deg);
 }
 
-label[for=share] {
-    background: url('http://www.brkcan.net/fun/codepen/circlemenu/share.png') no-repeat top center;
+label[for=level] {
+    background: url('../../images/tile.png') no-repeat top center;
+    -webkit-transform:rotateZ(180deg);
+    -moz-transform:rotateZ(180deg);
+    -ms-transform:rotateZ(180deg);
+    -o-transform:rotateZ(180deg);
     transform:rotateZ(180deg);
 }
 
 #tooltip-b {
-    margin: 10px auto 0 50px;
-    position: absolute;
-    z-index: 20;
+    text-align: center;
 }
 
 #tooltip-b span {

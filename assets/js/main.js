@@ -126,17 +126,28 @@ $(document).ready(function() {
 	});
 
 	// TOOLTIP FOOTER
+	$("#main-circle div:not(:first)").hide();
 	$("#tooltip-b span:not(:first)").hide();
-	$("#labels label").on('mouseover click',function(){
+	$("#labels label").on('click',function(){
 		var tab = $(this),
 		    index = tab.index(),
-		    content = $("#tooltip-b span").eq(index),
+		    content = $("#main-circle div").eq(index),
 		    contents = content.siblings();
 
 		tab.addClass("current").parent()
 		    .siblings().removeClass('current');
 		content.show();
 		contents.hide();
+
+		var tabLeg = $(this),
+		    indexLeg = tabLeg.index(),
+		    contentLeg = $("#tooltip-b span").eq(indexLeg),
+		    contentsLeg = contentLeg.siblings();
+
+		tabLeg.addClass("current").parent()
+		    .siblings().removeClass('current');
+		contentLeg.show();
+		contentsLeg.hide();
 	});
 
 	// POPUP
