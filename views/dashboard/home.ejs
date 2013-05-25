@@ -1,12 +1,97 @@
-<section>
-	<div class="buttons clear-fix">
-	   <button class="button pull-left" title="move player's ass"><i class="icon-screenshot"></i></button>
-	   <button class="button pull-left" title="select fucking object"><i class="icon-hand-up"></i></button>
-	   <button class="button pull-left">?</button>
-	   <button class="button pull-left">?</button>
+<div id="canvas-wrapper">
+<canvas id="maincanvas" width="1200" height="500" onmousemove="jfarm.mousemove(event);"></canvas>
+</div>
+<div class="content-actions borders-action clear-fix">
+	<div class="p10 clear-fix">
+		<div class="block pull-left w500">
+			<div class="title-b">Tile</div>
+			<button type="button" class="btn-flat btn-flat-blue">Actions</button>
+			<div class="min-block">
+				<span><strong>Owner :</strong> username</span><br />
+				<span><strong>State :</strong> test</span><br />
+				<span><strong>Occupied :</strong> true</span><br />
+				<span><strong>Humidity :</strong> 50%</span><br />
+				<span><strong>Fertility :</strong> 50%</span><br />
+			</div>
+		</div>
+		<div class="block pull-left">
+			<div id="main-circle">
+				<div class="health">12</div>
+				<div class="health">18</div>
+				<div class="health">79</div>
+				<div class="health">35</div>
+			</div>
+			<div id="labels">
+	            <label for="buildings" class="label-b"></label>
+	            <label for="life" class="label-b"></label>
+	            <label for="tiles" class="label-b"></label>
+	            <label for="level" class="label-b"></label>
+	        </div>
+	        <div id="tooltip-b">
+	        	<span>Buildings</span>
+	        	<span>Level</span>
+	        	<span>Life (%)</span>
+	        	<span>Tiles</span>
+	        </div>
+		</div>
+		<div class="block pull-right w500 clear-fix">
+			<div class="modal">
+				<h3>Weapons</h3>
+				<div class="clear-fix">
+					<div class="img pull-left">
+						<img src="images/fourche.png" alt="weapon" class="weapon">
+					</div>
+					<div class="img pull-left">
+						<img src="images/bat.png" alt="weapon" class="weapon">
+					</div>
+					<div class="img pull-left">
+						<img src="images/tronconneuse.png" alt="weapon" class="weapon">
+					</div>
+					<div class="img pull-left">
+						<img src="images/ak47.png" alt="weapon" class="weapon">
+					</div>
+				</div>
+				<h3>Accessories</h3>
+				<div class="clear-fix">
+					<div class="img pull-left">
+						<img src="images/arrosoir.png" alt="accessories" class="accesory">
+					</div>
+				</div>
+			</div>
+			<div class="pull-left">
+				<div class="title-b">Username</div>
+				<canvas id="playercanvas" width="220" height="220"></canvas>
+			</div>
+			<div class="pull-right">
+				<div class="clear-fix">
+					<div class="buttons pull-right">
+					   <button class="button pull-left"><img src="images/arrow-circle.png" alt=""></button>
+					   <button class="button pull-left"><img src="images/down.png" alt=""></button>
+					   <button class="button pull-left">?</button>
+					   <button class="button pull-left">?</button>
+					</div>
+				</div>
+				<div class="content-b">
+					<div class="clear-fix">
+						<button type="button" class="btn-flat btn-flat-green pull-right popup">Inventory</button>
+					</div>
+					<div class="min-block">
+						<span><strong>Level :</strong> 27</span><br />
+						<span><strong>Alliance :</strong> test</span><br />
+						<span><strong>Tiles :</strong> 18</span><br />
+						<span><strong>Ghost mode :</strong> off</span><br />
+						<span><strong>Buildings :</strong> 12</span>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div id="canvas-wrapper">
-		<canvas id="maincanvas" width="1200" height="500" onmousemove="jfarm.mousemove(event);"></canvas>
-	</div>
-</section>
+</div>
+<script>
+	$(document).ready(function() {
+		$("html").addClass("game");
+	});
+</script>
 <script src="js/jfarm.js"></script>
+<script src="js/playerShow.js"></script>
+>>>>>>> 6ce2878ab138dbd8a9bad06bc823ba61e51d6fe8

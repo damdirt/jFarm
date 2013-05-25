@@ -12,118 +12,97 @@
 	<%- assets.css() %>
 	<%- assets.js() %>
 </head>
-
 <body>
-	<header>
-		<nav class="main">
-			<ul class="clear-fix">
-				<li>
-					<a href="#" title="Buildlings">Buildlings</a>
-				</li>
-				<li>
-					<a href="#" title="Grows">Grows</a>
-				</li>
-				<li>
-					<a href="#" title="Fight">Fight</a>
-				</li>
-				<li>
-					<a href="#" title="Inventory">Inventory</a>
-				</li>
-				<li>
-					<a href="#" title="Account">
-						<% if(user.administrator == true){ %>
-                         Administrator
-                        <% } %>
-						<%- user.username %></a>
-				</li>
-			</ul>
-		</nav>
-		<nav class="sub">
-			<ul class="clear-fix">
-				<li>
-					<a href="#" title="">Silo</a>
-				</li>
-				<li>
-					<a href="#" title="">Barn</a>
-				</li>
-				<li>
-					<a href="#" title="">Cold storage</a>
-				</li>
-			</ul>
-		</nav>
-		<nav class="sub">
-			<ul class="clear-fix">
-				<li>
-					<a href="#" title="">Tomatoes</a>
-				</li>
-				<li>
-					<a href="#" title="">Corn</a>
-				</li>
-				<li>
-					<a href="#" title="">Wheat</a>
-				</li>
-			</ul>
-		</nav>
-		<nav class="sub">
-			<ul class="clear-fix">
-				<li>
-					<a href="#" title="">lorem ipsum</a>
-				</li>
-				<li>
-					<a href="#" title="">lorem ipsum</a>
-				</li>
-				<li>
-					<a href="#" title="">lorem ipsum</a>
-				</li>
-			</ul>
-		</nav>
-		<nav class="sub">
-			<ul class="clear-fix">
-				<li>
-					<a href="#" title="">lorem ipsum</a>
-				</li>
-				<li>
-					<a href="#" title="">lorem ipsum</a>
-				</li>
-				<li>
-					<a href="#" title="">lorem ipsum</a>
-				</li>
-			</ul>
-		</nav>
-		<nav class="sub">
-			<ul class="clear-fix">
-				<li>
-					<a href="/me" title="">View profile</a>
-				</li>
-				<li class="sep"></li>
-				<li>
-					<a href="/pwd" title="">Change password</a>
-				</li>
-                <% if(user.administrator == true){ %>
-                     <li class="sep"></li>
-                     <li>
-                         <a href="/settings" title="">Game settings</a>
-                     </li>
-                <% } %>
-				<li class="sep"></li>
-				<li>
-					<a href="/logout" title="">Logout</a>
-				</li>
-			</ul>
-		</nav>
-	</header>
 	<section>
+		<header>
+			<nav class="main">
+				<ul class="clear-fix">
+					<li>
+						<a href="/" title="Game">Game</a>
+					</li>
+					<li>
+						<a href="#" title="Buildlings">Buildlings</a>
+					</li>
+					<li>
+						<a href="#" title="Grows">Grows</a>
+					</li>
+					<li>
+						<a href="#" title="Fight">Fight</a>
+					</li>
+					<li>
+						<a href="#" title="Account">
+							<% if(user.administrator == true){ %>
+	                         Administrator
+	                        <% } %>
+							<%- user.username %></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="sub">
+				<ul class="clear-fix">
+					<li>
+						<a href="#" title="">Silo</a>
+					</li>
+					<li>
+						<a href="#" title="">Barn</a>
+					</li>
+					<li>
+						<a href="#" title="">Cold storage</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="sub">
+				<ul class="clear-fix">
+					<li>
+						<a href="#" title="">Tomatoes</a>
+					</li>
+					<li>
+						<a href="#" title="">Corn</a>
+					</li>
+					<li>
+						<a href="#" title="">Wheat</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="sub">
+				<ul class="clear-fix">
+					<li>
+						<a href="#" title="">lorem ipsum</a>
+					</li>
+					<li>
+						<a href="#" title="">lorem ipsum</a>
+					</li>
+					<li>
+						<a href="#" title="">lorem ipsum</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="sub">
+				<ul class="clear-fix">
+					<li>
+						<a href="/me" title="">View profile</a>
+					</li>
+					<li class="sep"></li>
+					<li>
+						<a href="/pwd" title="">Change password</a>
+					</li>
+	                <% if(user.administrator == true){ %>
+	                     <li class="sep"></li>
+	                     <li>
+	                         <a href="/settings" title="">Game settings</a>
+	                     </li>
+	                <% } %>
+					<li class="sep"></li>
+					<li>
+						<a href="/logout" title="">Logout</a>
+					</li>
+				</ul>
+			</nav>
+		</header>
 		<%- body %>
 	</section>
-	<footer>
-		<nav>
-			<ul>
-				<li>
-					<a href="#" title="">Perso</a>
-				</li>
-			</ul>
-		</nav>
+	<footer class="borders-action">
+		<div class="round hide"></div>
 	</footer>
 </body>
-
 </html>

@@ -13,9 +13,9 @@ $(document).ready(function() {
 
 	// DISPLAY SUB NAV
 	$("nav.sub").hide();
-	$("nav.main ul a").on('click', function() {
+	$("nav.main ul a:not(:first)").on('click', function() {
 		var tab = $(this),
-			index = tab.parent().index(),
+			index = tab.parent().index()-1,
 			content = $("nav.sub").eq(index),
 			contents = $('nav.sub:visible');
 		if (content.is(':visible')) {
@@ -70,7 +70,7 @@ $(document).ready(function() {
 		});
 	});
 
-	// delete process
+	// DELETE PROCESS
 	$(".action-delete").on('click', function() {
 		if (confirm('Confirm remove ?')) {
 			var $this = $(this),
@@ -108,4 +108,48 @@ $(document).ready(function() {
 			});
 	});
 
+	// PAGINATION LISTS
+	$('.pag-objects').pajinate({
+		items_per_page : 5
+	});
+
+	// FOOTER ON/OFF
+	$(".round").on('click', function() {
+		var fActions = $(".content-actions");
+		fActions.animate({
+			height: 'toggle'
+		},1000, function(){
+			$(".round").toggleClass('off');
+		});
+	});
+
+	// TOOLTIP FOOTER
+	$("#main-circle div:not(:first)").hide();
+	$("#tooltip-b span:not(:first)").hide();
+	$("#labels label").on('click',function(){
+		var tab = $(this),
+		    index = tab.index(),
+		    content = $("#main-circle div").eq(index),
+		    contents = content.siblings();
+
+		tab.addClass("current").parent()
+		    .siblings().removeClass('current');
+		content.show();
+		contents.hide();
+
+		var tabLeg = $(this),
+		    indexLeg = tabLeg.index(),
+		    contentLeg = $("#tooltip-b span").eq(indexLeg),
+		    contentsLeg = contentLeg.siblings();
+
+		tabLeg.addClass("current").parent()
+		    .siblings().removeClass('current');
+		contentLeg.show();
+		contentsLeg.hide();
+	});
+
+	// POPUP
+	$(".popup").on('click', function() {
+		$(".modal").toggle();
+	});
 });

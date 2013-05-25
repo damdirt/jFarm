@@ -1,40 +1,40 @@
-<div id="main">
-		<div class="content clear-fix">
-			<h1 class="title">Customize your own character <span class="line"></span></h1>
-			<div class="col pull-left w300">
-				<canvas id="maincanvas" width="300" height="300"></canvas>
-				<div id="userLabel">Username : your username</div>
-			</div>
-			<div class="col pull-left w300">
-				<form action="" name="form" method="post" id="define_form" class="standard-form clear-fix">
-                    <div class="controls">
-                        <label>Username</label>
-                        <input class="boot-input" type="text" id="inputUsername" placeholder="Username" name="username">
-                    </div>
-                    <div class="controls">
-                        <label>Skin</label>
-                        <input class="minicolors" id="inputSkin" type="text" value="#FF0" name="skin">
-                    </div>
-                    <div class="controls">
-                        <label>T-shirt</label>
-                        <input class="minicolors" id="inputShirt" type="text" value="#F0F" name="shirt">
-                    </div>
-                    <div class="controls">
-                        <label>Pants</label>
-                        <input class="minicolors" id="inputPants" type="text" value="#00F" name="pants">
-                    </div>
-                    <div class="controls">
-                        <label>Hair</label>
-                        <input class="minicolors" id="inputHair" type="text" value="#550" name="hair">
-                    </div>
-                    <hr>
-                    <div class="controls">
-                        <button type="button" class="btn-flat btn-flat-blue" onclick="redraw()">Preview</button>
-                        <button type="submit" class="btn-flat btn-flat-green">Validate</button>
-                    </div>
-                </form>
-			</div>
-		</div>
+<div class="content clear-fix">
+	<h1 class="title">Customize your own character <span class="line"></span></h1>
+	<div class="col pull-left w300">
+        <h2 class="title">Overview<span class="line"></span></h2>
+		<canvas id="playercanvas" width="300" height="300"></canvas>
+		<div id="userLabel">Username : your username</div>
 	</div>
+	<div class="col pull-left w300">
+        <h2 class="title">Parameters<span class="line"></span></h2>
+		<form action="" name="form" method="post" id="define_form" class="standard-form clear-fix">
+            <div class="controls">
+                <label>Username</label>
+                <input type="text" id="inputUsername" placeholder="Username" name="username" required="true">
+            </div>
+            <div class="controls">
+                <label>Skin</label>
+                <input class="minicolors" id="inputSkin" type="text" value="#FF0" name="skin">
+            </div>
+            <div class="controls">
+                <label>T-shirt</label>
+                <input class="minicolors" id="inputShirt" type="text" value="#F0F" name="shirt">
+            </div>
+            <div class="controls">
+                <label>Pants</label>
+                <input class="minicolors" id="inputPants" type="text" value="#00F" name="pants">
+            </div>
+            <div class="controls">
+                <label>Hair</label>
+                <input class="minicolors" id="inputHair" type="text" value="#550" name="hair">
+            </div>
+            <hr>
+            <div class="controls">
+                <button type="button" class="btn-flat btn-flat-blue" onclick="redraw()">Preview</button>
+                <button type="submit" class="btn-flat btn-flat-green pull-right">Validate</button>
+            </div>
+        </form>
+	</div>
+</div>
 <div id="console"></div>
-<script src="js/playerBuilder.js"></script>
+<script src="../js/playerBuilder.js"></script>
