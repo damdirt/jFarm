@@ -37,9 +37,7 @@ $(document).ready(function() {
 
 	// BTN ACTIVE
 	$(".buttons button").click(function() {
-		$(".buttons button").each(function() {
-			$(this).removeClass("active");
-		});
+		$(this).siblings().removeClass("active");
 		$(this).addClass("active");
 	});
 

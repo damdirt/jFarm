@@ -1,16 +1,12 @@
-
 <section>
 	<div class="buttons clear-fix">
-	   <button class="button pull-left"><img src="images/arrow-circle.png" alt=""></button>
-	   <button class="button pull-left"><img src="images/down.png" alt=""></button>
+	   <button class="button pull-left" title="move player's ass"><i class="icon-screenshot"></i></button>
+	   <button class="button pull-left" title="select fucking object"><i class="icon-hand-up"></i></button>
 	   <button class="button pull-left">?</button>
 	   <button class="button pull-left">?</button>
 	</div>
-	<canvas id="maincanvas"></canvas>
+	<div id="canvas-wrapper">
+		<canvas id="maincanvas" width="1200" height="500" onmousemove="jfarm.mousemove(event);"></canvas>
+	</div>
 </section>
-<script>
-var socket = io.connect('http://localhost:1337');
-socket.request('/getYard',{}, function (response) {
-console.log(response.values);
-});
-</script>
+<script src="js/jfarm.js"></script>

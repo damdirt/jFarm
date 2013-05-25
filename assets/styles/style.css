@@ -104,9 +104,9 @@ hr {
    src: local("PT Sans"), local("PTSans-Regular"), url("http://themes.googleusercontent.com/static/fonts/ptsans/v4/LKf8nhXsWg5ybwEGXk8UBQ.woff") format("woff");
 }
 
-/* ---------- INTERFACE ---------- */
-
-/* Top nav */
+/* ---------------------------------------------------- */
+/*    INTERFACE STYLES
+/* ---------------------------------------------------- */
 
 header > nav {
 	width: 100%;
@@ -161,7 +161,7 @@ li.sep {
     margin-left: 25px;
 }
 
-/* Bottom nav */
+/* ---------- BOTTOM NAV STYLES ---------- */
 
 footer > nav {
 	width: 100%;
@@ -185,19 +185,23 @@ footer > nav ul li a:hover {
 	background-color: #495461;
 }
 
-/* Map */
+/* ---------- MAP STYLES ---------- */
 
 section {
 	background-color: #FFFFFF;
 	min-height: 600px;
 	box-shadow: 0 0 85px rgba(0, 0, 0, 0.3);
 }
-/*
-canvas {
-    position: absolute;
-}*/
 
-/* Btn */
+
+/* ---------- CANVAS STYLES ---------- */
+
+#canvas-wrapper {
+  margin: 0 auto;
+  width: 1200px;
+}
+
+/* ---------- BUTTONS STYLES ---------- */
 
 .buttons {
        background-color: #EEEEEE;
@@ -272,8 +276,12 @@ canvas {
     background-color: #333333;
 }
 
+/* ---------- BUTTONS/ICONS STYLES ---------- */
+.buttons button i{
+  font-size: 20px;
+}
 
-/* Form */
+/* ---------- FORMS STYLES ---------- */
 
 #error{
   color:#FF0000;
@@ -349,7 +357,7 @@ canvas {
   outline: none;
 }
 
-/* Content */
+/* ---------- CONTENT STYLES ---------- */
 
 #userLabel {
   background-color: #7EBD26;
