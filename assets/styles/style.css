@@ -429,7 +429,7 @@ label[for=level] {
     font-size: 14pt;
 }
 
-/* ---------- MAP STYLES ---------- */
+/* ---------- MAP/CANVAS STYLES ---------- */
 
 section {
 	background-color: #FFFFFF;
@@ -437,13 +437,10 @@ section {
 	box-shadow: 0 0 85px rgba(0, 0, 0, 0.3);
 }
 
-
-/* ---------- CANVAS STYLES ---------- */
-
-#canvas-wrapper {
-  margin: 0 auto;
-  width: 1200px;
-}
+// #canvas-wrapper {
+//   margin: 0 auto;
+//   width: 1200px;
+// }
 
 /* ---------- BUTTONS STYLES ---------- */
 
