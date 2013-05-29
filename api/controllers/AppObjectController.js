@@ -44,7 +44,7 @@ var AppObjectController = {
 				} else if (methodParam == 'edit') {
 					console.log(valueParam);
 					AppObject.find({
-						content: "toto"
+						name: nameParam
 					}).done(function(err, obj) {
 						if (err || !obj) {
 							AppObject.update({
@@ -52,7 +52,7 @@ var AppObjectController = {
 							}, {
 								name: nameParam,
 								content: valueParam
-							}, function(err, user) {
+							}, function(err, appObject) {
 								// Error handling
 								if (err) {
 									res.redirect('/appobject');
@@ -72,26 +72,16 @@ var AppObjectController = {
 		}
 	},
 
-	edit: function(req, res) {
-		// update
-		res.view({
-			user: req.session.user,
-			obj: req.param('name'),
-			responseMessage: "AppObject edit"
-		})
-	},
-
 	delete: function(req, res) {
 		AppObject.destroy({
 			name: req.param('name')
-		}).done(function(error) {
+		}, function(error) {
 			if (error) {
-				return console.log(error);
+				res.send(error)
 			} else {
-				console.log('done');
+				res.send('done')
 			}
 		});
-		res.redirect('/appobject')
 	},
 
 	index: function(req, res) {
@@ -113,5 +103,22 @@ var AppObjectController = {
 		});
 	},
 
+	appObjectList: function(req, res) {
+		// return list of appObjects
+		
+		AppObject.findAll().done(function(err, appObjects) {
+			if (err) {
+				res.send(err)
+			} else {
+				var jsonObj = [];
+				for (var i = 0; i < appObjects.length; i++) {
+					var obj = appObjects[i].content
+					 //console.log(obj);
+					jsonObj[i] = JSON.parse(obj);
+				}
+				res.json({ "appObjects": jsonObj});
+			}
+		});
+	}
 };
 module.exports = AppObjectController;

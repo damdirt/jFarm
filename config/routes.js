@@ -22,7 +22,8 @@
 //
 module.exports.routes = {
 
-	// To route the home page to the "index" action of the "home" controller:
+
+	//----------------- DEFAULT --------------------
 	'/': {
 		controller: 'dashboard',
 		action: 'home'
@@ -32,9 +33,10 @@ module.exports.routes = {
 		controller: 'dashboard',
 		action: 'home'
 	},
+	//----------------- END DEFAULT -----------------
 
-	// If you want to set up a route only for a particular HTTP method/verb 
-	// (GET, POST, PUT, DELETE) you can specify the verb before the path:
+
+	// ----------------- AUTH ---------------------
 	'/login': {
 		controller: 'auth',
 		action: 'login'
@@ -49,6 +51,9 @@ module.exports.routes = {
 		controller: 'auth',
 		action: 'logout'
 	},
+	//------------------ END AUTH -------------------
+
+	//------------------ USER ------------------------
 
 	'/me': {
 		controller: 'user',
@@ -60,42 +65,81 @@ module.exports.routes = {
 		action: 'changePwd'
 	},
 
-    '/getYard': {
-        controller: 'user',
-        action: 'getYard'
-    },
+	//------------------ END USER ------------------------
 
-    '/settings': {
-        controller: 'settings',
-        action: 'index'
-    },
-
-    '/settings/appobject/createEdit': {
-        controller: 'appObject',
-        action: 'createEdit'
-    },
-
-    '/settings/appobject': {
-        controller: 'appObject',
-        action: 'index'
-    },
-
-    '/player': {
-	    controller: 'player',
-	    action: 'builder'
-    },
-
-    '/appobject/edit/:name': {
-		controller	: 'appObject',
-		action		: 'edit'
+	'/getYard': {
+		controller: 'user',
+		action: 'getYard'
 	},
 
-	'/appobject/delete/:id': {
-		controller	: 'appObject',
-		action		: 'delete'
+
+	//------------------- SETTINGS ------------------------
+
+	'/settings': {
+		controller: 'settings',
+		action: 'index'
+	},
+
+	'/settings/appobject/createEdit': {
+		controller: 'appObject',
+		action: 'createEdit'
+	},
+
+	'/settings/appobject': {
+		controller: 'appObject',
+		action: 'index'
+	},
+
+	'/settings/appobjects': {
+		controller: 'appObject',
+		action: 'appObjectList'
+	},
+
+	'/settings/gameproperty': {
+		controller: 'gameProperty',
+		action: 'index'
+	},
+
+	'/settings/gameproperty/createEdit': {
+		controller: 'gameProperty',
+		action: 'createEdit'
+	},
+
+	//------------------- END SETTINGS ----------------------
+
+	//------------------- PLAYER -----------------------------
+
+	'/player': {
+		controller: 'player',
+		action: 'builder'
+	},
+	//-------------------- END PLAYER ------------------------
+
+	//-------------------- INITIALIZER ------------------------
+
+	'/init/yard': {
+		controller: 'initializer',
+		action: 'firstLaunch'
+	},
+
+	//-------------------- END INITIALISER ---------------------
+
+	//-------------------- YARD ------------------------
+
+
+	'/yards': {
+		controller: 'yard',
+		action: 'getYard'
+	},
+
+	
+
+	'/yards/init': {
+		controller: 'yard',
+		action: 'init'
 	}
 
-
+	//-------------------- END YARD ---------------------
 
 	// Keep in mind default routes exist for each of your controllers
 	// So if you have a UserController with an action called "juggle" 

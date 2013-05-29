@@ -8,9 +8,6 @@ var AuthController = {
 		res.view({
 			layout: "minLayout"
 		})
-
-
-
 	},
 
 

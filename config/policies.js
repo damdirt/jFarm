@@ -14,8 +14,8 @@ module.exports.policies = {
 		'*': true
 	}  ,
 
-  'dashboard': {
-      'gameSettings': 'administrator'
+  'settings': {
+      '*': 'administrator'
   }
 
 

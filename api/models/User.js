@@ -6,9 +6,9 @@ module.exports = {
 
 	attributes: {
 
-		name: 'string',
-		email: 'string',
-		password: 'string',
+		username: 'TEXT',
+		email: 'TEXT',
+		password: 'TEXT',
         administrator: 'boolean'
 
 	}

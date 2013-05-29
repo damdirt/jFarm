@@ -1,12 +1,14 @@
 /*---------------------
-	:: AppObject
+	:: GameObject
 	-> model
 ---------------------*/
 module.exports = {
 
-	attributes	: {
-		name: 'TEXT',
+	attributes: {
+		yardId: 'INT',
 		content: 'TEXT'
 	}
+
+
 
 };

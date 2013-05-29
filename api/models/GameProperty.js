@@ -5,8 +5,8 @@
 module.exports = {
 
 		attributes	: {
-		name: 'STRING',
-		value: 'STRING'
+		name: 'TEXT',
+		content: 'TEXT'
 	}
 
 };
