@@ -2,11 +2,43 @@
  jfarm 
 */
 
+// Adding and Overriding of some prototype methods
+sheetengine.SheetObject.prototype.getData = function() {
+	return {
+		name: this.name || ""
+		, centerp: this.centerp
+		, rot: { 
+			alphaD: this.rot.alphaD
+			,betaD: this.rot.betaD
+			,gammaD: this.rot.gammaD
+		}
+	};
+};
+
+sheetengine.SheetObject.prototype.getString = function(){
+	// sheets
+	var sheets = [];
+	for (var i=0;i<this.sheets.length;i++) {
+	  var s = this.sheets[i];
+	  
+	  sheets.push({
+	    centerp: s.centerp,
+	    rot: {alphaD:s.rot.alphaD, betaD:s.rot.betaD, gammaD:s.rot.gammaD},
+	    width: s.width, 
+	    height: s.height, 
+	    canvas: s.canvas.toDataURL()
+	  });
+	}
+	// 'my object' replaced by this.name 
+	var retobj = {name:this.name, thumbnail:'', hidden:false, intersectionsenabled: this.intersectionsenabled, canvasSize:this.canvasSize, sheets:sheets};
+	return JSON.stringify(retobj);
+};
+
 jfarm = {
 	appid: '4f244f4db41abbfd2c00018c' //"jfarm"
 	,timerInterval: 40
 	,sceneIsReady: 0
-	,levelsize: 1
+	,levelsize: 5
 	,boundarySize:  0.6
 	,zoom: 1
 	,lineWidth: 0
@@ -36,7 +68,7 @@ jfarm = {
 	,cameraMaxDistance: 30
 
 	// gaming modes
-	,movingPlayer: false
+	,movingPlayer: true
 	,selectingObject: false
 	,drawingLocation: false
 
@@ -44,7 +76,7 @@ jfarm = {
 	,locationCorners: []
 	,currentLocationBaseSheets: []
 	,drawnObj: null
-	,enumAppObjects: ["barn", "cold storage", "silo", "corn", "tomatoes", "wheat"] // TODO : retrieve from DB ???
+	,enumAppObjects: ["Barn", "Cold Storage", "Silo", "Corn", "Tomatoes", "Wheat"] // TODO : retrieve from DB ???
 
 	// player 
 	,startp: {x:0,y:0,z:0}
@@ -52,48 +84,45 @@ jfarm = {
 
 	// playerObjects
 	,playerObjectChanged: false
-	,playerObjects: {}
-	,playerObjectsData: {
-			fork: {
-				name: "fork"
-				,centerp: {x:-3,y:2,z:10}
-				,rot: {alphaD:90,betaD:0,gammaD:90}
-				,x: 5
-				,y: 0
-			}
-			,bat: {
-				name: "bat"
-				,centerp: {x:-3,y:5,z:12}
-				,rot: {alphaD:45,betaD:0,gammaD:90}
-				,x: 10
-				,y: 0
-			}
-			,chainsaw: {
-				name: "chainsaw"
-				,centerp: {x:9,y:2,z:9}
-				,rot: {alphaD:0,betaD:0,gammaD:0}
-				,x: 0
-				,y: 9
-			}
-			,ak47: {
-				name: "ak47"
-				,centerp: {x:-3,y:5,z:12}
-				,rot: {alphaD:-45,betaD:0,gammaD:-90}
-				,x: 5
-				,y: 10
-			}
-			,watercan: {
-				name: "watercan"
-				,centerp: {x:-3,y:7,z:8}
-				,rot: {alphaD:30,betaD:0,gammaD:-90}
-				,x: 7
-				,y: 10
-			}
-		} // contains all available "objects" (sheets actually) wearable by the player (weapons etc)
 	,playerObjectData: {}
-	,playerObject: null // current wore object 
-	,playerObjectPos: {} // current wore player object position
-	,playerObjectsPos: {}
+	// contains all available "objects" (data actually) wearable by the player (weapons etc)
+	,playerObjectsData: { 
+		fork: {
+			name: "fork"
+			,centerp: {x:-3,y:2,z:10}
+			,rot: {alphaD:90,betaD:0,gammaD:90}
+			,x: 5
+			,y: 0
+		}
+		,bat: {
+			name: "bat"
+			,centerp: {x:-3,y:5,z:12}
+			,rot: {alphaD:45,betaD:0,gammaD:90}
+			,x: 10
+			,y: 0
+		}
+		,chainsaw: {
+			name: "chainsaw"
+			,centerp: {x:9,y:2,z:9}
+			,rot: {alphaD:0,betaD:0,gammaD:0}
+			,x: 0
+			,y: 9
+		}
+		,ak47: {
+			name: "ak47"
+			,centerp: {x:-3,y:5,z:12}
+			,rot: {alphaD:-45,betaD:0,gammaD:-90}
+			,x: 5
+			,y: 10
+		}
+		,watercan: {
+			name: "watercan"
+			,centerp: {x:-3,y:7,z:8}
+			,rot: {alphaD:30,betaD:0,gammaD:-90}
+			,x: 7
+			,y: 10
+		}
+	} 
 	
 	,init: function() {
 
@@ -112,7 +141,7 @@ jfarm = {
 		sheetengine.context.translate(-sheetengine.canvas.width/(2*zoom)*(zoom-1),-sheetengine.canvas.height/(2*zoom)*(zoom-1)); //???
 
 		// set tile width
-		// sheetengine.scene.tilewidth = jfarm.tileWidth; // default is 300
+		sheetengine.scene.tilewidth = jfarm.tileWidth; // default is 300
 
 		// retrieve initial yards from server
 		var yardcenter = sheetengine.scene.getUrlLoadInfo().yardcenter; // in url, ex: /?x=9&y=2
@@ -120,7 +149,7 @@ jfarm = {
 		// var centerp = {x:0,y:0,z:0};
 		// var centerpuv = sheetengine.transforms.transformPoint(centerp);
 		// sheetengine.scene.center = {x:centerp.x, y:centerp.y, u:centerpuv.u, v:centerpuv.v};
-		sheetengine.scene.getYards('http://www.crossyards.com', yardcenter, jfarm.levelsize, jfarm.appid, jfarm.sceneReady);
+		sheetengine.scene.getYards('http://10.12.16.241:1337', yardcenter, jfarm.levelsize, jfarm.appid, jfarm.sceneReady); //http://www.crossyards.com
 	},
 	sceneReady: function(){
 		
@@ -230,7 +259,12 @@ jfarm = {
 		leg2.angle = 0;
 
 		// define player object
-		jfarm.player = new sheetengine.SheetObject({x:centerp.x,y:centerp.y,z:centerp.z}, {alphaD:0,betaD:0,gammaD:0}, [arm, body,backhead,leg1,leg2], {w:80,h:80,relu:40,relv:40});
+		jfarm.player = new sheetengine.SheetObject(
+							{x:centerp.x,y:centerp.y,z:centerp.z}
+							, {alphaD:0,betaD:0,gammaD:0}
+							, [arm, body,backhead,leg1,leg2]
+							, {w:40,h:40,relu:20,relv:30}
+						);
 		jfarm.player.arm = arm;
 		jfarm.player.leg1 = leg1;
 		jfarm.player.leg2 = leg2;
@@ -243,169 +277,26 @@ jfarm = {
 	// weapons and player objects
 	definePlayerObjects: function(){
 		// FORK
-		// var fork = new sheetengine.Sheet(jfarm.playerObjectsData.fork.centerp, {alphaD:90,betaD:0,gammaD:90}, {w:11,h:25})
-		// 	,forkCtx = fork.context;
-		// fork.hidden = true;
-		// fork.name = "fork";
-		// forkCtx.fillStyle = "#dfc991"; // handle
-		// forkCtx.fillRect(4,10,2,15);
-		// forkCtx.fillStyle = "#413b32"; // pics
-		// forkCtx.fillRect(0,0,10,10);
-		// forkCtx.clearRect(1,0,2,8);
-		// forkCtx.clearRect(4,0,2,8);
-		// forkCtx.clearRect(7,0,2,8);
-		// fork.setDimming(true,true);
-		// jfarm.playerObjects.fork = fork;
-		// var forkImg = new Image();
-		// forkImg.src = fork.canvas.toDataURL();
-		// jfarm.playerObjectsData.fork.image = forkImg;
 		var forkImg = new Image();
 		forkImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAZCAYAAADnstS2AAAALElEQVQ4jWNwtDb6zwAFBNmjiilSTAwmXTE6uH9y4v/7JydilxxVPKqY7ooB1c+3tcuPBsEAAAAASUVORK5CYII=";
 		jfarm.playerObjectsData.fork.image = forkImg;
 
 		// BAT
-		// var bat = new sheetengine.Sheet(jfarm.playerObjectsData.bat.centerp, {alphaD:45,betaD:0,gammaD:90}, {w:3,h:17}) //d3a475
-		// 	,batCtx = bat.context;
-		// bat.hidden = true;
-		// bat.name = "bat";
-		// batCtx.fillStyle = "#dfc991";
-		// batCtx.beginPath();
-		// batCtx.moveTo(2, 0);
-		// batCtx.lineTo(3, 1);
-		// batCtx.lineTo(3, 2);
-		// batCtx.lineTo(2, 16);
-		// batCtx.lineTo(2.5, 16);
-		// batCtx.lineTo(3, 17);
-		// batCtx.lineTo(0, 17);
-		// batCtx.lineTo(0, 16);
-		// batCtx.lineTo(1.5, 16);
-		// batCtx.lineTo(0, 1);
-		// batCtx.lineTo(2, 0);
-		// batCtx.fill();
-		// bat.setDimming(true,true);
-		// jfarm.playerObjects.bat = bat;
-		// var batImg = new Image();
-		// batImg.src = bat.canvas.toDataURL();
-		// jfarm.playerObjectsData.bat.image = batImg;
-
 		var batImg = new Image();
 		batImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAARCAYAAAAYNhYvAAAAqUlEQVQImTXOIQ4CMRAF0G9JuAEexxmWM+DwnACBXolY2hmNBscZdhOStiMRiA3pjOEEkGCLoMiXn5//8Yh+qcJDjr6FJnqZcDHhAhUeTbhYog8sUV/xhAmdTLhoohs0UVeTHjn6bcUFWfzahIsKH2HBNSZcstAe+XqY150d7n07NeGi0W8AAJr4naNf/SA8WnANAMAS9Tm4xR/nMbhZ7VAXgpvgf1+Fhy/N9oRkGdFVpwAAAABJRU5ErkJggg==";
 		jfarm.playerObjectsData.bat.image = batImg;
 		
-
 		// CHAINSAW
-		// var chainsaw = new sheetengine.Sheet(jfarm.playerObjectsData.chainsaw.centerp,{alphaD:0,betaD:0,gammaD:0}, {w:20,h:7}) //ce3b10
-		// 	,chainsawCtx = chainsaw.context;
-		// chainsaw.hidden = true;
-		// chainsaw.name = "chainsaw";
-		// // engine
-		// chainsawCtx.fillStyle = "#ce3b10"; 
-		// chainsawCtx.fillRect(0,0,7,7);
-		// // handle
-		// chainsawCtx.strokeStyle = "#222"; 
-		// chainsawCtx.beginPath(); 
-		// chainsawCtx.lineWidth = 1;
-		// chainsawCtx.moveTo(0,5);
-		// chainsawCtx.lineTo(5,0);
-		// chainsawCtx.stroke();
-		// // blade
-		// chainsawCtx.fillStyle = "#c4bec2"; 
-		// chainsawCtx.fillRect(5,3,10,3);
-		// chainsawCtx.lineWidth = 1;
-		// chainsawCtx.strokeRect(5,3,10,3);
-		// chainsaw.setDimming(true,true);
-		// jfarm.playerObjects.chainsaw = chainsaw;
-		// var chainsawImg = new Image();
-		// chainsawImg.src = chainsaw.canvas.toDataURL();
-		// jfarm.playerObjectsData.chainsaw.image = chainsawImg;
-
 		var chainsawImg = new Image();
 		chainsawImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAAfklEQVQokaXRoQ2AMBCFYUZAIIprHv4UjqGAkjR1hFnYA0HQrPQwkJBSTkCT3365u2Z7k/NqrgtKZTnXBfcmZ/blvWG/wBjzUtJLSQCTVhKMsSCGADh0Tg0Ak2i8ZhBD1/bcllXtRJ/g/VPuE7q2V3udMAYvNIihtXbUSp3wAI0rrQLjqZEtAAAAAElFTkSuQmCC";
 		jfarm.playerObjectsData.chainsaw.image = chainsawImg;
 
-		
-
 		// AK-47
-		// var ak47 = new sheetengine.Sheet(jfarm.playerObjectsData.ak47.centerp,{alphaD:-45,betaD:0,gammaD:-90}, {w:18,h:6})
-		// 	,akCtx = ak47.context;
-		// ak47.name = "ak47";
-		// ak47.hidden = true;
-		// // crosse
-		// akCtx.fillStyle = "#000"; //"#d18150"; 
-		// akCtx.beginPath(); 
-		// akCtx.moveTo(0,2);
-		// akCtx.lineTo(1,5);
-		// akCtx.lineTo(4.7,2.3);
-		// akCtx.lineTo(4.7,1.5);
-		// akCtx.lineTo(0,2);
-		// akCtx.fill();
-		// // barillier
-		// akCtx.fillStyle = "#000";
-		// akCtx.fillRect(4.7,0.6,9,1.5);
-		// // crosse 1
-		// akCtx.fillStyle = "#000";
-		// akCtx.fillRect(5,2,1.3,2.7);
-		// // chargeur
-		// akCtx.fillStyle = "#000";
-		// akCtx.beginPath();
-		// akCtx.moveTo(8,2);
-		// akCtx.lineTo(8.7,4);
-		// akCtx.lineTo(10,6);
-		// akCtx.lineTo(11,4.9);
-		// akCtx.lineTo(10,3.5);
-		// akCtx.lineTo(9.4,2);
-		// akCtx.fill();
-		// // canon
-		// akCtx.fillStyle = "#000";
-		// akCtx.fillRect(13.7,0.8,4.3,0.5);
-		// chainsaw.setDimming(true,true);
-		// jfarm.playerObjects.ak47 = ak47;
-		// var akImg = new Image();
-		// akImg.src = ak47.canvas.toDataURL();
-		// jfarm.playerObjectsData.ak47.image = akImg;
-
 		var akImg = new Image();
 		akImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAGCAYAAADOic7aAAAAhUlEQVQYlY3PIQoCYRDF8d8BNGwRLGYxKp7AahA2i0m8gMVk8iJ6AzF4ETF4AA9gMq1lFj7Wxc8Hf3g83swwfGuAdYYFxg10McQMKxxQZbhi3sAtKbyxCb9EH3ecwtcULZ/Yx+ADk8iq+gp2eKHXNpxqhCM6SXbGNHyBJy65Rf+oxPZX4QO++CCk+Lv1qQAAAABJRU5ErkJggg==";
 		jfarm.playerObjectsData.ak47.image = akImg;
 
-
 		// WATERING CAN
-		// var watercan = new sheetengine.Sheet(jfarm.playerObjectsData.watercan.centerp,{alphaD:30,betaD:0,gammaD:-90}, {w:14,h:10})
-		// 	,watercanCtx = watercan.context;
-		// watercan.hidden = true;
-		// watercan.name = "watercan";
-		// watercanCtx.fillStyle = "#3b5d67";
-		// watercanCtx.fillRect(3,3,5,6); // réservoir
-
-		// var startAngle = 0.6 * Math.PI;
-		// var endAngle = 1.9 * Math.PI;
-		// var counterClockwise = false;
-
-		// watercanCtx.beginPath();
-		// watercanCtx.arc(4,5,4, startAngle, endAngle, counterClockwise);
-		// watercanCtx.lineWidth = 1;
-		// watercanCtx.strokeStyle = '#3b5d67';
-		// watercanCtx.stroke();
-
-		// watercanCtx.beginPath();
-		// watercanCtx.moveTo(7,8);
-		// watercanCtx.lineTo(12,4);
-		// watercanCtx.lineWidth = 2;
-		// watercanCtx.strokeStyle = '#3b5d67';
-		// watercanCtx.stroke();
-
-		// watercanCtx.beginPath();
-		// watercanCtx.moveTo(11,4);
-		// watercanCtx.lineTo(13,2);
-		// watercanCtx.lineTo(14,4);
-		// watercanCtx.fillStyle = '#000';
-		// watercanCtx.fill();
-		// chainsaw.setDimming(true,true);
-		// jfarm.playerObjects.watercan = watercan;
-		// var watercanImg = new Image();
-		// watercanImg.src = watercan.canvas.toDataURL();
-		// jfarm.playerObjectsData.watercan.image = watercanImg;
-
 		var watercanImg = new Image();
 		watercanImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAA6ElEQVQokYWRrU4DURCFT0WDQaExJOtKMCvonTG1ra9o74za25lXaMAgy8PgEQ3hHZq0CodBNSTY5iIWSNhstycZMT/fJDMHAFCW1h9KGoVoyxBtOYwV45SK8fiMxNaktiNZrOrwT1J/L0vrHwVZ/I3EN41yj8W+SP0ZQK/RewAwAqvnvyXquRmk1TUABKmKi8urNYAM4BUU7bELBACepwmr7Vk9B0kzAADJYtUFstgdqR/q3J4G0+l5DaptO0H1TOoHinb/715Se/l9Tjtoe56nSasdP5/9aAODVMVRSwDgdpZuOgca+gaCeIMuwChpKwAAAABJRU5ErkJggg==";
 		jfarm.playerObjectsData.watercan.image = watercanImg;
@@ -427,8 +318,6 @@ jfarm = {
 		arm.context.drawImage(jfarm.playerObjectData.image, jfarm.playerObjectData.x, jfarm.playerObjectData.y);
 		arm.canvasChanged();
 		arm.name = jfarm.playerObjectData.name;
-
-		arm.canvasChanged();
 		jfarm.playerObjectChanged = true;
 	},
 
@@ -688,6 +577,11 @@ jfarm = {
 		// jfarm.drawBubble();
 		if (jfarm.hoveredObj)
 			jfarm.highlightObject(jfarm.hoveredObj);
+
+		// we highlight new basesheet and
+		// we redraw scene to erase previous highlighted basesheet
+		if(jfarm.hoveredBaseSheet)
+			jfarm.highlightHoveredBaseSheet();
 	},
 	drawTarget: function() {
 		if (!jfarm.player.finalTarget && !jfarm.player.targetObj)
@@ -713,7 +607,6 @@ jfarm = {
 		ctx.restore();
 	},
 	highlightObject: function(obj, strokeStyle) {
-
 		var ctx = sheetengine.context
 			,strokeStyle = strokeStyle || '#000'
 			,canvasSize = obj.canvasSize
@@ -728,7 +621,7 @@ jfarm = {
 		ctx.strokeRect(Math.round(ouv.u) - canvasSize.relu , Math.round(ouv.v) - canvasSize.relv, canvasSize.w, canvasSize.h);
 
 		// displaying object's name above object canvassize
-		ctx.font = '14px "century gothic"';
+		ctx.font = '12px "century gothic"'; //"century gothic"
 		ctx.strokeStyle = '#000';
 		ctx.strokeText(text, p.u - canvasSize.relu, p.v - canvasSize.relv - 5);
 		ctx.restore();
@@ -1087,7 +980,7 @@ jfarm = {
 		[sud,est,top,tri1,tri2,pillierLeftSud,pillierLeftEst,pillierBottomSud,pillierBottomEst,pillierRightSud,pillierRightEst],
 		{w:150,h:225,relu:75,relv:190}
 		);
-		silo.name = "silo";
+		silo.name = "Silo";
 
 		return silo;
 	},
@@ -1120,7 +1013,7 @@ jfarm = {
 								{alphaD:0,betaD:0,gammaD:0},
 								plantsArr,
 								{w:120,h:70,relu:60,relv:40});
-		tomatoes.name = "tomatoes";
+		tomatoes.name = "Tomatoes";
 		return tomatoes
 	},
 	defineCrops: function(centerp, name, color, gradient, gradientColor){
@@ -1177,6 +1070,10 @@ jfarm = {
 			// var pxy = sheetengine.transforms.inverseTransformPoint({u:puv.u + sheetengine.scene.center.u, v:puv.v + sheetengine.scene.center.v});
 			// pxy.x = (pxy.x - sheetengine.scene.center.x) / jfarm.zoom + sheetengine.scene.center.x;
 			// pxy.y = (pxy.y - sheetengine.scene.center.y) / jfarm.zoom + sheetengine.scene.center.y;
+
+			var yard = sheetengine.scene.getYardFromPos(jfarm.hoveredBaseSheet.centerp);
+			console.log(yard.yardx + "," + yard.yardy);
+			console.log(jfarm.hoveredBaseSheet.centerp);
 			
 			jfarm.player.targetObj = null;
 			if(jfarm.hoveredBaseSheet)
@@ -1209,6 +1106,7 @@ jfarm = {
 				$(sheetengine.canvas).css('cursor','crosshair');
 		}
 		else {
+			$(sheetengine.canvas).css('cursor','crosshair');
 			// get hovered tile 
 			jfarm.hoveredBaseSheet = jfarm.getBaseSheetByPuv(puv); 
 			if(jfarm.drawingLocation && jfarm.hoveredBaseSheet){
@@ -1241,20 +1139,18 @@ jfarm = {
 	},
 	// main timer
 	timer: function() {
-		var startTime = new Date().getTime();
-	
-		var sceneChanged = 0;
+		var startTime = new Date().getTime()
+			,sceneChanged = 0;
 		
-		if(jfarm.hoveredBaseSheet){
-			// we redraw scene to erase previous highlighted basesheet
-			jfarm.redraw();
-			// we highlight new basesheet
-			jfarm.highlightHoveredBaseSheet();
-		  	// sceneChanged = 1;
+		// hovered basesheets
+		if(jfarm.preHoveredBaseSheet != jfarm.hoveredBaseSheet){
+			jfarm.preHoveredBaseSheet = jfarm.hoveredBaseSheet
+		  	sceneChanged = 1;
 		}
 
-		if(jfarm.playerObjectChanged){
-			jfarm.playerObjectChanged = false;
+		// hovered objects
+		if (jfarm.prevHoveredObj != jfarm.hoveredObj) {
+			jfarm.prevHoveredObj = jfarm.hoveredObj
 			sceneChanged = 1;
 		}
 
@@ -1265,12 +1161,13 @@ jfarm = {
 			sceneChanged = 1;
 		}
 
-		// player object has changed 
+		// player object has changed
 		if(jfarm.player.arm.name != jfarm.playerObjectData.name){
 			jfarm.setPlayerObject();
 			sceneChanged = 1;
-			sheetengine.calc.calculateChangedSheets();
+			// sheetengine.calc.calculateChangedSheets();
 		}
+		
 		
 		// if (jfarm.player.fighting) {
 		// 	jfarm.doFight(jfarm.player);
@@ -1313,11 +1210,6 @@ jfarm = {
 		// 	sceneChanged = 1;
 		// }
 		
-		// // hovered objects
-		// if (jfarm.prevhoveredObj != jfarm.hoveredObj) {
-		// 	jfarm.prevhoveredObj = jfarm.hoveredObj
-		// 	sceneChanged = 1;
-		// }
 		
 		// // control message bubble
 		// if (jfarm.bubbleDim > 0) {

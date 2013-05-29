@@ -34,7 +34,14 @@ module.exports.adapters = {
 
 	// MySQL is the world's most popular relational database.
 	// Learn more: http://en.wikipedia.org/wiki/MySQL
-	 mysql: {
+	 // mysql: {
+  //       module      : 'sails-mysql',
+  //       host        : 'mysql2.alwaysdata.com',
+  //       user        : 'jfarm',
+  //       password    : 'Supinf0',
+  //       database    : 'jfarm_dev'
+  //   },
+    mysql: {
         module      : 'sails-mysql',
         host        : 'mysql2.alwaysdata.com',
         user        : 'jfarm',
