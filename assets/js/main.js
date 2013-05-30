@@ -35,11 +35,6 @@ $(document).ready(function() {
 		$(this).addClass("active");
 	});
 
-	// BTN ACTIVE
-	$(".buttons button").click(function() {
-		$(this).siblings().removeClass("active");
-		$(this).addClass("active");
-	});
 
 	var consoleTimeout;
 	$('.minicolors').each(function() {
@@ -168,9 +163,41 @@ $(document).ready(function() {
 		    content = $("#creator div").eq(index),
 		    contents = content.siblings();
 
-		tabActions.addClass("current").parent()
-		    .siblings().removeClass('current');
+		tabActions.addClass("active")
+		    .siblings().removeClass('active');
 		content.show();
 		contents.hide();
+	});
+
+
+	/***********************************
+	*****    JFARM RELATED CODE    *****
+	***********************************/
+
+	// WEAPONS & ACCESSORIES
+	$('.weapon, .accessory').on('click', function(){
+		var $this = $(this)
+			,name = $this.data('name');
+
+		$('.weapon, .accessory').parent().removeClass('active');
+		$this.parent().addClass('active');
+		if(jfarm.playerObjectsData[name] && name != jfarm.playerObjectData.name)
+			jfarm.playerObjectData = jfarm.playerObjectsData[name];
+	});
+
+	$(".game-actions button").click(function() {
+		var $this = $(this)
+			,action = $this.data("action");
+		$this.siblings().removeClass("active");
+		$this.addClass("active");
+
+		console.log(jfarm[action]);
+		if(action == "selectingObject"){
+			jfarm.movingPlayer = false;
+		}
+		else {
+			jfarm.selectingObject = false;
+		}
+		jfarm[action] = true;
 	});
 });

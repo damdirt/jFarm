@@ -2294,7 +2294,7 @@ var sheetengine = (function() {
   };
   function getYards(urlBase, center, levelsize, appid, callback) {
     scene.yardcenterstart = {yardx:center.yardx, yardy:center.yardy};
-    var url = urlBase + '/yard?x='+center.yardx+'&y='+center.yardy+'&levelsize='+levelsize+'&appid='+appid+'&appobjects=1';
+    var url = urlBase + '/yards?x='+center.yardx+'&y='+center.yardy+'&levelsize='+levelsize+'&appid='+appid+'&appobjects=1';
     requestUrl(url, function(yardsAndObjects) {
       if (yardsAndObjects) {
         if (yardsAndObjects.center) {
@@ -2348,7 +2348,7 @@ var sheetengine = (function() {
       if (i < yardsToAdd.length-1)
         yardsStr += ';';
     }
-    var url = urlBase + '/yard?x='+scene.yardcenterstart.yardx+'&y='+scene.yardcenterstart.yardy+'&yards='+yardsStr+'&appid='+appid+'&appobjects=0';
+    var url = urlBase + '/yards?x='+scene.yardcenterstart.yardx+'&y='+scene.yardcenterstart.yardy+'&yards='+yardsStr+'&appid='+appid+'&appobjects=0';
     requestUrl(url, function(yardsAndObjects) {
       var oldcenter2 = {x:oldcenter.yardx*scene.tilewidth, y:oldcenter.yardy*scene.tilewidth, z:0};
       var newcenter2 = {x:newcenter.yardx*scene.tilewidth, y:newcenter.yardy*scene.tilewidth, z:0};

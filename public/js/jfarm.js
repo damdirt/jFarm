@@ -38,7 +38,7 @@ jfarm = {
 	appid: '4f244f4db41abbfd2c00018c' //"jfarm"
 	,timerInterval: 40
 	,sceneIsReady: 0
-	,levelsize: 5
+	,levelsize: 1
 	,boundarySize:  0.6
 	,zoom: 1
 	,lineWidth: 0
@@ -149,7 +149,7 @@ jfarm = {
 		// var centerp = {x:0,y:0,z:0};
 		// var centerpuv = sheetengine.transforms.transformPoint(centerp);
 		// sheetengine.scene.center = {x:centerp.x, y:centerp.y, u:centerpuv.u, v:centerpuv.v};
-		sheetengine.scene.getYards('http://10.12.16.241:1337', yardcenter, jfarm.levelsize, jfarm.appid, jfarm.sceneReady); //http://www.crossyards.com
+		sheetengine.scene.getYards('', yardcenter, jfarm.levelsize, jfarm.appid, jfarm.sceneReady); //http://www.crossyards.com
 	},
 	sceneReady: function(){
 		
@@ -499,7 +499,7 @@ jfarm = {
 		jfarm.setBoundary(yardpos);
 
 		// get new yards and remove old yards
-		sheetengine.scene.getNewYards("http://www.crossyards.com", yardpos, jfarm.levelsize, jfarm.appid, jfarm.newYardsAdded);
+		sheetengine.scene.getNewYards("", yardpos, jfarm.levelsize, jfarm.appid, jfarm.newYardsAdded);
 	},
 	newYardsAdded: function(newsheets, newobjects, removedsheets, removedobjects) {
 		// store deleted objects' properties for later use
@@ -1076,8 +1076,8 @@ jfarm = {
 			console.log(jfarm.hoveredBaseSheet.centerp);
 			
 			jfarm.player.targetObj = null;
-			if(jfarm.hoveredBaseSheet)
-				jfarm.setTarget(jfarm.player, jfarm.hoveredBaseSheet.centerp);
+			// if(jfarm.hoveredBaseSheet)
+			// 	jfarm.setTarget(jfarm.player, jfarm.hoveredBaseSheet.centerp);
 		} else {
 			// set target object
 			jfarm.player.targetObj = jfarm.hoveredObj;
@@ -1109,6 +1109,7 @@ jfarm = {
 			$(sheetengine.canvas).css('cursor','crosshair');
 			// get hovered tile 
 			jfarm.hoveredBaseSheet = jfarm.getBaseSheetByPuv(puv); 
+			// console.log(jfarm.hoveredBaseSheet);
 			if(jfarm.drawingLocation && jfarm.hoveredBaseSheet){
 				switch(jfarm.drawnObj){
 					case jfarm.enumAppObjects[0]: // barn

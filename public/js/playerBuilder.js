@@ -122,22 +122,22 @@
 		};
 
 		// define a character
-		defineCharacter({
-			x: 0,
-			y: 0,
-			z: 0
-		});
+		var character = defineCharacter({
+							x: 0,
+							y: 0,
+							z: 0
+						});
 		// draw the scene
 		sheetengine.calc.calculateAllSheets();
 		sheetengine.drawing.drawScene(true);
 
 		function redraw() {
 			// find and delete character
-			sheetengine.objects[0].destroy();
-			// draw scene
-			sheetengine.drawing.drawScene();
-			// define character
-			defineCharacter({
+			character.destroy();
+			character.draw();
+
+			// define new character
+			character = defineCharacter({
 				x: 0,
 				y: 0,
 				z: 0
