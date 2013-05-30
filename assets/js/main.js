@@ -159,6 +159,7 @@ $(document).ready(function() {
 	});
 
 	// RIGHT CREATE ACTIONS
+	$("#right-actions").hide();
 	$("#right-actions button:first").addClass("active");
 	$("#creator div:not(:first)").hide();
 	$("#right-actions button").on('click',function(){
