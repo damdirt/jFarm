@@ -99,6 +99,10 @@ h2.title {
     min-height: 300px;
 }
 
+.w120 {
+    width: 120px;
+}
+
 .w300 {
     width: 300px;
 }
@@ -192,7 +196,7 @@ li.sep {
     margin-left: 25px;
 }
 
-/* ---------- BOTTOM NAV STYLES ---------- */
+/* ---------- BOTTOM ACTIONS STYLES ---------- */
 
 footer {
     position: relative;
@@ -232,7 +236,7 @@ footer p {
     background-color: #7EBD26;
 }
 
-.content-actions {
+#content-actions {
     background-color: #3C454F;
     position: absolute;
     bottom: 40px;
@@ -245,11 +249,11 @@ footer p {
     border-right: 5px solid #7EBD26;
 }
 
-.content-actions .block:first-child {
+#content-actions .block:first-child {
     margin-right: 10px;
 }
 
-.content-actions #playercanvas {
+#content-actions #playercanvas {
     position: absolute;
 }
 
@@ -259,12 +263,12 @@ footer p {
     padding: 5px;
 }
 
-.content-actions .block:first-child .min-block {
+#content-actions .block:first-child .min-block {
     padding: 5px;
     background: none;
 }
 
-.content-actions .block:last-child .min-block {
+#content-actions .block:last-child .min-block {
     margin-left: 20px;
     width: 230px;
 }
@@ -273,16 +277,16 @@ footer p {
     padding-top: 10px;
 }
 
-.content-actions .btn-flat {
+#content-actions .btn-flat {
     border: 1px solid #3C454F;
 }
 
-.content-actions .btn-flat:hover {
+#content-actions .btn-flat:hover {
     background-color: #F5F5F5;
     color: #333;
 }
 
-.content-actions .modal {
+#content-actions .modal {
     background-color: #495461;
     box-shadow: 1px 1px 8px #333333;
     display: none;
@@ -328,12 +332,12 @@ footer p {
     font-size: 12pt;
 }
 
-.content-actions .block:first-child .title-b {
+#content-actions .block:first-child .title-b {
     color: #52A8EC;
     margin-bottom: 10px;
 }
 
-.content-actions .block:last-child .title-b {
+#content-actions .block:last-child .title-b {
     color: #7EBD26;
     z-index: 10;
     position: absolute;
@@ -384,8 +388,8 @@ footer p {
     transform-origin: 50% 313%;
 }
 
-label[for=buildings] {
-    background: url('http://www.brkcan.net/fun/codepen/circlemenu/home.png') no-repeat top center;
+#content-actions label[for=buildings] {
+    background: url('../../images/home.png') no-repeat top center;
     -webkit-transform:rotateZ(0deg);
     -moz-transform:rotateZ(0deg);
     -ms-transform:rotateZ(0deg);
@@ -393,8 +397,8 @@ label[for=buildings] {
     transform:rotateZ(0deg);
 }
 
-label[for=life] {
-    background: url('http://www.brkcan.net/fun/codepen/circlemenu/user.png') no-repeat top center;
+#content-actions label[for=life] {
+    background: url('../../images/user.png') no-repeat top center;
     -webkit-transform:rotateZ(-90deg);
     -moz-transform:rotateZ(-90deg);
     -ms-transform:rotateZ(-90deg);
@@ -402,7 +406,7 @@ label[for=life] {
     transform:rotateZ(-90deg);
 }
 
-label[for=tiles] {
+#content-actions label[for=tiles] {
     background: url('../../images/life.png') no-repeat top center;
     -webkit-transform:rotateZ(90deg);
     -moz-transform:rotateZ(90deg);
@@ -411,7 +415,7 @@ label[for=tiles] {
     transform:rotateZ(90deg);
 }
 
-label[for=level] {
+#content-actions label[for=level] {
     background: url('../../images/tile.png') no-repeat top center;
     -webkit-transform:rotateZ(180deg);
     -moz-transform:rotateZ(180deg);
@@ -429,12 +433,37 @@ label[for=level] {
     font-size: 14pt;
 }
 
+/* ---------- RIGHT ACTIONS STYLES ---------- */
+
+#right-actions {
+    background-color: #F6F6F6;
+    margin-top: 60px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 120px;
+}
+
+#creator ul {
+    margin-top: 10px;
+}
+
+#creator li {
+    cursor: pointer;
+    padding: 10px 0;
+}
+
+#creator li:hover {
+    box-shadow: 1px 1px 8px #58595B;
+}
+
 /* ---------- MAP/CANVAS STYLES ---------- */
 
 section {
 	background-color: #FFFFFF;
 	min-height: 600px;
 	box-shadow: 0 0 85px rgba(0, 0, 0, 0.3);
+    position: relative;
 }
 
 // #canvas-wrapper {
