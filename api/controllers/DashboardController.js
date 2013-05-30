@@ -10,6 +10,12 @@ var DashboardController = {
 			user : user,
 			player: global.player
 		});
+	},
+	contact: function (req,res) {
+		var user = req.session.user;
+		res.view({
+			user : user
+		});
 	}
 };
 module.exports = DashboardController;

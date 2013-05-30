@@ -15,7 +15,7 @@ $(document).ready(function() {
 	$("nav.sub").hide();
 	$("nav.main ul a:not(:first)").on('click', function() {
 		var tab = $(this),
-			index = tab.parent().index()-1,
+			index = tab.parent().index()-2,
 			content = $("nav.sub").eq(index),
 			contents = $('nav.sub:visible');
 		if (content.is(':visible')) {
@@ -115,7 +115,7 @@ $(document).ready(function() {
 
 	// FOOTER ON/OFF
 	$(".round").on('click', function() {
-		var fActions = $(".content-actions");
+		var fActions = $("#content-actions");
 		fActions.animate({
 			height: 'toggle'
 		},1000, function(){
@@ -151,5 +151,26 @@ $(document).ready(function() {
 	// POPUP
 	$(".popup").on('click', function() {
 		$(".modal").toggle();
+	});
+
+	// BUILDINGS
+	$(".showBuildings").on('click', function() {
+		$("#right-actions").toggle();
+	});
+
+	// RIGHT CREATE ACTIONS
+	$("#right-actions").hide();
+	$("#right-actions button:first").addClass("active");
+	$("#creator div:not(:first)").hide();
+	$("#right-actions button").on('click',function(){
+		var tabActions = $(this),
+		index = tabActions.index(),
+		content = $("#creator div").eq(index),
+		contents = content.siblings();
+
+		tabActions.addClass("active")
+			.siblings().removeClass('active');
+		content.show();
+		contents.hide();
 	});
 });
