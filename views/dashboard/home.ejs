@@ -1,7 +1,30 @@
 <div id="canvas-wrapper">
 <canvas id="maincanvas" width="1200" height="460" onmousemove="jfarm.mousemove(event);"></canvas>
 </div>
-<div class="content-actions borders-action clear-fix">
+<div id="right-actions" class="clear-fix">
+	<div class="buttons clear-fix">
+		<button class="button pull-left"><i class="icon-leaf"></i></button>
+		<button class="button pull-left"><i class="icon-home"></i></button>
+	</div>
+	<div id="creator">
+		<div class="farms">
+			<ul>
+				<li><img src="images/buildings/wheat.png" alt="Wheat" class="farm"></li>
+				<li><img src="images/buildings/corn.png" alt="Corn" class="farm"></li>
+				<li><img src="images/buildings/tomatoes.png" alt="Tomatoes" class="farm"></li>
+			</ul>
+		</div>
+		<div class="buildings">
+			<ul>
+				<li><img src="images/buildings/silo.png" alt="Silo" class="building"></li>
+				<li><img src="images/buildings/barn.png" alt="Barn" class="building"></li>
+				<li><img src="images/buildings/coldstorage.png" alt="Cold storage" class="building"></li>
+			</ul>
+		</div>
+	</div>
+	<!-- <button class="btn-flat btn-flat-green w120">Show</button> -->
+</div>
+<div id="content-actions" class="borders-action clear-fix">
 	<div class="p10 clear-fix">
 		<div class="block pull-left w500">
 			<div class="title-b">Tile</div>
@@ -39,22 +62,22 @@
 				<h3>Weapons</h3>
 				<div class="clear-fix">
 					<div class="img pull-left">
-						<img src="images/fourche.png" alt="weapon" class="weapon">
+						<img src="images/weapons/fourche.png" alt="Fork" class="weapon">
 					</div>
 					<div class="img pull-left">
-						<img src="images/bat.png" alt="weapon" class="weapon">
+						<img src="images/weapons/bat.png" alt="Bat" class="weapon">
 					</div>
 					<div class="img pull-left">
-						<img src="images/tronconneuse.png" alt="weapon" class="weapon">
+						<img src="images/weapons/tronconneuse.png" alt="Chainsaw" class="weapon">
 					</div>
 					<div class="img pull-left">
-						<img src="images/ak47.png" alt="weapon" class="weapon">
+						<img src="images/weapons/ak47.png" alt="AK47" class="weapon">
 					</div>
 				</div>
 				<h3>Accessories</h3>
 				<div class="clear-fix">
 					<div class="img pull-left">
-						<img src="images/arrosoir.png" alt="accessories" class="accesory">
+						<img src="images/weapons/arrosoir.png" alt="accessories" class="accesory">
 					</div>
 				</div>
 			</div>
@@ -74,6 +97,7 @@
 				<div class="content-b">
 					<div class="clear-fix">
 						<button type="button" class="btn-flat btn-flat-green pull-right popup">Inventory</button>
+						<button type="button" class="btn-flat btn-flat-green pull-right showBuildings">Create</button>
 					</div>
 					<div class="min-block">
 						<span><strong>Level :</strong> 27</span><br />
@@ -90,6 +114,9 @@
 <script>
 	$(document).ready(function() {
 		$("html").addClass("game");
+
+		var rightActionsHeight = $('section').height() - $('footer').height() - $('header').height();
+		$('#right-actions').css('height', rightActionsHeight);
 	});
 </script>
 <script src="js/jfarm.js"></script>
