@@ -15,7 +15,7 @@ $(document).ready(function() {
 	$("nav.sub").hide();
 	$("nav.main ul a:not(:first)").on('click', function() {
 		var tab = $(this),
-			index = tab.parent().index()-1,
+			index = tab.parent().index()-2,
 			content = $("nav.sub").eq(index),
 			contents = $('nav.sub:visible');
 		if (content.is(':visible')) {
@@ -164,12 +164,12 @@ $(document).ready(function() {
 	$("#creator div:not(:first)").hide();
 	$("#right-actions button").on('click',function(){
 		var tabActions = $(this),
-		    index = tabActions.index(),
-		    content = $("#creator div").eq(index),
-		    contents = content.siblings();
+		index = tabActions.index(),
+		content = $("#creator div").eq(index),
+		contents = content.siblings();
 
-		tabActions.addClass("current").parent()
-		    .siblings().removeClass('current');
+		tabActions.addClass("active")
+			.siblings().removeClass('active');
 		content.show();
 		contents.hide();
 	});

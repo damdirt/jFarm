@@ -439,7 +439,6 @@ footer p {
     background-color: #F6F6F6;
     margin-top: 60px;
     position: absolute;
-    right: 0;
     top: 0;
     width: 120px;
 }
@@ -463,13 +462,12 @@ section {
 	background-color: #FFFFFF;
 	min-height: 600px;
 	box-shadow: 0 0 85px rgba(0, 0, 0, 0.3);
-    position: relative;
 }
 
-// #canvas-wrapper {
-//   margin: 0 auto;
-//   width: 1200px;
-// }
+/*#canvas-wrapper {
+    margin: 0 auto;
+    width: 1200px;
+}*/
 
 /* ---------- BUTTONS STYLES ---------- */
 
@@ -693,3 +691,5 @@ section {
 .page_navigation a.no_more {
     background-color: #E5E5E5;
 }
+
+/* SOCIAL */
