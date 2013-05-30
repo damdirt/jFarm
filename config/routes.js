@@ -113,13 +113,19 @@ module.exports.routes = {
 		controller: 'player',
 		action: 'builder'
 	},
+
+	'/player/gamelevel': {
+		controller: 'player',
+		action: 'levelChoice'
+	},
+	
 	//-------------------- END PLAYER ------------------------
 
 	//-------------------- INITIALIZER ------------------------
 
-	'/init/yard': {
+	'/init': {
 		controller: 'initializer',
-		action: 'firstLaunch'
+		action: 'index'
 	},
 
 	//-------------------- END INITIALISER ---------------------
@@ -132,7 +138,7 @@ module.exports.routes = {
 		action: 'getYard'
 	},
 
-	
+
 
 	'/yards/init': {
 		controller: 'yard',

@@ -127,26 +127,29 @@ var YardController = {
 							yardId: yards[i].id
 						}).done(function(err, obj) {
 							waiting--;
-							if (err) {
-								console.log(err);
-							} else {
-								var arrObj = [];
-								for (var j = 0; j < obj.length; j++) {
-									arrObj.push(JSON.parse(obj[j].content));
+							if (obj) {
+								if (obj.length != 0) {
+									objectsResponse[obj[0].yardId] = obj;
 								}
-								objectsResponse.push(arrObj);
 							}
 							complete();
 						});
 					}
-
-
 				}
 
 				function complete() {
 					if (!waiting) {
+
 						for (var i = 0; i < yards.length; i++) {
-							yards[i].objects = objectsResponse[i];
+							yards[i].values = undefined;
+							yards[i].createdAt = undefined;
+							yards[i].updatedAt = undefined;
+							if (objectsResponse[yards[i].id]) {
+
+								for (var j = 0; j < objectsResponse[yards[i].id].length; j++) {
+									yards[i].objects.push(JSON.parse(objectsResponse[yards[i].id][j].content));
+								}
+							}
 						}
 
 
@@ -190,8 +193,6 @@ var YardController = {
 								}));
 							}
 						}
-
-
 					}
 				}
 
@@ -208,7 +209,6 @@ var YardController = {
 				};
 				yardsReq.push(obj)
 			}
-
 			Yard.findAll({
 				where: {
 					or: yardsReq
@@ -227,23 +227,26 @@ var YardController = {
 							yardId: yards[i].id
 						}).done(function(err, obj) {
 							waiting--;
-							if (err) {
-								console.log(err);
-							} else {
-								var arrObj = [];
-								for (var j = 0; j < obj.length; j++) {
-									arrObj.push(JSON.parse(obj[j].content));
+							if (obj) {
+								if (obj.length != 0) {
+									objectsResponse[obj[0].yardId] = obj;
 								}
-								objectsResponse.push(arrObj);
 							}
 							complete();
 						});
 					}
-
 					function complete() {
 						if (!waiting) {
 							for (var i = 0; i < yards.length; i++) {
-								yards[i].objects = objectsResponse[i];
+								yards[i].values = undefined;
+								yards[i].createdAt = undefined;
+								yards[i].updatedAt = undefined;
+								if (objectsResponse[yards[i].id]) {
+
+									for (var j = 0; j < objectsResponse[yards[i].id].length; j++) {
+										yards[i].objects.push(JSON.parse(objectsResponse[yards[i].id][j].content));
+									}
+								}
 							}
 							res.writeHead(200, {
 								'Content-Type': 'application/json',
@@ -259,23 +262,13 @@ var YardController = {
 							}));
 						}
 					}
-
-
-
 				}
 			});
-
-
 		} else {
-
 			res.json({
 				"response": "Parameter(s) missing"
 			})
-
-
-
 		}
-
 	},
 
 
