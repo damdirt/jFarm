@@ -359,6 +359,12 @@ var YardController = {
 
 	},
 
+	getRespawnPoint: function(player){
+
+
+
+	}
+
 
 };
 module.exports = YardController;

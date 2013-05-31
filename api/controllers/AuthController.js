@@ -96,15 +96,15 @@ var AuthController = {
 			})
 		} else if (req.method == "POST") {
 
-			global.defaultSkinColor = "#FFFFF";
+
 
 			// Get password and username from request
-			var arr = [];
-			JSON.stringify(req.body).replace(/["{}]/g, '').split(',').forEach(function(elem) {
-				arr.push(elem.split(':')[0]);
-			});
+			// var arr = [];
+			// JSON.stringify(req.body).replace(/["{}]/g, '').split(',').forEach(function(elem) {
+			// 	arr.push(elem.split(':')[0]);
+			// });
 
-			console.log(arr);
+			// console.log(arr);
 
 
 			var usernameParam = req.param('username');
@@ -136,10 +136,10 @@ var AuthController = {
 								name: usernameParam
 							}).done(function(err, player) {
 								if (player) {
-									global.player = player;
+									session.player = player;
 									res.redirect('/');
 								} else {
-									global.player = ""
+									session.player = ""
 								}
 							});
 

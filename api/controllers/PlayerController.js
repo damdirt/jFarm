@@ -35,7 +35,7 @@ var PlayerController = {
 			console.log(global.player);
 			res.view({
 				user: req.session.user,
-				player: global.player
+				player: req.session.player
 			});
 		}
 	},

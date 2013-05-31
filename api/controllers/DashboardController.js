@@ -8,7 +8,7 @@ var DashboardController = {
 		var user = req.session.user;
 		res.view({
 			user : user,
-			player: global.player
+			player: req.session.player
 		});
 	},
 	contact: function (req,res) {
