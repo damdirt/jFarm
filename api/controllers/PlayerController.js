@@ -60,7 +60,9 @@ var PlayerController = {
 				user: req.session.user
 			});
 		}
-	}
+	},
+
+
 
 };
 module.exports = PlayerController;

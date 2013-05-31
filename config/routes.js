@@ -72,10 +72,6 @@ module.exports.routes = {
 
 	//------------------ END USER ------------------------
 
-	'/getYard': {
-		controller: 'user',
-		action: 'getYard'
-	},
 
 
 	//------------------- SETTINGS ------------------------
@@ -140,6 +136,11 @@ module.exports.routes = {
 
 	'/yards': {
 		controller: 'yard',
+		action: 'getYards'
+	},
+
+	'/getyard': {
+		controller: 'yard',
 		action: 'getYard'
 	},
 
@@ -148,6 +149,16 @@ module.exports.routes = {
 	'/yards/init': {
 		controller: 'yard',
 		action: 'init'
+	},
+
+	//-------------------- END YARD ---------------------
+
+	//-------------------- OBJECT ------------------------
+
+
+	'/gameobject/create': {
+		controller: 'gameobject',
+		action: 'create'
 	}
 
 	//-------------------- END YARD ---------------------

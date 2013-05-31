@@ -12,7 +12,11 @@ module.exports = {
 		hairColor: 'TEXT',
 		gameLevel: 'TEXT',
 		level: 'INT',
-		money: 'FLOAT'
+		money: 'FLOAT',
+		respawnX: 'INT',
+		respawnY: 'INT',
+		currentX: 'INT',
+		currentY: 'INT'
 	}
 
 };

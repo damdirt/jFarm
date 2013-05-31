@@ -143,6 +143,43 @@
 
 		var rightActionsHeight = $('section').height() - $('footer').height() - $('header').height();
 		$('#right-actions').css('height', rightActionsHeight);
+
+
+			// $.ajax({
+			// 	url: "/gameobject/create",
+			// 	dataType: "json",
+			// 	data:{
+			// 		x:3,
+			// 		y:2,
+			// 		object: {
+			// 			name:"Barn",
+			// 			centerp:{
+			// 				x:0,
+			// 				y:0,
+			// 				z:0
+			// 			},
+			// 			rot:{
+			// 				alphaD:0,
+			// 				betaD:0,
+			// 				gammaD:0
+			// 			}
+			// 		}
+			// 	}
+			// }).done(function(response){
+			// 	console.log(response);
+			// });
+
+			$.ajax({
+				url: "/getyard",
+				dataType: "json",
+				data:{
+					x:3,
+					y:3
+				}
+			}).done(function(response){
+				console.log(response);
+			});
+
 	});
 </script>
 <script src="js/jfarm.js"></script>
