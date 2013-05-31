@@ -38,7 +38,7 @@ jfarm = {
 	appid: '4f244f4db41abbfd2c00018c' //"jfarm"
 	,timerInterval: 40
 	,sceneIsReady: 0
-	,levelsize: 1
+	,levelsize: 5
 	,boundarySize:  0.6
 	,zoom: 1
 	,lineWidth: 0
@@ -76,6 +76,14 @@ jfarm = {
 	,locationCorners: []
 	,currentLocationBaseSheets: []
 	,drawnObj: null
+	,enumAppObjectsObj: {
+		barn: "Barn"
+		,coldstorage: "Cold Storage"
+		,silo: "Silo"
+		,corn: "Corn"
+		,tomatoes: "Tomatoes"
+		,wheat: "Wheat"
+	}
 	,enumAppObjects: ["Barn", "Cold Storage", "Silo", "Corn", "Tomatoes", "Wheat"] // TODO : retrieve from DB ???
 
 	// player 
@@ -575,13 +583,20 @@ jfarm = {
 		jfarm.drawTarget();
 		// jfarm.drawHealth();
 		// jfarm.drawBubble();
+
 		if (jfarm.hoveredObj)
 			jfarm.highlightObject(jfarm.hoveredObj);
 
-		// we highlight new basesheet and
-		// we redraw scene to erase previous highlighted basesheet
-		if(jfarm.hoveredBaseSheet)
-			jfarm.highlightHoveredBaseSheet();
+		if(jfarm.drawnObj && jfarm.locationCorners){
+			jfarm.highlightLocation();
+		}
+		else {
+			// we highlight new basesheet and
+			// we redraw scene to erase previous highlighted basesheet
+			if(jfarm.hoveredBaseSheet)
+				jfarm.highlightHoveredBaseSheet();
+		}
+		
 	},
 	drawTarget: function() {
 		if (!jfarm.player.finalTarget && !jfarm.player.targetObj)
@@ -700,15 +715,22 @@ jfarm = {
 		}
 		return null;
 	},
+	getYardsFromBasesheets: function(basesheets){
+		var yards = [];
+		for (var i = 0; i < basesheets.length; i++) {
+			yards.push(sheetengine.scene.getYardFromPos(basesheets[i].centerp));
+		};
+		return yards;
+	},
 
 	// location
 	isPossibleToDrawHere: function(basesheet) {
 		switch(jfarm.drawnObj){
 			case jfarm.enumAppObjects[0]: // barn
-				// return false if any of basesheets.neutral property is true
-				jfarm.currentLocationBaseSheets = jfarm.getBarnLocationBaseSheets(basesheet); 
+				// return false if any of basesheets.free property is true
+				jfarm.currentLocationBaseSheets = jfarm.getBarnLocationBaseSheets(basesheet);
 				for (var i = 0; i < jfarm.currentLocationBaseSheets.length; i++) {
-					if(!jfarm.currentLocationBaseSheets[i].neutral)
+					if(jfarm.currentLocationBaseSheets[i].free != undefined && !jfarm.currentLocationBaseSheets[i].free)
 						return false;
 				};
 				return true;
@@ -716,104 +738,236 @@ jfarm = {
 			case jfarm.enumAppObjects[1]: // cold storage
 				jfarm.currentLocationBaseSheets = jfarm.getColdStorageLocationBaseSheets(basesheet); 
 				for (var i = 0; i < jfarm.currentLocationBaseSheets.length; i++) {
-					if(!jfarm.currentLocationBaseSheets[i].neutral)
+					if(jfarm.currentLocationBaseSheets[i].free != undefined && !jfarm.currentLocationBaseSheets[i].free)
 						return false;
 				};
 				return true;
 			break;
 			case jfarm.enumAppObjects[2]: // silo
-				return basesheet.neutral;
+				jfarm.currentLocationBaseSheets = [basesheet];
+				return (basesheet.free != undefined) ? basesheet.free : true;
 			break;
 			case jfarm.enumAppObjects[3]: // corn
-				return basesheet.neutral;
+				jfarm.currentLocationBaseSheets = [basesheet];
+				return (basesheet.free != undefined) ? basesheet.free : true;
 			break;
 			case jfarm.enumAppObjects[4]: // tomatoes
-				return basesheet.neutral;
+				jfarm.currentLocationBaseSheets = [basesheet];
+				return (basesheet.free != undefined) ? basesheet.free : true;
 			break;
 			case jfarm.enumAppObjects[5]: // wheat
-				return basesheet.neutral;
+				jfarm.currentLocationBaseSheets = [basesheet];
+				return (basesheet.free != undefined) ? basesheet.free : true;
 			break;
 			default:
+				jfarm.currentLocationBaseSheets = [];
 				return false;
 		}
 	},
 	getDrawingCenterp: function(centerp) { // TODO gérer l'orientation
 		switch(jfarm.drawnObj){
 			case jfarm.enumAppObjects[0]: // barn
-				return {x: centerp.x+(tileWidth*3)/2, y: centerp.y, z:null};
+				return {x: centerp.x+(jfarm.tileWidth*3)/2, y: centerp.y, z:null};
 			break;
 			case jfarm.enumAppObjects[1]: // cold storage
-				return {x: centerp.x+tileWidth, y: centerp.y - tileHeight/2, z:null};
+				return {x: centerp.x+jfarm.tileWidth, y: centerp.y - jfarm.tileWidth/2, z:null};
 			break;
 			default:
-				return centerp;
+				return centerp; // for silo and crops because it's only on one basesheet
+		}
+	},
+
+	getLocationCornersuv: function(obj){
+		switch(obj){
+			case jfarm.enumAppObjects[0]: // barn
+				jfarm.locationCorners = jfarm.getBarnLocationCornersuv(jfarm.hoveredBaseSheet);
+			break;
+			case jfarm.enumAppObjects[1]: // cold storage
+				jfarm.locationCorners = jfarm.getColdStorageLocationCornersuv(jfarm.hoveredBaseSheet);
+			break;
+			case jfarm.enumAppObjects[2]: // silo
+				jfarm.locationCorners = jfarm.hoveredBaseSheet.corners;
+			break;
+			case jfarm.enumAppObjects[3]: // corn
+				jfarm.locationCorners = jfarm.hoveredBaseSheet.corners;
+			break;
+			case jfarm.enumAppObjects[4]: // tomatoes
+				jfarm.locationCorners = jfarm.hoveredBaseSheet.corners;
+			break;
+			case jfarm.enumAppObjects[5]: // wheat
+				jfarm.locationCorners = jfarm.hoveredBaseSheet.corners;
+			break;
+			default:
 		}
 	},
 	getColdStorageLocationCornersuv: function(basesheet) { // TODO : Check boundaries
 		var corners = basesheet.corners
 			, centerp = basesheet.centerp
-			, westNorthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x, y:centerp.y - tileHeight})
-			, eastNorthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+tileWidth*2, y:centerp.y - tileHeight})
-			, eastSouthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+tileWidth*2, y:centerp.y});
+			, westNorthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x, y:centerp.y - jfarm.tileWidth})
+			, eastNorthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+jfarm.tileWidth*2, y:centerp.y - jfarm.tileWidth})
+			, eastSouthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+jfarm.tileWidth*2, y:centerp.y});
 		
-		return [corners[0], eastSouthBaseSheet.corners[1], eastNorthBaseSheet.corners[2], westNorthBaseSheet.corners[3]];
+		if(westNorthBaseSheet && eastNorthBaseSheet && eastSouthBaseSheet)
+			return [corners[3], eastSouthBaseSheet.corners[2], eastNorthBaseSheet.corners[1], westNorthBaseSheet.corners[0]];
+		else
+			return null;
 	},
 	getColdStorageLocationBaseSheets: function(basesheet) { // TODO : Check boundaries
 		var centerp = basesheet.centerp
-			, westNorthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x, y:centerp.y - tileHeight})
-			, centerNorthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+tileWidth, y:centerp.y - tileHeight})
-			, eastNorthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+tileWidth*2, y:centerp.y - tileHeight})
-			, eastSouthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+tileWidth*2, y:centerp.y})
-			, centerSouthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+tileWidth*2, y:centerp.y - tileHeight});
+			, westNorthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x, y:centerp.y - jfarm.tileWidth})
+			, centerNorthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+jfarm.tileWidth, y:centerp.y - jfarm.tileWidth})
+			, eastNorthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+jfarm.tileWidth*2, y:centerp.y - jfarm.tileWidth})
+			, eastSouthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+jfarm.tileWidth*2, y:centerp.y})
+			, centerSouthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+jfarm.tileWidth*2, y:centerp.y - jfarm.tileWidth});
 		
-		return [basesheet,westNorthBaseSheet, centerNorthBaseSheet, eastSouthBaseSheet, eastNorthBaseSheet, centerSouthBaseSheet];
+		if(basesheet && westNorthBaseSheet && centerNorthBaseSheet && eastSouthBaseSheet, eastNorthBaseSheet, centerSouthBaseSheet)
+			return [basesheet,westNorthBaseSheet, centerNorthBaseSheet, eastSouthBaseSheet, eastNorthBaseSheet, centerSouthBaseSheet];
+		else
+			return null;
 	},
 	getBarnLocationBaseSheets: function(basesheet) {
 		var centerp = basesheet.centerp
-			, secondBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+tileWidth, y:centerp.y})
-			, thirdBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+tileWidth*2, y:centerp.y})
-			, fourthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+tileWidth*3, y:centerp.y});
+			, secondBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+jfarm.tileWidth, y:centerp.y})
+			, thirdBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+jfarm.tileWidth*2, y:centerp.y})
+			, fourthBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+jfarm.tileWidth*3, y:centerp.y});
 
-		return [basesheet,secondBaseSheet, thirdBaseSheet, fourthBaseSheet];
+		if(basesheet && secondBaseSheet && thirdBaseSheet && fourthBaseSheet)
+			return [basesheet,secondBaseSheet, thirdBaseSheet, fourthBaseSheet];
+		else
+			return null;
 	},
 	getBarnLocationCornersuv: function(basesheet) { // TODO : Check boundaries
 		var corners = basesheet.corners
 			, centerp = basesheet.centerp
-			, lastBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+tileWidth*3, y:centerp.y});
+			, lastBaseSheet = jfarm.getBasesheetByCenterp({x: centerp.x+jfarm.tileWidth*3, y:centerp.y});
 		
-		return [corners[0], lastBaseSheet.corners[1], lastBaseSheet.corners[2], corners[3]];
-	},
+		if(lastBaseSheet)
+			return [corners[0], lastBaseSheet.corners[1], lastBaseSheet.corners[2], corners[3]];
+		else 
+			return null;
+	}
 
 	// buildings & crops
+	,highlightLocation: function(){
+
+		if(jfarm.locationCorners){
+			// console.log(jfarm.locationCorners);
+			var ctx = sheetengine.context;
+			ctx.save();
+			ctx.scale(1, 0.5);
+			ctx.lineWidth = 2;
+
+			ctx.strokeStyle = '#CCC';
+			var puvC1 = sheetengine.drawing.getPointuv(jfarm.locationCorners[0])
+				,puvC2 = sheetengine.drawing.getPointuv(jfarm.locationCorners[1])
+				,puvC3 = sheetengine.drawing.getPointuv(jfarm.locationCorners[2])
+				,puvC4 = sheetengine.drawing.getPointuv(jfarm.locationCorners[3]);
+			ctx.beginPath();
+			ctx.moveTo(puvC1.u, puvC1.v*2);
+			ctx.lineTo(puvC2.u, puvC2.v*2);
+			ctx.lineTo(puvC3.u, puvC3.v*2);
+			ctx.lineTo(puvC4.u, puvC4.v*2);
+			ctx.lineTo(puvC1.u, puvC1.v*2);
+			ctx.stroke();
+			ctx.restore();
+		}
+		
+	},
+	drawSelectedObj: function(basesheet){
+
+		if(jfarm.isPossibleToDrawHere(basesheet)){
+			var createdObj = null
+				,objc = jfarm.getDrawingCenterp(basesheet.centerp, jfarm.drawnObj); // we look for building centerp
+
+			// we get location yards
+			jfarm.currentLocationYards = jfarm.getYardsFromBasesheets(jfarm.currentLocationBaseSheets);
+			switch(jfarm.drawnObj){
+				case jfarm.enumAppObjects[0]: // barn
+					createdObj = jfarm.defineBarn(objc);
+	  				var basesheets = (jfarm.currentLocationBaseSheets.length > 0) ? jfarm.currentLocationBaseSheets : jfarm.getBarnLocationBaseSheets(basesheet);
+						for (var i = 0; i < basesheets.length; i++) {
+							basesheets[i].free = false;
+						};
+				break;
+				case jfarm.enumAppObjects[1]: // cold storage
+					createdObj = jfarm.defineColdStorage(objc);
+					var basesheets = (jfarm.currentLocationBaseSheets.length > 0) ? jfarm.currentLocationBaseSheets : jfarm.getColdStorageLocationBaseSheets(basesheet);
+						for (var i = 0; i < basesheets.length; i++) {
+							basesheets[i].free = false;
+						};
+				break;
+				case jfarm.enumAppObjects[2]: // silo
+					createdObj = jfarm.defineSilo(basesheet.centerp);
+					basesheet.free = false;
+				break;
+				case jfarm.enumAppObjects[3]: // corn
+					createdObj = jfarm.defineCrops(basesheet.centerp, "Corn", "#fef094", true, "#319704");
+					basesheet.free = false;
+				break;
+				case jfarm.enumAppObjects[4]: // tomatoes
+					createdObj = jfarm.defineTomatoesPlants(basesheet.centerp);
+					basesheet.free = false;
+				break;
+				case jfarm.enumAppObjects[5]: // wheat
+					createdObj = jfarm.defineCrops(basesheet.centerp, "Wheat", "#fef094");
+					basesheet.free = false;
+				break;
+				default:
+			}
+			jfarm.drawnObj = null;
+			// console.log(sheetengine.scene.getYardFromPos(objc));
+			jfarm.sendNewObject(createdObj,sheetengine.scene.getYardFromPos(objc), jfarm.currentLocationYards);
+		} else {
+			alert("Sorry this tile is not free");
+		}
+	},
+	sendNewObject: function(obj, yard, yards){
+		var yardsStr = '';
+		for (var i=0;i<yards.length;i++) {
+		  yardsStr += yards[i].yardx+','+yards[i].yardy;
+		  if (i < yards.length-1)
+		    yardsStr += ';';
+		}
+		var data = {
+			x: yard.yardx,
+			y: yard.yardy,
+			object: JSON.stringify(obj.getData()),
+			yards: yardsStr
+		};
+		jfarm.requestAjax("/gameobject/create",data,function(response){
+			// console.log(response.name + " added to DB");
+			console.log("done");
+		});
+	},
 	defineColdStorage: function(centerp) {
 		//TODO calculate relative centerp for each sheet
-		var csLength = tileWidth*3
+		var csLength = jfarm.tileWidth*3
 			, csHeight = 80
-			, csWidth = tileHeight*2;
+			, csWidth = jfarm.tileWidth*2;
 
-	  	var roofSheet = new sheetengine.Sheet({x:0,y:0,z:csHeight}, rotTopSide, {w:csLength,h:csWidth});
+	  	var roofSheet = new sheetengine.Sheet({x:0,y:0,z:csHeight}, jfarm.rotTop, {w:csLength,h:csWidth});
 			roofSheet.context.fillStyle = '#FFF'; // Top
 			roofSheet.context.fillRect(0,0,csLength,csWidth);
 
-	  	var northSheet = new sheetengine.Sheet({x:0,y:-csHeight,z:csHeight/2}, rotSouthSide, {w:csLength,h:csHeight});
+	  	var northSheet = new sheetengine.Sheet({x:0,y:-csHeight,z:csHeight/2}, jfarm.rotSouthNorth, {w:csLength,h:csHeight});
 			northSheet.context.fillStyle = '#FFF'; // South
-			northSheet.context.fillRect(0,0,csLength,tileHeight);
+			northSheet.context.fillRect(0,0,csLength,jfarm.tileWidth);
 
-	  	var southSheet = new sheetengine.Sheet({x:0,y:csHeight,z:csHeight/2}, rotSouthSide, {w:csLength,h:csHeight});
+	  	var southSheet = new sheetengine.Sheet({x:0,y:csHeight,z:csHeight/2}, jfarm.rotSouthNorth, {w:csLength,h:csHeight});
 			southSheet.context.fillStyle = '#FFF'; // South
-			southSheet.context.fillRect(0,0,csLength,tileHeight);
+			southSheet.context.fillRect(0,0,csLength,jfarm.tileWidth);
 
-	  	var westSheet = new sheetengine.Sheet({x:-csLength/2,y:0,z:csHeight/2}, rotEastSide, {w:csWidth,h:csHeight});
+	  	var westSheet = new sheetengine.Sheet({x:-csLength/2,y:0,z:csHeight/2}, jfarm.rotWestEast, {w:csWidth,h:csHeight});
 	  	westSheet.context.fillStyle = '#FFF'; // East
 	  	westSheet.context.fillRect(0,0,csWidth,csHeight);
 
-	  	var eastSheet = new sheetengine.Sheet({x:csLength/2,y:0,z:csHeight/2}, rotEastSide, {w:csWidth,h:csHeight});
+	  	var eastSheet = new sheetengine.Sheet({x:csLength/2,y:0,z:csHeight/2}, jfarm.rotWestEast, {w:csWidth,h:csHeight});
 	  	eastSheet.context.fillStyle = '#FFF'; // East
 	  	eastSheet.context.fillRect(0,0,csWidth,csHeight);
 
 	  	var cs = new sheetengine.SheetObject(
 	  					centerp
-	  					, rotSouthSide
+	  					, jfarm.rotSouthNorth
 	  					, [roofSheet, northSheet, southSheet, westSheet, eastSheet]
 	  					, {w:330,h:250,relu:160,relv:160}); // TODO : Dynamic values
 	  	cs.name = "Cold Storage";
@@ -821,21 +975,21 @@ jfarm = {
 	  	// Cold Storage doors
 	  	var ctx = southSheet.context;
 	  	ctx.fillStyle = '#424242';
-	  	ctx.fillRect(tileWidth*2/3,csHeight/3,tileWidth*2/3, csHeight*2/3); 
-	  	ctx.fillRect(tileWidth*2,csHeight/2,30, csHeight/2); 
+	  	ctx.fillRect(jfarm.tileWidth*2/3,csHeight/3,jfarm.tileWidth*2/3, csHeight*2/3); 
+	  	ctx.fillRect(jfarm.tileWidth*2,csHeight/2,30, csHeight/2); 
 
 	  	// poignées
 	  	ctx.fillStyle = '#000';
-	  	ctx.fillRect(tileWidth,csHeight-10,3, 4);
-	  	ctx.fillRect(tileWidth*2+20,60,3, 4);
+	  	ctx.fillRect(jfarm.tileWidth,csHeight-10,3, 4);
+	  	ctx.fillRect(jfarm.tileWidth*2+20,60,3, 4);
 
 	  	return cs;
 	},
 
 	defineBarn:function(centerp){
-		var bLength = tileWidth*4
+		var bLength = jfarm.tileWidth*4
 			, bHeight = 80
-			, bWidth = tileHeight;
+			, bWidth = jfarm.tileWidth;
 
 		var roofSouthSheet = new sheetengine.Sheet({x:0,y:bHeight/2 -12,z:bHeight + 14}, {alphaD:-45,betaD:0,gammaD:0}, {w:bLength +10,h:bHeight});
 		roofSouthSheet.context.fillStyle = '#9ba5a4'; // South
@@ -845,18 +999,18 @@ jfarm = {
 		roofNorthSheet.context.fillStyle = '#9ba5a4'; // South
 		roofNorthSheet.context.fillRect(0,0,bLength +10,bHeight-15);
 
-		var southSheet = new sheetengine.Sheet({x:0,y:bWidth/2,z:bHeight/2}, rotSouthSide, {w:bLength,h:bHeight});
+		var southSheet = new sheetengine.Sheet({x:0,y:bWidth/2,z:bHeight/2}, jfarm.rotSouthNorth, {w:bLength,h:bHeight});
 		southSheet.context.fillStyle = '#aa3114'; // South //aa3114
-		southSheet.context.fillRect(0,0,bLength,tileHeight);
+		southSheet.context.fillRect(0,0,bLength,jfarm.tileWidth);
 
-		var northSheet = new sheetengine.Sheet({x:0,y:-bWidth/2,z:bHeight/2}, rotSouthSide, {w:bLength,h:bHeight});
+		var northSheet = new sheetengine.Sheet({x:0,y:-bWidth/2,z:bHeight/2}, jfarm.rotSouthNorth, {w:bLength,h:bHeight});
 		northSheet.context.fillStyle = '#aa3114'; // South //aa3114
-		northSheet.context.fillRect(0,0,bLength,tileHeight);
+		northSheet.context.fillRect(0,0,bLength,jfarm.tileWidth);
 
 		var eastSheetH = bHeight + 40;
-		var eastSheet = new sheetengine.Sheet({x:bLength/2,y:0,z:(bHeight+40)/2}, rotEastSide, {w:bWidth,h:eastSheetH});
+		var eastSheet = new sheetengine.Sheet({x:bLength/2,y:0,z:(bHeight+40)/2}, jfarm.rotWestEast, {w:bWidth,h:eastSheetH});
 
-		var westSheet = new sheetengine.Sheet({x:-bLength/2,y:0,z:(bHeight+40)/2}, rotEastSide, {w:bWidth,h:eastSheetH});
+		var westSheet = new sheetengine.Sheet({x:-bLength/2,y:0,z:(bHeight+40)/2}, jfarm.rotWestEast, {w:bWidth,h:eastSheetH});
 
 		// South
 		var ctxSS = southSheet.context
@@ -1063,21 +1217,28 @@ jfarm = {
 		
 		if (!jfarm.hoveredObj) {
 			// set target location
-			// var puv = {
-			// 	u:event.clientX - sheetengine.canvas.offsetLeft + pageXOffset, 
-			// 	v:event.clientY - sheetengine.canvas.offsetTop + pageYOffset
-			// };
+			var puv = {
+				u:event.clientX - sheetengine.canvas.offsetLeft + pageXOffset, 
+				v:event.clientY - sheetengine.canvas.offsetTop + pageYOffset
+			};
 			// var pxy = sheetengine.transforms.inverseTransformPoint({u:puv.u + sheetengine.scene.center.u, v:puv.v + sheetengine.scene.center.v});
 			// pxy.x = (pxy.x - sheetengine.scene.center.x) / jfarm.zoom + sheetengine.scene.center.x;
 			// pxy.y = (pxy.y - sheetengine.scene.center.y) / jfarm.zoom + sheetengine.scene.center.y;
 
 			var yard = sheetengine.scene.getYardFromPos(jfarm.hoveredBaseSheet.centerp);
-			console.log(yard.yardx + "," + yard.yardy);
-			console.log(jfarm.hoveredBaseSheet.centerp);
+			// console.log(yard.yardx + "," + yard.yardy);
+			// console.log(jfarm.hoveredBaseSheet.centerp);
+
+			jfarm.clickedBaseSheet = jfarm.getBaseSheetByPuv(puv);
 			
 			jfarm.player.targetObj = null;
-			// if(jfarm.hoveredBaseSheet)
-			// 	jfarm.setTarget(jfarm.player, jfarm.hoveredBaseSheet.centerp);
+			if(jfarm.hoveredBaseSheet && jfarm.drawnObj){
+				jfarm.validatePosObj = true;
+			}
+			else {
+				// if(jfarm.hoveredBaseSheet)
+				// 	jfarm.setTarget(jfarm.player, jfarm.hoveredBaseSheet.centerp);
+			}
 		} else {
 			// set target object
 			jfarm.player.targetObj = jfarm.hoveredObj;
@@ -1110,33 +1271,25 @@ jfarm = {
 			// get hovered tile 
 			jfarm.hoveredBaseSheet = jfarm.getBaseSheetByPuv(puv); 
 			// console.log(jfarm.hoveredBaseSheet);
-			if(jfarm.drawingLocation && jfarm.hoveredBaseSheet){
-				switch(jfarm.drawnObj){
-					case jfarm.enumAppObjects[0]: // barn
-						jfarm.locationCorners = jfarm.getBarnLocationCornersuv(jfarm.hoveredBaseSheet);
-					break;
-					case jfarm.enumAppObjects[1]: // cold storage
-						jfarm.locationCorners = jfarm.getColdStorageLocationCornersuv(jfarm.hoveredBaseSheet);
-					break;
-					case jfarm.enumAppObjects[2]: // silo
-						jfarm.locationCorners = jfarm.hoveredBaseSheet.corners;
-					break;
-					case jfarm.enumAppObjects[3]: // corn
-						jfarm.locationCorners = jfarm.hoveredBaseSheet.corners;
-					break;
-					case jfarm.enumAppObjects[4]: // tomatoes
-						jfarm.locationCorners = jfarm.hoveredBaseSheet.corners;
-					break;
-					case jfarm.enumAppObjects[5]: // wheat
-						jfarm.locationCorners = jfarm.hoveredBaseSheet.corners;
-					break;
-					default:
-				}
+
+			// if a building or crop is currently being drawn
+			if(jfarm.drawnObj && jfarm.hoveredBaseSheet){
+				
 			}
 			else { // moving character process ???
 
 			}
 		}
+	},
+	requestAjax: function (url, data, callback, callbackError) {
+	  $.ajax({
+	    url: url,
+	    data: data,
+	    cache: false,
+	    dataType: "json"
+	  })
+	  .done(callback)
+	  .error(callbackError || function(){ console.log("ajax request error")});
 	},
 	// main timer
 	timer: function() {
@@ -1144,8 +1297,8 @@ jfarm = {
 			,sceneChanged = 0;
 		
 		// hovered basesheets
-		if(jfarm.preHoveredBaseSheet != jfarm.hoveredBaseSheet){
-			jfarm.preHoveredBaseSheet = jfarm.hoveredBaseSheet
+		if(jfarm.preHoveredBaseSheet != jfarm.hoveredBaseSheet && !jfarm.drawnObj){
+			jfarm.preHoveredBaseSheet = jfarm.hoveredBaseSheet;
 		  	sceneChanged = 1;
 		}
 
@@ -1167,6 +1320,20 @@ jfarm = {
 			jfarm.setPlayerObject();
 			sceneChanged = 1;
 			// sheetengine.calc.calculateChangedSheets();
+		}
+
+		// Draw object location on the map
+		if(jfarm.drawnObj && jfarm.hoveredBaseSheet && jfarm.preHoveredBaseSheet != jfarm.hoveredBaseSheet){
+			jfarm.preHoveredBaseSheet = jfarm.hoveredBaseSheet;
+			jfarm.getLocationCornersuv(jfarm.drawnObj);
+			sceneChanged = 1;
+		}
+
+		// draw object on the map
+		if(jfarm.validatePosObj && jfarm.clickedBaseSheet){
+			jfarm.validatePosObj = false;
+			jfarm.drawSelectedObj(jfarm.clickedBaseSheet);
+			sceneChanged = 1;
 		}
 		
 		

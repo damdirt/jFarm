@@ -8,6 +8,12 @@ var DashboardController = {
 		res.view({
 			user : user
 		});
+	},
+	contact: function (req,res) {
+		var user = req.session.user;
+		res.view({
+			user : user
+		});
 	}
 };
 module.exports = DashboardController;

@@ -33,6 +33,11 @@ module.exports.routes = {
 		controller: 'dashboard',
 		action: 'home'
 	},
+
+	'/contact': {
+		controller: 'dashboard',
+		action: 'contact'
+	},
 	//----------------- END DEFAULT -----------------
 
 

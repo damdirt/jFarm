@@ -15,7 +15,7 @@ $(document).ready(function() {
 	$("nav.sub").hide();
 	$("nav.main ul a:not(:first)").on('click', function() {
 		var tab = $(this),
-			index = tab.parent().index()-1,
+			index = tab.parent().index()-2,
 			content = $("nav.sub").eq(index),
 			contents = $('nav.sub:visible');
 		if (content.is(':visible')) {
@@ -147,6 +147,11 @@ $(document).ready(function() {
 	$(".popup").on('click', function() {
 		$(".modal").toggle();
 	});
+	
+	/***********************************
+	*****    JFARM RELATED CODE    *****
+	***********************************/
+
 
 	// BUILDINGS
 	$(".showBuildings").on('click', function() {
@@ -159,9 +164,9 @@ $(document).ready(function() {
 	$("#creator div:not(:first)").hide();
 	$("#right-actions button").on('click',function(){
 		var tabActions = $(this),
-		    index = tabActions.index(),
-		    content = $("#creator div").eq(index),
-		    contents = content.siblings();
+		index = tabActions.index(),
+		content = $("#creator div").eq(index),
+		contents = content.siblings();
 
 		tabActions.addClass("active")
 		    .siblings().removeClass('active');
@@ -169,10 +174,16 @@ $(document).ready(function() {
 		contents.hide();
 	});
 
+	// CROPS AND BUILDINGS
+	$('.crop, .building').on('click', function(){
+		var $this = $(this)
+			,value = $this.data('value')
+			,$li = $this.parent()
 
-	/***********************************
-	*****    JFARM RELATED CODE    *****
-	***********************************/
+		$('.crop, .building').parent().removeClass('active');
+		$li.addClass('active');
+		jfarm.drawnObj = jfarm.enumAppObjectsObj[value];
+	});
 
 	// WEAPONS & ACCESSORIES
 	$('.weapon, .accessory').on('click', function(){
