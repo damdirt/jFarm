@@ -209,13 +209,10 @@ $(document).ready(function() {
 		$this.siblings().removeClass("active");
 		$this.addClass("active");
 
-		console.log(jfarm[action]);
-		if(action == "selectingObject"){
+		if(action == "selectingObject")
 			jfarm.movingPlayer = false;
-		}
-		else {
+		else
 			jfarm.selectingObject = false;
-		}
 		jfarm[action] = true;
 	});
 });

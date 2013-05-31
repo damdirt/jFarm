@@ -1236,8 +1236,8 @@ jfarm = {
 				jfarm.validatePosObj = true;
 			}
 			else {
-				// if(jfarm.hoveredBaseSheet)
-				// 	jfarm.setTarget(jfarm.player, jfarm.hoveredBaseSheet.centerp);
+				if(jfarm.hoveredBaseSheet)
+					jfarm.setTarget(jfarm.player, jfarm.hoveredBaseSheet.centerp);
 			}
 		} else {
 			// set target object
@@ -1270,7 +1270,6 @@ jfarm = {
 			$(sheetengine.canvas).css('cursor','crosshair');
 			// get hovered tile 
 			jfarm.hoveredBaseSheet = jfarm.getBaseSheetByPuv(puv); 
-			// console.log(jfarm.hoveredBaseSheet);
 
 			// if a building or crop is currently being drawn
 			if(jfarm.drawnObj && jfarm.hoveredBaseSheet){
