@@ -3,7 +3,65 @@
 	-> controller
 ---------------------*/
 var YardController = {
-	getYard: function(req, res, next) {
+
+
+	getYard: function(req, res){
+		if (!req.isAjax) {
+			res.redirect('/');
+		} else {
+			res.writeHead(200, {
+				'Content-Type': 'application/json',
+				'Access-Control-Allow-Origin': '*' // implementation of CORS
+			});
+			if (req.param('x') && req.param('y')) {
+				var xParam = parseInt(req.param('x'));
+				var yParam = parseInt(req.param('y'));
+				
+				Yard.find({
+					x: xParam,
+					y: yParam,
+				}).done(function(err, yard) {
+					if (err) {
+						res.end(JSON.stringify({
+							'success': false,
+							'message': 'no yard at this position',
+							'error': err
+						}));
+					} else {
+						yard.values = undefined;
+						Player.find({
+							id: yard.playerId
+						}).done(function(err, player) {
+							if (!player) {
+								res.end(JSON.stringify({
+									yard: yard,
+									player: null
+								}));
+							} else {
+								player.values = undefined;
+								res.end(JSON.stringify({
+									yard: yard,
+									player: player
+								}));
+							}
+						});
+					}
+				});
+			}else{
+				res.end(JSON.stringify({
+					'success': false,
+					'message': 'parameter(s) missing',
+					'error': null
+				}));
+			}
+
+		}
+
+	},
+
+
+
+	getYards: function(req, res, next) {
 
 		var sorto = {
 			x: "asc",
@@ -177,7 +235,7 @@ var YardController = {
 
 						function completeAppObjects(appObjectsResponse) {
 							if (!waitingAppObjects) {
-								console.log("trop saoul");
+								
 								res.writeHead(200, {
 									'Content-Type': 'application/json',
 									'Access-Control-Allow-Origin': '*' // implementation of CORS
@@ -299,6 +357,8 @@ var YardController = {
 
 		res.send("Yards created !");
 
-	}
+	},
+
+
 };
 module.exports = YardController;

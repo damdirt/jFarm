@@ -20,7 +20,8 @@ var UserController = {
 		console.log(user);
 		// This will render the view: /Volumes/DATA/Documents/git/jFarm/views/dashboard/home.ejs
 		res.view({
-			user: user
+			user: user,
+			player: global.player
 		});
 
 	},
@@ -39,7 +40,6 @@ var UserController = {
 						username: req.session.user.username
 					}, {
 						password: passwordHash.generate(password),
-						email: 'saoul'
 					}, function(err, user) {
 						if (err) {
 							returnMessage = err;

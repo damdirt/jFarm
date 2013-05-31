@@ -3,30 +3,30 @@
 	<div class="col pull-left w300">
         <h2 class="title">Overview<span class="line"></span></h2>
 		<canvas id="playercanvas" width="300" height="300"></canvas>
-		<div id="userLabel">Username : your username</div>
+		<div id="userLabel">Username : <%= player.name %></div>
 	</div>
 	<div class="col pull-left w300">
         <h2 class="title">Parameters<span class="line"></span></h2>
 		<form action="" name="form" method="post" id="define_form" class="standard-form clear-fix">
             <div class="controls">
                 <label>Username</label>
-                <input type="text" id="inputUsername" placeholder="Username" name="username" required="true">
+                <input type="text" id="inputUsername" placeholder="Username" name="username" required="true" value="<%= player.name %>" disabled >
             </div>
             <div class="controls">
                 <label>Skin</label>
-                <input class="minicolors" id="inputSkin" type="text" value="#FF0" name="skin">
+                <input class="minicolors" id="inputSkin" type="text" value="<%= player.skinColor %>" name="skin">
             </div>
             <div class="controls">
                 <label>T-shirt</label>
-                <input class="minicolors" id="inputShirt" type="text" value="#F0F" name="shirt">
+                <input class="minicolors" id="inputShirt" type="text" value="<%= player.tshirtColor %>" name="shirt">
             </div>
             <div class="controls">
                 <label>Pants</label>
-                <input class="minicolors" id="inputPants" type="text" value="#00F" name="pants">
+                <input class="minicolors" id="inputPants" type="text" value="<%= player.pantsColor %>" name="pants">
             </div>
             <div class="controls">
                 <label>Hair</label>
-                <input class="minicolors" id="inputHair" type="text" value="#550" name="hair">
+                <input class="minicolors" id="inputHair" type="text" value="<%= player.hairColor %>" name="hair">
             </div>
             <hr>
             <div class="controls">

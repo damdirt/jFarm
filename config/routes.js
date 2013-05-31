@@ -72,10 +72,6 @@ module.exports.routes = {
 
 	//------------------ END USER ------------------------
 
-	'/getYard': {
-		controller: 'user',
-		action: 'getYard'
-	},
 
 
 	//------------------- SETTINGS ------------------------
@@ -118,13 +114,19 @@ module.exports.routes = {
 		controller: 'player',
 		action: 'builder'
 	},
+
+	'/player/gamelevel': {
+		controller: 'player',
+		action: 'levelChoice'
+	},
+	
 	//-------------------- END PLAYER ------------------------
 
 	//-------------------- INITIALIZER ------------------------
 
-	'/init/yard': {
+	'/init': {
 		controller: 'initializer',
-		action: 'firstLaunch'
+		action: 'index'
 	},
 
 	//-------------------- END INITIALISER ---------------------
@@ -134,14 +136,29 @@ module.exports.routes = {
 
 	'/yards': {
 		controller: 'yard',
+		action: 'getYards'
+	},
+
+	'/getyard': {
+		controller: 'yard',
 		action: 'getYard'
 	},
 
-	
+
 
 	'/yards/init': {
 		controller: 'yard',
 		action: 'init'
+	},
+
+	//-------------------- END YARD ---------------------
+
+	//-------------------- OBJECT ------------------------
+
+
+	'/gameobject/create': {
+		controller: 'gameobject',
+		action: 'create'
 	}
 
 	//-------------------- END YARD ---------------------

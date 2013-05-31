@@ -23,7 +23,7 @@
 				<% _.each(gameProperties, function (prop) { %>
 				<div class="object-line">
 					<div class="object-cell">
-						<%= prop.name %>
+						<%= prop.name %> : <%= prop.content %> 
 					</div>
 					<div class="object-cell">
 						<a href="javascript:void(0)" class="action-get" data-id="<%= prop.id %>" data-url="/gameproperty/find/">Edit</a>

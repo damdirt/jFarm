@@ -11,15 +11,12 @@ body > section {
 }
 
 body {
-    margin: 0;
-    padding: 0 60px;
-    font-family: Arial;
-    font-size: 10pt;
     background-color: #EEEEEE;
     color: #58595B;
     font-family: "PT Sans";
-    width: 1200px;
+    font-size: 10pt;
     margin: 0 auto;
+    width: 1200px;
 }
 
 img {
@@ -109,6 +106,14 @@ h2.title {
 
 .w500 {
     width: 480px;
+}
+
+.w15p {
+    width: 15%;
+}
+
+.w80p {
+    width: 80%;
 }
 
 .p10 {
@@ -207,10 +212,11 @@ footer {
     color: #FFFFFF;
 }
 
-footer p {
-    margin: 0;
-    padding: 0;
+.copyright {
+    float: left;
     line-height: 40px;
+    padding-left: 15px;
+    position: absolute;
 }
 
 .round {
@@ -290,12 +296,17 @@ footer p {
     background-color: #495461;
     box-shadow: 1px 1px 8px #333333;
     display: none;
-    margin-top: -300px;
+    margin-top: -359px;
     min-height: 260px;
     padding: 15px;
     position: absolute;
     right: 0;
     width: 360px;
+}
+
+.weapons p {
+    margin: 0;
+    text-align: center;
 }
 
 .img {
@@ -453,11 +464,16 @@ footer p {
 
 #creator li {
     cursor: pointer;
-    padding: 10px 0;
+    padding-top: 10px;
 }
 
 #creator li:hover {
     box-shadow: 1px 1px 8px #58595B;
+}
+
+.crops p, .buildings p {
+    margin: 0;
+    text-align: center;
 }
 
 /* ---------- MAP/CANVAS STYLES ---------- */
@@ -467,11 +483,6 @@ section {
 	min-height: 600px;
 	box-shadow: 0 0 85px rgba(0, 0, 0, 0.3);
 }
-
-/*#canvas-wrapper {
-    margin: 0 auto;
-    width: 1200px;
-}*/
 
 /* ---------- BUTTONS STYLES ---------- */
 
@@ -697,3 +708,28 @@ section {
 }
 
 /* SOCIAL */
+
+.content .contact:not(:last-child) {
+    border-bottom: 1px solid #CFCFCF;
+}
+
+.contact {
+    padding: 20px 0;
+}
+.icons a {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin: 10px;
+    vertical-align: middle;
+    -o-transition: all .3s;
+    -moz-transition: all .3s;
+    -webkit-transition: all .3s;
+    -ms-transition: all .3s;
+}
+
+.icons a.twitter { background: url(../../images/social/twitter.png) left top no-repeat; }
+.icons a.email { background: url(../../images/social/email.png) left top no-repeat; }
+.icons a.github { background: url(../../images/social/github.png) left top no-repeat; }
+
+.icons a:hover { background-position: left -34px; }

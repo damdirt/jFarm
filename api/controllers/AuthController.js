@@ -1,5 +1,4 @@
 // api/controllers/AuthController.js
-
 var passwordHash = require('password-hash');
 
 var AuthController = {
@@ -19,7 +18,6 @@ var AuthController = {
 
 		// No username/password entered
 		if (!(usernameParam && emailParam && passwordParam)) {
-			// res.send("No username, emaill or password specified!"
 			res.view({
 				layout: "minLayout",
 				error: "No username, emaill or password specified!"
@@ -34,7 +32,7 @@ var AuthController = {
 						username: usernameParam,
 						email: emailParam,
 						password: passwordHash.generate(passwordParam),
-                        administrator: false
+						administrator: false
 					}).done(function(err, user) {
 
 						// Error handling
@@ -47,13 +45,29 @@ var AuthController = {
 						} else {
 							req.session.authenticated = true;
 							req.session.user = user;
-							// console.log("User created:", user);
-							//console.log(user);
-							res.redirect('/')
+							Player.create({
+								name: user.username,
+								skinColor: global.skinColor,
+								tshirtColor: global.tshirtColor,
+								pantsColor: global.pantsColor,
+								hairColor: global.hairColor,
+								gameLevel: "easy",
+								level: 1,
+								money: 0
+							}).done(function(err, player) {
+								if (err) {
+									res.view({
+										layout: "minLayout",
+										error: err
+									})
+								} else {
+									global.player = player;
+									res.redirect('/player/gamelevel')
+								}
+							});
 						}
 					});
 				} else {
-					//console.log("Utilisateur déja existant");
 					res.view({
 						layout: "minLayout",
 						error: "Username already used !"
@@ -81,16 +95,19 @@ var AuthController = {
 				error: ""
 			})
 		} else if (req.method == "POST") {
+
+			global.defaultSkinColor = "#FFFFF";
+
 			// Get password and username from request
-            var arr = [];
-            JSON.stringify(req.body).replace(/["{}]/g, '').split(',').forEach(function(elem) {
-                arr.push(elem.split(':')[0]);
-            });
+			var arr = [];
+			JSON.stringify(req.body).replace(/["{}]/g, '').split(',').forEach(function(elem) {
+				arr.push(elem.split(':')[0]);
+			});
 
-            console.log(arr);
+			console.log(arr);
 
 
-            var usernameParam = req.param('username');
+			var usernameParam = req.param('username');
 			var passwordParam = req.param('password');
 			// No username/password entered
 			if (!(usernameParam || passwordParam)) {
@@ -112,10 +129,20 @@ var AuthController = {
 					}
 					// Login succeeded
 					if (user) {
-						if (passwordHash.verify(passwordParam, user.password )) {
+						if (passwordHash.verify(passwordParam, user.password)) {
 							req.session.authenticated = true;
 							req.session.user = user;
-							res.redirect('/');
+							Player.find({
+								name: usernameParam
+							}).done(function(err, player) {
+								if (player) {
+									global.player = player;
+									res.redirect('/');
+								} else {
+									global.player = ""
+								}
+							});
+
 						} else {
 							res.view({
 								layout: "minLayout",

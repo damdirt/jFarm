@@ -9,16 +9,34 @@
 	<div id="creator">
 		<div class="crops">
 			<ul>
-				<li><img src="images/buildings/wheat.png" alt="Wheat" data-value="wheat" class="crop"></li>
-				<li><img src="images/buildings/corn.png" alt="Corn" data-value="corn" class="crop"></li>
-				<li><img src="images/buildings/tomatoes.png" alt="Tomatoes" data-value="tomatoes" class="crop"></li>
+				<li>
+					<img src="images/buildings/wheat.png" alt="Wheat" data-value="wheat" class="crop">
+					<p>Wheat</p>
+				</li>
+				<li>
+					<img src="images/buildings/corn.png" alt="Corn" data-value="corn" class="crop">
+					<p>Corn</p>
+				</li>
+				<li>
+					<img src="images/buildings/tomatoes.png" alt="Tomatoes" data-value="tomatoes" class="crop">
+					<p>Tomatoes</p>
+				</li>
 			</ul>
 		</div>
 		<div class="buildings">
 			<ul>
-				<li><img src="images/buildings/silo.png" alt="Silo" data-value="silo" class="building"></li>
-				<li><img src="images/buildings/barn.png" alt="Barn" data-value="barn" class="building"></li>
-				<li><img src="images/buildings/coldstorage.png" alt="Cold storage" data-value="coldstorage" class="building"></li>
+				<li>
+					<img src="images/buildings/silo.png" alt="Silo" data-value="silo" class="building">
+					<p>Silo</p>
+				</li>
+				<li>
+					<img src="images/buildings/barn.png" alt="Barn" data-value="barn" class="building">
+					<p>Barn</p>
+				</li>
+				<li>
+					<img src="images/buildings/coldstorage.png" alt="Cold storage" data-value="coldstorage" class="building">
+					<p>Cold storage</p>
+				</li>
 			</ul>
 		</div>
 	</div>
@@ -60,30 +78,39 @@
 		<div class="block pull-right w500 clear-fix">
 			<div class="modal">
 				<h3>Weapons</h3>
-				<div class="clear-fix">
+				<div class="weapons clear-fix">
 					<div class="img pull-left">
-						<img src="images/weapons/fourche.png" alt="Fork" class="weapon">
+						<img src="images/weapons/fourche.png" alt="Fork" data-name="fork" class="weapon">
+						<p>Fork</p>
 					</div>
 					<div class="img pull-left">
-						<img src="images/weapons/bat.png" alt="Bat" class="weapon">
+						<img src="images/weapons/bat.png" alt="Bat" data-name="bat" class="weapon">
+						<p>Bat</p>
 					</div>
 					<div class="img pull-left">
-						<img src="images/weapons/tronconneuse.png" alt="Chainsaw" class="weapon">
+						<img src="images/weapons/tronconneuse.png" alt="Chainsaw" data-name="chainsaw" class="weapon">
+						<p>Chainsaw</p>
 					</div>
 					<div class="img pull-left">
-						<img src="images/weapons/ak47.png" alt="AK47" class="weapon">
+						<img src="images/weapons/ak47.png" alt="AK47" data-name="ak47" class="weapon">
+						<p>AK47</p>
 					</div>
 				</div>
 				<h3>Accessories</h3>
 				<div class="clear-fix">
 					<div class="img pull-left">
-						<img src="images/weapons/arrosoir.png" alt="accessories" class="accesory">
+						<img src="images/weapons/arrosoir.png" alt="accessories" data-name="watercan" class="accessory">
+						<p>Watering can</p>
 					</div>
 				</div>
 			</div>
 			<div class="pull-left">
-				<div class="title-b">Username</div>
+				<div class="title-b"><%= player.name %></div>
 				<canvas id="playercanvas" width="220" height="220"></canvas>
+				<input type="hidden" name="skinColor" id="inputSkin" value="<%= player.skinColor %>">
+				<input type="hidden" name="hairColor" id="inputHair" value="<%= player.hairColor %>">
+				<input type="hidden" name="pantsColor" id="inputPants" value="<%= player.pantsColor %>">
+				<input type="hidden" name="tshirtColor" id="inputShirt" value="<%= player.tshirtColor %>">
 			</div>
 			<div class="pull-right">
 				<div class="clear-fix">
@@ -116,6 +143,7 @@
 
 		var rightActionsHeight = $('section').height() - $('footer').height() - $('header').height();
 		$('#right-actions').css('height', rightActionsHeight);
+
 	});
 </script>
 <script src="js/playerShow.js"></script>

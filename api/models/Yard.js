@@ -10,7 +10,11 @@ module.exports = {
 		name: 'TEXT',
 		baserectcolor: 'TEXT',
 		objects: 'string',
-		sheets: 'string'		
+		sheets: 'string',
+		neutral: 'boolean',
+		playerId: 'INT',
+		free: 'boolean',
+		fertility: 'INT'
 	}
 
 };

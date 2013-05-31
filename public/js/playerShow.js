@@ -3,7 +3,6 @@ sheetengine.scene.init(canvasElement, {
 	w: 300,
 	h: 500
 });
-
 // define some basesheets
 var basesheet = new sheetengine.BaseSheet({
 	x: 0,
@@ -17,14 +16,13 @@ var basesheet = new sheetengine.BaseSheet({
 	w: 150,
 	h: 150
 });
-basesheet.color = '#7EBD26';
+basesheet.color = '#5D7E36';
 
 function defineCharacter(centerp) {
 	cSkin = $("#inputSkin").val();
 	cShirt = $("#inputShirt").val();
 	cPants = $("#inputPants").val();
 	cHair = $("#inputHair").val();
-	username = $("#inputUsername").val();
 
 	// character definition for animation with sheet motion
 	var body = new sheetengine.Sheet({
@@ -51,7 +49,7 @@ function defineCharacter(centerp) {
 		w: 16,
 		h: 12
 	});
-	backhead.context.fillStyle = '#550';
+	backhead.context.fillStyle = cHair;
 	backhead.context.fillRect(0, 0, 16, 12);
 	// legs
 	var leg1 = new sheetengine.Sheet({
@@ -66,7 +64,7 @@ function defineCharacter(centerp) {
 		w: 10,
 		h: 16
 	});
-	leg1.context.fillStyle = '#0000ff';
+	leg1.context.fillStyle = cPants;
 	leg1.context.fillRect(0, 0, 10, 20);
 	var leg2 = new sheetengine.Sheet({
 		x: 6,
@@ -80,7 +78,7 @@ function defineCharacter(centerp) {
 		w: 10,
 		h: 16
 	});
-	leg2.context.fillStyle = '#0000ff';
+	leg2.context.fillStyle = cPants;
 	leg2.context.fillRect(0, 0, 10, 20);
 
 	// define character object
@@ -102,19 +100,19 @@ function defineCharacter(centerp) {
 	var ctx = body.context;
 
 	// head
-	ctx.fillStyle = '#ffff00';
+	ctx.fillStyle = cSkin;
 	ctx.fillRect(4, 4, 14, 8);
-	ctx.fillStyle = '#555500';
+	ctx.fillStyle = cHair;
 	ctx.fillRect(4, 0, 14, 4);
 	ctx.fillRect(4, 4, 2, 2);
 	ctx.fillRect(16, 4, 2, 2);
 
 	// body
-	ctx.fillStyle = '#ff00ff';
+	ctx.fillStyle = cShirt;
 	ctx.fillRect(0, 12, 22, 14);
 
 	// hands
-	ctx.fillStyle = '#ffff00';
+	ctx.fillStyle = cSkin;
 	ctx.fillRect(0, 22, 2, 4);
 	ctx.fillRect(20, 22, 2, 4);
 
@@ -130,3 +128,19 @@ defineCharacter({
 // draw the scene
 sheetengine.calc.calculateAllSheets();
 sheetengine.drawing.drawScene(true);
+
+function redraw() {
+	// find and delete character
+	sheetengine.objects[0].destroy();
+	// draw scene
+	sheetengine.drawing.drawScene();
+	// define character
+	defineCharacter({
+		x: 0,
+		y: 0,
+		z: 0
+	});
+	// draw scene
+	sheetengine.calc.calculateAllSheets(true);
+	sheetengine.drawing.drawScene();
+}
