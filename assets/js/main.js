@@ -153,6 +153,9 @@ $(document).ready(function() {
 		$(".modal").toggle();
 		e.stopPropagation();
 	});
+	$(".modal").on('click', function(e) {
+		e.stopPropagation();
+	});
 	$(document).on('click', function() {
 		$(".modal").hide();
 	});
