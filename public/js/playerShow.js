@@ -17,7 +17,7 @@
 			w: 150,
 			h: 150
 		});
-		basesheet.color = '#7EBD26';
+		basesheet.color = '#5D7E36';
 
 		function defineCharacter(centerp) {
 			cSkin = $("#inputSkin").val();

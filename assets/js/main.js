@@ -13,7 +13,7 @@ $(document).ready(function() {
 
 	// DISPLAY SUB NAV
 	$("nav.sub").hide();
-	$("nav.main ul a:not(:first)").on('click', function() {
+	$("nav.main ul a:last").on('click', function() {
 		var tab = $(this),
 			index = tab.parent().index()-2,
 			content = $("nav.sub").eq(index),
@@ -149,8 +149,12 @@ $(document).ready(function() {
 	});
 
 	// POPUP
-	$(".popup").on('click', function() {
+	$(".popup").on('click', function(e) {
 		$(".modal").toggle();
+		e.stopPropagation();
+	});
+	$(document).on('click', function() {
+		$(".modal").hide();
 	});
 
 	// BUILDINGS
