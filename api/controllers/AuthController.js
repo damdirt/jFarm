@@ -136,10 +136,10 @@ var AuthController = {
 								name: usernameParam
 							}).done(function(err, player) {
 								if (player) {
-									session.player = player;
+									req.session.player = player;
 									res.redirect('/');
 								} else {
-									session.player = ""
+									req.session.player = ""
 								}
 							});
 

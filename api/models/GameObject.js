@@ -6,7 +6,9 @@ module.exports = {
 
 	attributes: {
 		yardId: 'INT',
-		content: 'TEXT'
+		content: 'TEXT',
+		objectType: 'TEXT'
+		cornerYard: 'TEXT'
 	}
 
 
