@@ -5,7 +5,7 @@
 var YardController = {
 
 
-	getYard: function(req, res){
+	getYard: function(req, res) {
 		if (!req.isAjax) {
 			res.redirect('/');
 		} else {
@@ -16,7 +16,7 @@ var YardController = {
 			if (req.param('x') && req.param('y')) {
 				var xParam = parseInt(req.param('x'));
 				var yParam = parseInt(req.param('y'));
-				
+
 				Yard.find({
 					x: xParam,
 					y: yParam,
@@ -47,7 +47,7 @@ var YardController = {
 						});
 					}
 				});
-			}else{
+			} else {
 				res.end(JSON.stringify({
 					'success': false,
 					'message': 'parameter(s) missing',
@@ -149,11 +149,11 @@ var YardController = {
 				yStart = yParam - lvlParam,
 				yEnd = (yParam + lvlParam);
 
-			console.log(
-				'xStart : ' + xStart + '\n' +
-				'xEnd : ' + xEnd + '\n' +
-				'yStart : ' + yStart + '\n' +
-				'yEnd : ' + yEnd + '\n');
+			// console.log(
+			// 	'xStart : ' + xStart + '\n' +
+			// 	'xEnd : ' + xEnd + '\n' +
+			// 	'yStart : ' + yStart + '\n' +
+			// 	'yEnd : ' + yEnd + '\n');
 
 			var jsonObj
 			Yard.findAll({
@@ -223,7 +223,7 @@ var YardController = {
 									} else {
 										waitingAppObjects = 1;
 									}
-									console.log(waitingAppObjects);
+									//console.log(waitingAppObjects);
 									var obj = appObjects[i].content
 									//console.log(obj);
 									appObjectsArr[i] = JSON.parse(obj);
@@ -235,7 +235,7 @@ var YardController = {
 
 						function completeAppObjects(appObjectsResponse) {
 							if (!waitingAppObjects) {
-								
+
 								res.writeHead(200, {
 									'Content-Type': 'application/json',
 									'Access-Control-Allow-Origin': '*' // implementation of CORS
@@ -293,6 +293,7 @@ var YardController = {
 							complete();
 						});
 					}
+
 					function complete() {
 						if (!waiting) {
 							for (var i = 0; i < yards.length; i++) {
@@ -327,44 +328,6 @@ var YardController = {
 				"response": "Parameter(s) missing"
 			})
 		}
-	},
-
-
-	init: function(req, res) {
-
-		var i = 0;
-		for (x = 0; x < 11; x++) {
-			for (y = 0; y < 11; y++) {
-				Yard.create({
-					x: x,
-					y: y,
-					name: 'yard(' + x + ';' + y + ')',
-					baserectcolor: '#5D7E36'
-				}).done(function(err, yard) {
-					// Error handling
-					if (err) {
-						console.log(err);
-					} else {
-						console.log("Yard created: " + yard.name);
-					}
-
-				});
-
-			}
-		}
-
-
-
-		res.send("Yards created !");
-
-	},
-
-	getRespawnPoint: function(player){
-
-
-
 	}
-
-
 };
 module.exports = YardController;

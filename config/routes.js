@@ -119,7 +119,12 @@ module.exports.routes = {
 		controller: 'player',
 		action: 'levelChoice'
 	},
-	
+
+	'/player/respawn': {
+		controller: 'player',
+		action: 'createRespawnPoint'
+	},
+
 	//-------------------- END PLAYER ------------------------
 
 	//-------------------- INITIALIZER ------------------------
@@ -144,11 +149,14 @@ module.exports.routes = {
 		action: 'getYard'
 	},
 
-
-
 	'/yards/init': {
 		controller: 'yard',
 		action: 'init'
+	},
+
+	'/yards/growmap': {
+		controller: 'yard',
+		action: 'growMap'
 	},
 
 	//-------------------- END YARD ---------------------

@@ -47,13 +47,15 @@ var AuthController = {
 							req.session.user = user;
 							Player.create({
 								name: user.username,
-								skinColor: global.skinColor,
-								tshirtColor: global.tshirtColor,
-								pantsColor: global.pantsColor,
-								hairColor: global.hairColor,
+								skinColor: global.properties.skinColor,
+								tshirtColor: global.properties.tshirtColor,
+								pantsColor: global.properties.pantsColor,
+								hairColor: global.properties.hairColor,
 								gameLevel: "easy",
 								level: 1,
-								money: 0
+								money: 0,
+								respawnX: 0,
+								respawnY: 0
 							}).done(function(err, player) {
 								if (err) {
 									res.view({
@@ -61,7 +63,12 @@ var AuthController = {
 										error: err
 									})
 								} else {
-									global.player = player;
+									if (global.properties.firstPlayer == 0) {
+										growMap(player);
+									} else {
+										global.setProperty("firstPlayer", false);
+									}
+									req.session.player = player;
 									res.redirect('/player/gamelevel')
 								}
 							});
@@ -75,15 +82,77 @@ var AuthController = {
 				}
 			});
 
-
 		}
+
+		function growMap(player) {
+			var newYards = [];
+			Yard.findAll().done(function(err, yards) {
+				if (yards.length != 0) {
+					var mapWidth = Math.sqrt(yards.length);
+					createYard(0, mapWidth, mapWidth, 1)
+
+					function createYard(x, y, mapWidthParam, step) {
+						Yard.create({
+							x: x,
+							y: y,
+							name: 'yard(' + x + ';' + y + ')',
+							baserectcolor: global.properties.yardColor,
+							neutral: true,
+							free: true
+						}).done(function(err, yard) {
+							// Error handling
+							if (err) {
+								console.log(err);
+							} else {
+								newYards.push(yard);
+								console.log("Yard created: " + yard.name);
+								if (step == 1) {
+									if (yard.y == ((mapWidthParam - 1) + global.properties.rangeToAdd) && yard.x == (mapWidthParam - 1)) {
+										createYard(mapWidthParam, 0, mapWidthParam, 2);
+									} else if (yard.x == (mapWidthParam - 1)) {
+										createYard(0, yard.y + 1, mapWidthParam, step)
+									} else if (yard.x < (mapWidthParam - 1)) {
+										createYard(yard.x + 1, yard.y, mapWidthParam, step);
+									}
+								} else if (step == 2) {
+									if (yard.y == ((mapWidthParam - 1) + global.properties.rangeToAdd) && yard.x == ((mapWidthParam - 1) + global.properties.rangeToAdd)) {
+										console.log("finished !!!!");
+										var respawnYard = newYards[Math.floor(Math.random() * newYards.length)];
+										Player.update({
+											name: player.name
+										}, {
+											respawnX: respawnYard.x,
+											respawnY: respawnYard.y
+										}, function(err, player) {
+											// Error handling
+											if (err) {
+												console.log(err);
+											}
+										});
+									} else if (yard.y == ((mapWidthParam - 1) + global.properties.rangeToAdd)) {
+										createYard(yard.x + 1, 0, mapWidthParam, 2)
+									} else if (yard.x <= ((mapWidthParam - 1) + global.properties.rangeToAdd)) {
+										createYard(yard.x, yard.y + 1, mapWidthParam, 2);
+									}
+								}
+
+							}
+						});
+
+					}
+
+				}
+			});
+		}
+
 	},
 
 
 
 	logout: function(req, res) {
 		req.session.authenticated = false;
-		req.session.User = null;
+		req.session.user = null;
+		req.session.player = null;
 		res.redirect('/');
 	},
 
@@ -95,17 +164,6 @@ var AuthController = {
 				error: ""
 			})
 		} else if (req.method == "POST") {
-
-
-
-			// Get password and username from request
-			// var arr = [];
-			// JSON.stringify(req.body).replace(/["{}]/g, '').split(',').forEach(function(elem) {
-			// 	arr.push(elem.split(':')[0]);
-			// });
-
-			// console.log(arr);
-
 
 			var usernameParam = req.param('username');
 			var passwordParam = req.param('password');
@@ -136,10 +194,10 @@ var AuthController = {
 								name: usernameParam
 							}).done(function(err, player) {
 								if (player) {
-									session.player = player;
+									req.session.player = player;
 									res.redirect('/');
 								} else {
-									session.player = ""
+									req.session.player = ""
 								}
 							});
 

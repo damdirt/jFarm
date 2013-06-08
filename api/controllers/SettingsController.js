@@ -14,7 +14,6 @@ var SettingsController = {
 
 	// To trigger this action locally, visit: `http://localhost:port/settings/appObjects`
 	index: function(req, res) {
-		console.log(global.defaultSkinColor);
 		res.view({
 			user: req.session.user
 		})

@@ -41,14 +41,20 @@ module.exports.adapters = {
   //       password    : 'Supinf0',
   //       database    : 'jfarm_dev'
   //   },
-    mysql: {
+    // mysql: {
+    //     module      : 'sails-mysql',
+    //     host        : 'mysql2.alwaysdata.com',
+    //     user        : 'jfarm',
+    //     password    : 'Supinf0',
+    //     database    : 'jfarm_dev'
+    // }
+ mysql: {
         module      : 'sails-mysql',
-        host        : 'mysql2.alwaysdata.com',
-        user        : 'jfarm',
-        password    : 'Supinf0',
-        database    : 'jfarm_dev'
+        host        : 'localhost',
+        user        : 'root',
+        password    : 'root',
+        database    : 'jfarm'
     }
-
    
 
 };
