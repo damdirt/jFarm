@@ -33,17 +33,17 @@ var YardController = {
 							id: yard.playerId
 						}).done(function(err, player) {
 							if (!player) {
-								res.end(JSON.stringify({
-									yard: yard,
-									player: null
-								}));
+								yard.player = null;
 							} else {
 								player.values = undefined;
-								res.end(JSON.stringify({
-									yard: yard,
-									player: player
-								}));
+								yard.player = player;
 							}
+							res.end(JSON.stringify({
+								'success': true,
+								'message': 'Yard found',
+								'error': null,
+								'yard': yard,
+							}));
 						});
 					}
 				});
@@ -140,7 +140,6 @@ var YardController = {
 		if (req.param('x') && req.param('y') && req.param('appobjects') && req.param('levelsize') && !req.param('yards')) {
 			var xParam = parseInt(req.param('x'));
 			var yParam = parseInt(req.param('y'));
-			var objParam = parseInt(req.param('appobjects'));
 			var lvlParam = parseInt(req.param('levelsize'));
 
 
@@ -205,7 +204,11 @@ var YardController = {
 							if (objectsResponse[yards[i].id]) {
 
 								for (var j = 0; j < objectsResponse[yards[i].id].length; j++) {
-									yards[i].objects.push(JSON.parse(objectsResponse[yards[i].id][j].content));
+									var obj = objectsResponse[yards[i].id][j]
+										,json = JSON.parse(obj.content)
+									json.id = obj.id;
+									json.cornerYard = obj.cornerYard;
+									yards[i].objects.push(json);
 								}
 							}
 						}
@@ -223,7 +226,7 @@ var YardController = {
 									} else {
 										waitingAppObjects = 1;
 									}
-									//console.log(waitingAppObjects);
+
 									var obj = appObjects[i].content
 									//console.log(obj);
 									appObjectsArr[i] = JSON.parse(obj);
@@ -303,7 +306,11 @@ var YardController = {
 								if (objectsResponse[yards[i].id]) {
 
 									for (var j = 0; j < objectsResponse[yards[i].id].length; j++) {
-										yards[i].objects.push(JSON.parse(objectsResponse[yards[i].id][j].content));
+										var obj = objectsResponse[yards[i].id][j]
+											,json = JSON.parse(obj.content)
+										json.id = obj.id;
+										json.cornerYard = obj.cornerYard;
+										yards[i].objects.push(json);
 									}
 								}
 							}

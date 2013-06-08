@@ -159,7 +159,10 @@ $(document).ready(function() {
 	*****    JFARM RELATED CODE    *****
 	***********************************/
 
-
+	// WINDOW
+	$(document).on('keyup', function(event){
+		jfarm.keyup(event);
+	})
 	// BUILDINGS
 	$(".showBuildings").on('click', function() {
 		$("#right-actions").toggle();
@@ -182,14 +185,24 @@ $(document).ready(function() {
 	});
 
 	// CROPS AND BUILDINGS
-	$('.crop, .building').on('click', function(){
-		var $this = $(this)
-			,value = $this.data('value')
-			,$li = $this.parent()
-
+	$('#creator').on("cancelDrawing", function(){
 		$('.crop, .building').parent().removeClass('active');
-		$li.addClass('active');
-		jfarm.drawnObj = jfarm.enumAppObjectsObj[value];
+	});
+
+	$('.crop, .building').on('click', function(){
+		// to be sure moving player button is pushed
+		$(".game-actions button:first").trigger('click');
+		// we check if player has enough money for crop/building
+		// jfarm.getPlayerDetails(null, function(player){
+			
+			var $this = $(this)
+				,value = $this.data('value')
+				,$li = $this.parent()
+
+			$('.crop, .building').parent().removeClass('active');
+			$li.addClass('active');
+			jfarm.drawnObj = jfarm.enumAppObjectsObj[value];
+		// })
 	});
 
 	// WEAPONS & ACCESSORIES
@@ -205,14 +218,45 @@ $(document).ready(function() {
 
 	$(".game-actions button").click(function() {
 		var $this = $(this)
-			,action = $this.data("action");
-		$this.siblings().removeClass("active");
+			,action = $this.data("action")
+			,siblings = $this.siblings();
+
+		// ui process
+		siblings.removeClass("active");
 		$this.addClass("active");
 
-		if(action == "selectingObject")
-			jfarm.movingPlayer = false;
-		else
-			jfarm.selectingObject = false;
+		// jfarm process
+		siblings.each(function(index, elem){
+			jfarm[$(elem).data("action")] = false;
+		});
 		jfarm[action] = true;
+	});
+
+	// PLAYER DETAILS
+	$('#content-actions').on('getPlayerData', function(e, player){
+		$('#player-data-level').text(player.level);
+		$('#player-money').text(player.money + " ch.");
+		// $('#player-data-life').text(player.);
+		// $('#player-data-tiles').text(player.);
+		// $('#player-data-buildings').text(player.);
+	});
+
+	// TILES 
+	$("#tile-wrapper").on("onGettingTileDetails", function(e){
+		$(this).find('.tile-property-value').html("loading...");
+	});	
+	$("#tile-wrapper").on("getTileData", function(e, tile){
+		$('#tile-owner').text(tile.player ? tile.player.name : "");
+		$('#tile-fertility').text(tile.fertility);
+		$('#tile-humidity').text("tile.humidity"); // TODO
+		$('#tile-state').text(tile.neutral ? "neutral" : "no" );
+		$('#tile-free').text(!!tile.free ? "yes" : "no" );
+	});
+
+	// OBJECTS 
+	$("#object-wrapper").on("getObjectData", function(e, obj){
+		$('#object-type').text(obj.content.name);
+		$('#object-owner').text(obj.owner.name);
+		// $('#object-alliance').text(obj.content.name); // TODO
 	});
 });

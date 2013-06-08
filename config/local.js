@@ -10,4 +10,14 @@
 
 // or to keep your db credentials out of the repo, but to use them on the local machine
 // override the `modelDefaults` config
-// module.exports.modelDefaults = { database: 'foo', user: 'bar', password: 'baZ'}
+// module.exports.modelDefaults = {
+// 	host: 'localhost',
+// 	database: 'jfarm',
+// 	user: 'root',
+// 	password: 'root'
+// }
+
+// module.exports.adapters.mysql.host = "localhost";
+// module.exports.adapters.mysql.user = "root";
+// module.exports.adapters.mysql.password = "root";
+// module.exports.adapters.mysql.database = "jfarm";

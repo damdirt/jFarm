@@ -120,9 +120,9 @@ module.exports.routes = {
 		action: 'levelChoice'
 	},
 
-	'/player/respawn': {
+	'/player/conquer': {
 		controller: 'player',
-		action: 'createRespawnPoint'
+		action: 'conquer'
 	},
 
 	//-------------------- END PLAYER ------------------------
@@ -144,7 +144,7 @@ module.exports.routes = {
 		action: 'getYards'
 	},
 
-	'/getyard': {
+	'/yard/getdetails/:x/:y': {
 		controller: 'yard',
 		action: 'getYard'
 	},
@@ -167,6 +167,10 @@ module.exports.routes = {
 	'/gameobject/create': {
 		controller: 'gameobject',
 		action: 'create'
+	},
+	'/gameobject/getdetails/:id': {
+		controller: 'gameobject',
+		action: 'getDetails'
 	}
 
 	//-------------------- END YARD ---------------------
