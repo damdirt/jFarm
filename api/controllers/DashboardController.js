@@ -6,6 +6,7 @@
 var DashboardController = {
 	home: function(req, res) {
 		var user = req.session.user;
+		console.log(req.session.player);
 		res.view({
 			user: user,
 			player: req.session.player

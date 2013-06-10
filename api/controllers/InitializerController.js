@@ -3,11 +3,8 @@
 	-> controller
 ---------------------*/
 var InitializerController = {
-
 	index: function() {
-
 		global.loadProperties();
-
 		Yard.findAll().done(function(err, yards) {
 			if (!yards || yards.length == 0) {
 				var i = 0;
@@ -36,6 +33,9 @@ var InitializerController = {
 				}
 			}
 		});
+		setTimeout(function() {
+			global.loadTemplates();
+		}, 1000);
 	}
 };
 module.exports = InitializerController;

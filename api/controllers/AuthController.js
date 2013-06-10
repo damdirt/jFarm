@@ -55,7 +55,9 @@ var AuthController = {
 								level: 1,
 								money: 0,
 								respawnX: 0,
-								respawnY: 0
+								respawnY: 0,
+								health: 50,
+								regenerationSpeed: 5
 							}).done(function(err, player) {
 								if (err) {
 									res.view({

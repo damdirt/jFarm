@@ -180,13 +180,23 @@ var YardController = {
 						waiting++;
 						yards[i].objects = [];
 						yards[i].sheets = [];
-						GameObject.findAll({
+						Building.findAll({
 							yardId: yards[i].id
-						}).done(function(err, obj) {
+						}).done(function(err, buildings) {
+
+							if (buildings) {
+								if (buildings.length != 0) {
+									objectsResponse[buildings[0].yardId] = buildings;
+								}
+							}
+						});
+						Crop.findAll({
+							yardId: yards[i].id
+						}).done(function(err, crops) {
 							waiting--;
-							if (obj) {
-								if (obj.length != 0) {
-									objectsResponse[obj[0].yardId] = obj;
+							if (crops) {
+								if (crops.length != 0) {
+									objectsResponse[crops[0].yardId] = crops;
 								}
 							}
 							complete();
@@ -204,10 +214,11 @@ var YardController = {
 							if (objectsResponse[yards[i].id]) {
 
 								for (var j = 0; j < objectsResponse[yards[i].id].length; j++) {
-									var obj = objectsResponse[yards[i].id][j]
-										,json = JSON.parse(obj.content)
-									json.id = obj.id;
+									var obj = objectsResponse[yards[i].id][j],
+										json = JSON.parse(obj.content)
+										json.id = obj.id;
 									json.cornerYard = obj.cornerYard;
+									json.type = obj.objectType;
 									yards[i].objects.push(json);
 								}
 							}
@@ -284,13 +295,34 @@ var YardController = {
 						waiting++;
 						yards[i].objects = [];
 						yards[i].sheets = [];
-						GameObject.findAll({
+						// GameObject.findAll({
+						// 	yardId: yards[i].id
+						// }).done(function(err, obj) {
+						// 	waiting--;
+						// 	if (obj) {
+						// 		if (obj.length != 0) {
+						// 			objectsResponse[obj[0].yardId] = obj;
+						// 		}
+						// 	}
+						// 	complete();
+						// });
+						Building.findAll({
 							yardId: yards[i].id
-						}).done(function(err, obj) {
+						}).done(function(err, buildings) {
+
+							if (buildings) {
+								if (buildings.length != 0) {
+									objectsResponse[buildings[0].yardId] = buildings;
+								}
+							}
+						});
+						Crop.findAll({
+							yardId: yards[i].id
+						}).done(function(err, crops) {
 							waiting--;
-							if (obj) {
-								if (obj.length != 0) {
-									objectsResponse[obj[0].yardId] = obj;
+							if (crops) {
+								if (crops.length != 0) {
+									objectsResponse[crops[0].yardId] = crops;
 								}
 							}
 							complete();
@@ -306,10 +338,11 @@ var YardController = {
 								if (objectsResponse[yards[i].id]) {
 
 									for (var j = 0; j < objectsResponse[yards[i].id].length; j++) {
-										var obj = objectsResponse[yards[i].id][j]
-											,json = JSON.parse(obj.content)
-										json.id = obj.id;
+										var obj = objectsResponse[yards[i].id][j],
+											json = JSON.parse(obj.content)
+											json.id = obj.id;
 										json.cornerYard = obj.cornerYard;
+										json.type = obj.objectType;
 										yards[i].objects.push(json);
 									}
 								}
