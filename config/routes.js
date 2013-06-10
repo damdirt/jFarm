@@ -168,7 +168,7 @@ module.exports.routes = {
 		controller: 'gameobject',
 		action: 'create'
 	},
-	'/gameobject/getdetails/:id': {
+	'/gameobject/getdetails/:id/:type': {
 		controller: 'gameobject',
 		action: 'getDetails'
 	}

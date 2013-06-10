@@ -21,7 +21,7 @@ module.exports.bootstrap = function(cb) {
 
 	global.setProperty = function(nameParam, valueParam) {
 
-		
+
 		GameProperty.update({
 			name: nameParam
 		}, {
@@ -36,8 +36,30 @@ module.exports.bootstrap = function(cb) {
 
 	}
 
+	global.loadTemplates = function() {
+		CropTemplate.findAll().done(function(err, cropTemplates) {
+			if (cropTemplates.length > 0) {
+				global.properties.cropTemplates = {};
+				for (var cropTpl in cropTemplates) {
+					global.properties.cropTemplates[cropTemplates[cropTpl].name] = cropTemplates[JSON.parse(cropTpl)]
+				}
+				//console.log(global.properties.cropTemplates);
+			}
+		});
 
-	global.getRespawPoint = function(){
+		BuildingTemplate.findAll().done(function(err, buildingTemplates) {
+			if (buildingTemplates.length > 0) {
+				global.properties.buildingTemplates = {};
+				for (var buildingTpl in buildingTemplates) {
+					global.properties.buildingTemplates[buildingTemplates[buildingTpl].name] = buildingTemplates[JSON.parse(buildingTpl)]
+				}
+				//console.log(global.properties.buildingTemplates);
+			}
+		});
+	}
+
+
+	global.getRespawPoint = function() {
 		Yard.findAll().done(function(err, yards) {
 			if (yards.length > 0) {
 				return yards[Math.floor(Math.random() * yards.length) + 1]

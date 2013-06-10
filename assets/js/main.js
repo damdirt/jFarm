@@ -76,7 +76,7 @@ $(document).ready(function() {
 				message: 'delete' + id
 			}, function(response) {
 				if (response.id == id) {
-					$this.parent().fadeOut();
+					$this.parents('.object-line').fadeOut();
 				} else {
 					alert(response);
 				}

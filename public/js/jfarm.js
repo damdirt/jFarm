@@ -843,7 +843,7 @@ jfarm = {
 	},
 	// Data
 	getObjectDetails: function(obj){
-		jfarm.requestAjax("/gameobject/getdetails/"+ obj.idDB, null, function(response){
+		jfarm.requestAjax("/gameobject/getdetails/"+ obj.idDB+ "/" + obj.type , null, function(response){
 			if(response.success)
 				$("#object-wrapper").trigger("getObjectData", [response.obj]);
 		});
@@ -1092,18 +1092,20 @@ jfarm = {
 		}
 	},
 	sendNewObject: function(obj, yard, yards){
-		var yardsStr = jfarm.getYardsStringFromYards(yards)
-			,cornerYardStr = jfarm.clickedYard.yardx + "," + jfarm.clickedYard.yardy;
-		
-		var data = {
-			x: yard.yardx,
-			y: yard.yardy,
-			object: obj,
-			yards: yardsStr,
-			cornerYard: cornerYardStr// we send our clicked yard for reference
-		};
-		jfarm.requestAjax("/gameobject/create",data,jfarm.drawSelectedObj);
-	},
+               var yardsStr = jfarm.getYardsStringFromYards(yards)
+                       ,cornerYardStr = jfarm.clickedYard.yardx + "," + jfarm.clickedYard.yardy;
+               
+               var data = {
+                       x: yard.yardx,
+                       y: yard.yardy,
+                       objectName: obj.name,
+                       object: obj,
+                       yards: yardsStr,
+                       objectType: obj.type, // TODO
+                       cornerYard: cornerYardStr// we send our clicked yard for reference
+               };
+               jfarm.requestAjax("/gameobject/create",data,jfarm.drawSelectedObj);
+    },
 	drawSelectedObj: function(ajaxResponse){
 		if(ajaxResponse.success){
 
@@ -1143,7 +1145,8 @@ jfarm = {
 			}
 			jfarm.drawnObj = null;
 			if(createdObj){ // in case of default switch
-				// we assign immediately cornerYard to new added object 
+				// we assign immediately cornerYard to new added object
+				createdObj.type = ajaxResponse.type;
 				createdObj.idDB = ajaxResponse.id; 
 				createdObj.cornerYard = ajaxResponse.cornerYard; 
 				jfarm.densityMap.addSheets(createdObj.sheets);
