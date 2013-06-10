@@ -5,7 +5,7 @@
 var YardController = {
 
 
-	getYard: function(req, res){
+	getYard: function(req, res) {
 		if (!req.isAjax) {
 			res.redirect('/');
 		} else {
@@ -16,7 +16,7 @@ var YardController = {
 			if (req.param('x') && req.param('y')) {
 				var xParam = parseInt(req.param('x'));
 				var yParam = parseInt(req.param('y'));
-				
+
 				Yard.find({
 					x: xParam,
 					y: yParam,
@@ -33,21 +33,21 @@ var YardController = {
 							id: yard.playerId
 						}).done(function(err, player) {
 							if (!player) {
-								res.end(JSON.stringify({
-									yard: yard,
-									player: null
-								}));
+								yard.player = null;
 							} else {
 								player.values = undefined;
-								res.end(JSON.stringify({
-									yard: yard,
-									player: player
-								}));
+								yard.player = player;
 							}
+							res.end(JSON.stringify({
+								'success': true,
+								'message': 'Yard found',
+								'error': null,
+								'yard': yard,
+							}));
 						});
 					}
 				});
-			}else{
+			} else {
 				res.end(JSON.stringify({
 					'success': false,
 					'message': 'parameter(s) missing',
@@ -140,7 +140,6 @@ var YardController = {
 		if (req.param('x') && req.param('y') && req.param('appobjects') && req.param('levelsize') && !req.param('yards')) {
 			var xParam = parseInt(req.param('x'));
 			var yParam = parseInt(req.param('y'));
-			var objParam = parseInt(req.param('appobjects'));
 			var lvlParam = parseInt(req.param('levelsize'));
 
 
@@ -149,11 +148,11 @@ var YardController = {
 				yStart = yParam - lvlParam,
 				yEnd = (yParam + lvlParam);
 
-			console.log(
-				'xStart : ' + xStart + '\n' +
-				'xEnd : ' + xEnd + '\n' +
-				'yStart : ' + yStart + '\n' +
-				'yEnd : ' + yEnd + '\n');
+			// console.log(
+			// 	'xStart : ' + xStart + '\n' +
+			// 	'xEnd : ' + xEnd + '\n' +
+			// 	'yStart : ' + yStart + '\n' +
+			// 	'yEnd : ' + yEnd + '\n');
 
 			var jsonObj
 			Yard.findAll({
@@ -205,7 +204,11 @@ var YardController = {
 							if (objectsResponse[yards[i].id]) {
 
 								for (var j = 0; j < objectsResponse[yards[i].id].length; j++) {
-									yards[i].objects.push(JSON.parse(objectsResponse[yards[i].id][j].content));
+									var obj = objectsResponse[yards[i].id][j]
+										,json = JSON.parse(obj.content)
+									json.id = obj.id;
+									json.cornerYard = obj.cornerYard;
+									yards[i].objects.push(json);
 								}
 							}
 						}
@@ -223,7 +226,7 @@ var YardController = {
 									} else {
 										waitingAppObjects = 1;
 									}
-									console.log(waitingAppObjects);
+
 									var obj = appObjects[i].content
 									//console.log(obj);
 									appObjectsArr[i] = JSON.parse(obj);
@@ -235,7 +238,7 @@ var YardController = {
 
 						function completeAppObjects(appObjectsResponse) {
 							if (!waitingAppObjects) {
-								
+
 								res.writeHead(200, {
 									'Content-Type': 'application/json',
 									'Access-Control-Allow-Origin': '*' // implementation of CORS
@@ -293,6 +296,7 @@ var YardController = {
 							complete();
 						});
 					}
+
 					function complete() {
 						if (!waiting) {
 							for (var i = 0; i < yards.length; i++) {
@@ -302,7 +306,11 @@ var YardController = {
 								if (objectsResponse[yards[i].id]) {
 
 									for (var j = 0; j < objectsResponse[yards[i].id].length; j++) {
-										yards[i].objects.push(JSON.parse(objectsResponse[yards[i].id][j].content));
+										var obj = objectsResponse[yards[i].id][j]
+											,json = JSON.parse(obj.content)
+										json.id = obj.id;
+										json.cornerYard = obj.cornerYard;
+										yards[i].objects.push(json);
 									}
 								}
 							}
@@ -327,44 +335,6 @@ var YardController = {
 				"response": "Parameter(s) missing"
 			})
 		}
-	},
-
-
-	init: function(req, res) {
-
-		var i = 0;
-		for (x = 0; x < 11; x++) {
-			for (y = 0; y < 11; y++) {
-				Yard.create({
-					x: x,
-					y: y,
-					name: 'yard(' + x + ';' + y + ')',
-					baserectcolor: '#5D7E36'
-				}).done(function(err, yard) {
-					// Error handling
-					if (err) {
-						console.log(err);
-					} else {
-						console.log("Yard created: " + yard.name);
-					}
-
-				});
-
-			}
-		}
-
-
-
-		res.send("Yards created !");
-
-	},
-
-	getRespawnPoint: function(player){
-
-
-
 	}
-
-
 };
 module.exports = YardController;

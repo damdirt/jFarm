@@ -1,25 +1,26 @@
 <div id="canvas-wrapper">
 	<canvas id="maincanvas" width="1200" height="460" onmousemove="jfarm.mousemove(event);"></canvas>
 </div>
-<div id="right-actions" class="clear-fix">
+<div id="right-actions" class="clear-fix center">
+	<span>ESC to cancel</span> 
 	<div class="buttons clear-fix">
 		<button class="button pull-left"><i class="icon-leaf"></i></button>
 		<button class="button pull-left"><i class="icon-home"></i></button>
 	</div>
-	<div id="creator">
+	<div id="creator" class="center">
 		<div class="crops">
 			<ul>
 				<li>
 					<img src="images/buildings/wheat.png" alt="Wheat" data-value="wheat" class="crop">
-					<p>Wheat</p>
+					<p>Wheat (20 ch.)</p>
 				</li>
 				<li>
 					<img src="images/buildings/corn.png" alt="Corn" data-value="corn" class="crop">
-					<p>Corn</p>
+					<p>Corn (20 ch.)</p>
 				</li>
 				<li>
 					<img src="images/buildings/tomatoes.png" alt="Tomatoes" data-value="tomatoes" class="crop">
-					<p>Tomatoes</p>
+					<p>Tomatoes (20 ch.)</p>
 				</li>
 			</ul>
 		</div>
@@ -27,40 +28,54 @@
 			<ul>
 				<li>
 					<img src="images/buildings/silo.png" alt="Silo" data-value="silo" class="building">
-					<p>Silo</p>
+					<p>Silo (500 ch.)</p>
 				</li>
 				<li>
 					<img src="images/buildings/barn.png" alt="Barn" data-value="barn" class="building">
-					<p>Barn</p>
+					<p>Barn (1000 ch.)</p>
 				</li>
 				<li>
 					<img src="images/buildings/coldstorage.png" alt="Cold storage" data-value="coldstorage" class="building">
-					<p>Cold storage</p>
+					<p>Cold storage (2000 ch.)</p>
 				</li>
 			</ul>
 		</div>
 	</div>
 </div>
 <div id="content-actions" class="borders-action clear-fix">
-	<div class="p10 clear-fix">
-		<div class="block pull-left w500">
-			<div class="title-b">Tile</div>
-			<button type="button" class="btn-flat btn-flat-blue showBuildings">Create</button>
-			<button type="button" class="btn-flat btn-flat-blue">Actions</button>
-			<div class="min-block">
-				<span><strong>Owner :</strong> username</span><br />
-				<span><strong>State :</strong> test</span><br />
-				<span><strong>Occupied :</strong> true</span><br />
-				<span><strong>Humidity :</strong> 50%</span><br />
-				<span><strong>Fertility :</strong> 50%</span><br />
+	<div class="p10 clear-fix" >
+		<div class="w500 block pull-left" id="content-actions-left">
+			<div>
+				<button type="button" class="btn-flat btn-flat-blue showBuildings">Create</button>
+				<button type="button" class="btn-flat btn-flat-blue">Actions</button>
+			</div>
+			<div>
+				<div class="block pull-left w230">
+					<div class="title-b">Tile</div>
+					<div class="min-block" id="tile-wrapper">
+						<span><strong>Free :</strong> <span id="tile-free" class="tile-property-value"></span></span><br />
+						<span><strong>State :</strong> <span id="tile-state" class="tile-property-value"></span></span><br />
+						<span><strong>Owner :</strong> <span id="tile-owner" class="tile-property-value"></span></span><br />
+						<span><strong>Humidity :</strong> <span id="tile-humidity" class="tile-property-value"></span></span><br />
+						<span><strong>Fertility :</strong> <span id="tile-fertility" class="tile-property-value"></span></span><br />
+					</div>
+				</div>
+				<div class="block pull-left w230" id="object-wrapper">
+					<div class="title-b">Object</div>
+					<div class="min-block">
+						<span><strong>Type :</strong> <span id="object-type"></span></span><br />
+						<span><strong>Owner :</strong> <span id="object-owner"></span></span><br />
+						<span><strong>Alliance :</strong> <span id="object-alliance"></span></span><br />
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="block pull-left">
 			<div id="main-circle">
-				<div class="health">12</div>
-				<div class="health">18</div>
-				<div class="health">79</div>
-				<div class="health">35</div>
+				<div class="main-circle-data" id="player-data-buildings"></div>
+				<div class="main-circle-data" id="player-data-life"></div>
+				<div class="main-circle-data" id="player-data-tiles"></div>
+				<div class="main-circle-data" id="player-data-level"></div>
 			</div>
 			<div id="labels">
 	            <label for="buildings" class="label-b"></label>
@@ -70,9 +85,9 @@
 	        </div>
 	        <div id="tooltip-b">
 	        	<span>Buildings</span>
-	        	<span>Level</span>
 	        	<span>Life (%)</span>
 	        	<span>Tiles</span>
+	        	<span>Level</span>
 	        </div>
 		</div>
 		<div class="block pull-right w500 clear-fix">
@@ -116,21 +131,22 @@
 				<div class="clear-fix">
 					<div class="buttons game-actions pull-right">
 					   <button class="button pull-left active" title="move player's ass" data-action="movingPlayer"><i class="icon-screenshot"></i></button>
-					   <button class="button pull-left" title="select fucking object" data-action="selectingObject"><i class="icon-hand-up"></i></button>
-					   <button class="button pull-left">?</button>
+					   <!-- <button class="button pull-left" title="select fucking object" data-action="selectingObject"><i class="icon-hand-up"></i></button> -->
+					   <button class="button pull-left" title="Conquer !!!!" data-action="conquer"><i class="icon-plus-sign"></i></button>
 					   <button class="button pull-left">?</button>
 					</div>
 				</div>
 				<div class="content-b">
 					<div class="clear-fix">
-						<button type="button" class="btn-flat btn-flat-green pull-right popup">Inventory</button>
+						<button type="button" class="btn-flat btn-flat-green pull-right popup">Weapons</button>
 					</div>
-					<div class="min-block">
-						<span><strong>Level :</strong> 27</span><br />
-						<span><strong>Alliance :</strong> test</span><br />
-						<span><strong>Tiles :</strong> 18</span><br />
-						<span><strong>Ghost mode :</strong> off</span><br />
-						<span><strong>Buildings :</strong> 12</span>
+					<div class="min-block" id="player-wrapper">
+						<span><strong>Money :</strong> <span id="player-money"></span></span><br />
+						<!-- <span><strong>Level :</strong> <span id="player-level"></span></span><br /> -->
+						<!-- <span><strong>Alliance :</strong> <span id="player-alliance"></span></span><br /> -->
+						<!-- <span><strong>Tiles :</strong> <span id="object-nbtiles"></span></span><br /> -->
+						<!-- <span><strong>Ghost mode :</strong> <span id="object-ghost"></span></span><br /> -->
+						<!-- <span><strong>Buildings :</strong> <span id="object-nbbuildings"></span></span> -->
 					</div>
 				</div>
 			</div>
@@ -143,6 +159,11 @@
 
 		var rightActionsHeight = $('section').height() - $('footer').height() - $('header').height();
 		$('#right-actions').css('height', rightActionsHeight);
+
+		// to retrieve logged player details from server in jfarm sceneready
+		jfarm.playerId = <%= player.id %>;
+		jfarm.respawnX = <%= player.respawnX %>;
+		jfarm.respawnY = <%= player.respawnY %>;
 
 	});
 </script>

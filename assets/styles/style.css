@@ -99,6 +99,13 @@ h2.title {
 .w120 {
     width: 120px;
 }
+.w230 {
+    width: 230px;
+}
+
+.w250 {
+    width: 250px;
+}
 
 .w300 {
     width: 300px;
@@ -275,7 +282,7 @@ footer {
 }
 
 #content-actions .block:last-child .min-block {
-    margin-left: 20px;
+    // margin-left: 20px;
     width: 230px;
 }
 
@@ -336,7 +343,7 @@ footer {
     margin-top: 10px;
 }
 
-.health {
+.main-circle-data {
     font-size: 28pt;
     font-weight: bold;
     margin-top: 10px;
@@ -347,15 +354,15 @@ footer {
     font-size: 12pt;
 }
 
-#content-actions .block:first-child .title-b {
+#content-actions #content-actions-left .title-b {
+    margin-top: 10px;
     color: #52A8EC;
-    margin-bottom: 10px;
 }
 
 #content-actions .block:last-child .title-b {
     color: #7EBD26;
     z-index: 10;
-    position: absolute;
+    // position: absolute;
 }
 
 .hr-b {
@@ -404,7 +411,7 @@ footer {
 }
 
 #content-actions label[for=buildings] {
-    background: url('../../images/home.png') no-repeat top center;
+    background: url('/images/home.png') no-repeat top center;
     -webkit-transform:rotateZ(0deg);
     -moz-transform:rotateZ(0deg);
     -ms-transform:rotateZ(0deg);
@@ -413,7 +420,7 @@ footer {
 }
 
 #content-actions label[for=life] {
-    background: url('../../images/user.png') no-repeat top center;
+    background: url('/images/life.png') no-repeat top center;
     -webkit-transform:rotateZ(-90deg);
     -moz-transform:rotateZ(-90deg);
     -ms-transform:rotateZ(-90deg);
@@ -422,7 +429,7 @@ footer {
 }
 
 #content-actions label[for=tiles] {
-    background: url('../../images/life.png') no-repeat top center;
+    background: url('/images/tile.png') no-repeat top center;
     -webkit-transform:rotateZ(90deg);
     -moz-transform:rotateZ(90deg);
     -ms-transform:rotateZ(90deg);
@@ -431,7 +438,7 @@ footer {
 }
 
 #content-actions label[for=level] {
-    background: url('../../images/tile.png') no-repeat top center;
+    background: url('/images/user.png') no-repeat top center;
     -webkit-transform:rotateZ(180deg);
     -moz-transform:rotateZ(180deg);
     -ms-transform:rotateZ(180deg);
@@ -464,10 +471,10 @@ footer {
 
 #creator li {
     cursor: pointer;
-    padding-top: 10px;
+    padding-top: 8px;
 }
 
-#creator li:hover {
+#creator li:hover, #creator li.active {
     box-shadow: 1px 1px 8px #58595B;
 }
 

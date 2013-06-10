@@ -1797,7 +1797,6 @@ var sheetengine = (function() {
     var deletedsheetidxs = [];
     for (var s=0;s<sheetengine.sheets.length;s++) {
       var sheet = sheetengine.sheets[s];
-      // console.log("name : " +sheet.name + " - " + sheet.deleting);
       if (!sheet.deleting)
         newsheets.push(sheet);
       else 
@@ -2133,9 +2132,27 @@ var sheetengine = (function() {
         var yard = yards[i];
           
         var offset = { x: (yard.x - scene.yardcenterstart.yardx)*scene.tilewidth, y: (yard.y - scene.yardcenterstart.yardy)*scene.tilewidth, z: 0 };
+        // var offset = { x: (yard.x)*scene.tilewidth, y: (yard.y)*scene.tilewidth, z: 0 };
+
 
         var basesheet = new sheetengine.BaseSheet(offset, {alphaD:-90, betaD:0, gammaD:0}, {w:scene.tilewidth, h:scene.tilewidth});
-        basesheet.color = yard.baserectcolor;
+
+        // own jfarm process
+        basesheet.yardx = yard.x;
+        basesheet.yardy = yard.y;
+
+        basesheet.name = yard.name;
+
+        if(!!!yard.free){
+          basesheet.color = '#CCC';
+        } else {
+          basesheet.color = yard.baserectcolor;
+        }
+        basesheet.free = !!yard.free;
+        basesheet.neutral = !!yard.neutral;
+        basesheet.playerId = !!yard.playerId;
+        basesheet.fertility = !!yard.fertility;
+        // end own jfarm process
 
         var sheets;
         if (yard.sheets) {
@@ -2153,9 +2170,22 @@ var sheetengine = (function() {
             var createdObj = objhelpers.defineObject(objdata.name);
             if (!createdObj)
               continue;
+
+            // own jfarm process
+            console.log(yard);
+            console.log(objdata.name);
+            console.log(objdata.cornerYard);
+            // console.log(yard.name);
+            // console.log(offset);
+            // console.log(objdata.centerp);
+            createdObj.idDB = objdata.id;
+            createdObj.cornerYard = objdata.cornerYard;
+            // end own jfarm process
+
             createdObj.id = 'x'+yard.x+'y'+yard.y+'i'+j;
             yardObjects.push(createdObj);
             newobjects.push(createdObj);
+
             createdObj.setPosition(geometry.addPoint(objdata.centerp, offset));
             createdObj.oldcenterp = clonePoint(createdObj.centerp);  // set oldcenterp to centerp as this is the initial position
             createdObj.setOrientation(objdata.rot);

@@ -119,7 +119,12 @@ module.exports.routes = {
 		controller: 'player',
 		action: 'levelChoice'
 	},
-	
+
+	'/player/conquer': {
+		controller: 'player',
+		action: 'conquer'
+	},
+
 	//-------------------- END PLAYER ------------------------
 
 	//-------------------- INITIALIZER ------------------------
@@ -139,16 +144,19 @@ module.exports.routes = {
 		action: 'getYards'
 	},
 
-	'/getyard': {
+	'/yard/getdetails/:x/:y': {
 		controller: 'yard',
 		action: 'getYard'
 	},
 
-
-
 	'/yards/init': {
 		controller: 'yard',
 		action: 'init'
+	},
+
+	'/yards/growmap': {
+		controller: 'yard',
+		action: 'growMap'
 	},
 
 	//-------------------- END YARD ---------------------
@@ -159,6 +167,10 @@ module.exports.routes = {
 	'/gameobject/create': {
 		controller: 'gameobject',
 		action: 'create'
+	},
+	'/gameobject/getdetails/:id': {
+		controller: 'gameobject',
+		action: 'getDetails'
 	}
 
 	//-------------------- END YARD ---------------------

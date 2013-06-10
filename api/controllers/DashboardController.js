@@ -4,17 +4,17 @@
 ---------------------*/
 // var init = require('./InitializerController.js');
 var DashboardController = {
-	home: function (req,res) {
+	home: function(req, res) {
 		var user = req.session.user;
 		res.view({
-			user : user,
+			user: user,
 			player: req.session.player
 		});
 	},
-	contact: function (req,res) {
+	contact: function(req, res) {
 		var user = req.session.user;
 		res.view({
-			user : user
+			user: user
 		});
 	}
 };

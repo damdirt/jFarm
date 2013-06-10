@@ -6,13 +6,13 @@ var InitializerController = {
 
 	index: function() {
 
-
+		global.loadProperties();
 
 		Yard.findAll().done(function(err, yards) {
 			if (!yards || yards.length == 0) {
 				var i = 0;
-				for (x = 0; x < 11; x++) {
-					for (y = 0; y < 11; y++) {
+				for (x = 0; x < global.properties.defaultYardNumber; x++) {
+					for (y = 0; y < global.properties.defaultYardNumber; y++) {
 						Yard.create({
 							x: x,
 							y: y,
@@ -36,57 +36,9 @@ var InitializerController = {
 			}
 		});
 
-		//----------------------- SKIN COLOR ----------------------
-		GameProperty.find({
-			name: 'skinColor',
-		}).done(function(err, prop) {
+		
 
-			// Error handling
-			if (!prop) {
-				global.skinColor = "#FFFF00";
-			} else {
-				global.skinColor = prop.content;
-			}
-		});
-
-		//----------------------- TSHIRT COLOR ----------------------
-		GameProperty.find({
-			name: 'tshirtColor',
-		}).done(function(err, prop) {
-
-			// Error handling
-			if (!prop) {
-				global.tshirtColor = "#FF00FF";
-			} else {
-				global.tshirtColor = prop.content;
-			}
-		});
-
-		//----------------------- PANTS COLOR ----------------------
-		GameProperty.find({
-			name: 'pantsColor',
-		}).done(function(err, prop) {
-
-			// Error handling
-			if (!prop) {
-				global.pantsColor = "#0000FF";
-			} else {
-				global.pantsColor = prop.content;
-			}
-		});
-
-		//----------------------- HAIR COLOR ----------------------
-		GameProperty.find({
-			name: 'hairColor',
-		}).done(function(err, prop) {
-
-			// Error handling
-			if (!prop) {
-				global.hairColor = "#555500";
-			} else {
-				global.hairColor = prop.content;
-			}
-		});
+		
 
 	}
 
