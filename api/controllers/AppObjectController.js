@@ -9,10 +9,11 @@ var AppObjectController = {
 			var methodParam = req.param('method'),
 				nameParam = req.param('name'),
 				idParam = req.param('id'),
-				valueParam = req.param('value');
+				valueParam = req.param('value'),
+				gameobjecttypeParam = req.param('gameobjecttype');
 
 			// check if post's params exist
-			if (!(methodParam || nameParam || valueParam)) {
+			if (!(methodParam || nameParam || valueParam || gameobjecttypeParam)) {
 				res.view({
 					user: req.session.user,
 					responseMessage: "No name or value specified!"
@@ -26,7 +27,8 @@ var AppObjectController = {
 						if (err || !obj) {
 							AppObject.create({
 								name: nameParam,
-								content: valueParam
+								content: valueParam,
+								objectTypeId: gameobjecttypeParam
 							}).done(function(err, obj) {
 								if (err) {
 									// Error handling during creating appObject
@@ -42,26 +44,17 @@ var AppObjectController = {
 						}
 					});
 				} else if (methodParam == 'edit') {
-					console.log(valueParam);
-					AppObject.find({
-						name: nameParam
-					}).done(function(err, obj) {
-						if (err || !obj) {
-							AppObject.update({
-								id: idParam
-							}, {
-								name: nameParam,
-								content: valueParam
-							}, function(err, appObject) {
-								// Error handling
-								if (err) {
-									res.redirect('/appobject');
-								} else {
-									res.redirect('/appobject');
-								}
-							});
+					AppObject.update({
+						id: idParam
+					}, {
+						name: nameParam,
+						content: valueParam,
+						objectTypeId: gameobjecttypeParam
+					}, function(err, appObject) {
+						// Error handling
+						if (err) {
+							res.redirect('/appobject');
 						} else {
-							// case when appObject already exist
 							res.redirect('/appobject');
 						}
 					});
@@ -94,11 +87,16 @@ var AppObjectController = {
 					responseMessage: err
 				})
 			} else {
-				res.view({
-					user: req.session.user,
-					appObjects: appObjects,
-					responseMessage: "AppObject list"
+				GameObjectType.findAll().done(function(err, gameObjectTypes){
+					if(!err)
+						res.view({
+							user: req.session.user,
+							appObjects: appObjects,
+							gameObjectTypes: gameObjectTypes,
+							responseMessage: "AppObject list"
+						})
 				})
+				
 			}
 		});
 	},

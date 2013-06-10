@@ -160,31 +160,18 @@ jfarm = {
 		// set tile width
 		sheetengine.scene.tilewidth = jfarm.tileWidth; // default is 300
 
-		// retrieve initial yards from server
-		// var yardcenter = sheetengine.scene.getUrlLoadInfo().yardcenter; // in url, ex: /?x=9&y=2
+		
+		// var centerp = {x:0,y:0,z:0};
+		// var centerpuv = sheetengine.transforms.transformPoint(centerp);
+		// sheetengine.scene.center = {x:centerp.x, y:centerp.y, u:centerpuv.u, v:centerpuv.v};
+
+		// jfarm.respawnX & jfarm.respawnY are defined in home.ejs
 		var yardcenter = {
 			yardx: jfarm.respawnX,
 			yardy: jfarm.respawnY
 		};
-		
-		// if(isNaN(yardcenter.yardx) || isNaN(yardcenter.yardy)){
-		// 	var ctx = sheetengine.context;
-		// 	ctx.save();
-
-		// 	ctx.font = '20px "century gothic"';
-		// 	ctx.strokeStyle = '#000';
-		// 	ctx.strokeText("Please add coordinates in URL (/?x=5&y=5 for instance)", sheetengine.canvas.width/4, sheetengine.canvas.height/2);
-		// 	ctx.restore();
-		// } else {
-			
-			// OR
-			// var centerp = {x:0,y:0,z:0};
-			// var centerpuv = sheetengine.transforms.transformPoint(centerp);
-			// sheetengine.scene.center = {x:centerp.x, y:centerp.y, u:centerpuv.u, v:centerpuv.v};
-
-			// retrieve yards from localhost/yards
-			sheetengine.scene.getYards('', yardcenter, jfarm.levelsize, jfarm.appid, jfarm.sceneReady); //http://www.crossyards.com
-		// }
+		// retrieve yards from localhost/yards
+		sheetengine.scene.getYards('', yardcenter, jfarm.levelsize, jfarm.appid, jfarm.sceneReady); //http://www.crossyards.com
 	},
 	sceneReady: function(){
 		
@@ -698,7 +685,7 @@ jfarm = {
 					ctx.restore();
 
 					// displaying object's details in footer
-					jfarm.getObjectDetails(obj);
+					// jfarm.getObjectDetails(obj);
 				}
 			}
 		}
@@ -846,14 +833,20 @@ jfarm = {
 		jfarm.requestAjax("/gameobject/getdetails/"+ obj.idDB, null, function(response){
 			if(response.success)
 				$("#object-wrapper").trigger("getObjectData", [response.obj]);
+		},
+		null,
+		function(){
+			jfarm.getObjectDetailsDone = true;
 		});
 	},
 	getTileDetails: function(yard){
 		jfarm.requestAjax("/yard/getdetails/"+ yard.yardx + "/"+ yard.yardy, null, function(response){
-			if(response.success){
-				jfarm.getTileDetailsDone = true;
+			if(response.success)
 				$("#tile-wrapper").trigger("getTileData", [response.yard]);
-			}
+		},
+		null,
+		function(){
+			jfarm.getTileDetailsDone = true;
 		});
 	},
 	getPlayerDetails: function(playerId, callback){
@@ -1098,8 +1091,10 @@ jfarm = {
 		var data = {
 			x: yard.yardx,
 			y: yard.yardy,
+			objectName: obj.name,
 			object: obj,
 			yards: yardsStr,
+			objectType: obj.type, // TODO
 			cornerYard: cornerYardStr// we send our clicked yard for reference
 		};
 		jfarm.requestAjax("/gameobject/create",data,jfarm.drawSelectedObj);
@@ -1145,6 +1140,7 @@ jfarm = {
 			if(createdObj){ // in case of default switch
 				// we assign immediately cornerYard to new added object 
 				createdObj.idDB = ajaxResponse.id; 
+				createdObj.type = ajaxResponse.type;
 				createdObj.cornerYard = ajaxResponse.cornerYard; 
 				jfarm.densityMap.addSheets(createdObj.sheets);
 				jfarm.validateCreationObj = true;
@@ -1284,7 +1280,7 @@ jfarm = {
 		barn.name = "Barn";
 		var yard = sheetengine.scene.getYardFromPos(centerp);
 		barn.centerpdb = {x:0,y:0,z:0};
-
+		barn.type
 		return barn;
 	},
 
@@ -1448,7 +1444,7 @@ jfarm = {
 			jfarm.clickedBaseSheet = jfarm.getBaseSheetByPuv(puv);
 			if(jfarm.clickedBaseSheet){
 				jfarm.clickedYard =  sheetengine.scene.getYardFromPos(jfarm.clickedBaseSheet.centerp);
-				// console.log(yard.yardx + "," + yard.yardy);
+				console.log(jfarm.clickedYard.yardx + "," + jfarm.clickedYard.yardy);
 				// console.log(yard);
 				// console.log(jfarm.clickedBaseSheet);
 				
@@ -1521,7 +1517,7 @@ jfarm = {
 				break;
 		}
 	},
-	requestAjax: function (url, data, callback, callbackError) {
+	requestAjax: function (url, data, callback, callbackFail, callbackAlways) {
 	  $.ajax({
 	    url: url,
 	    data: data,
@@ -1529,7 +1525,8 @@ jfarm = {
 	    dataType: "json"
 	  })
 	  .done(callback)
-	  .error(callbackError || function(){ console.log("ajax request error")});
+	  .fail(callbackFail || function(){ console.log("ajax request failed")})
+	  .always(callbackAlways || null);
 	},
 	// main timer
 	timer: function() {
@@ -1545,7 +1542,7 @@ jfarm = {
 		}
 		// get hovered baseheet details
 		if(jfarm.preHoveredBaseSheet == jfarm.hoveredBaseSheet){
-			// we get tile details if we stay on same tile more than 1 sec
+			// we get tile details if we stay on it more than 1 sec
 			var cond  = jfarm.tileDelayTime + 1000 < new Date().getTime() && !jfarm.getTileDetailsDone;
 			if(cond && jfarm.hoveredBaseSheet){
 				$("#tile-wrapper").trigger("onGettingTileDetails");
@@ -1555,8 +1552,18 @@ jfarm = {
 
 		// hovered objects
 		if (jfarm.prevHoveredObj != jfarm.hoveredObj) {
+			jfarm.objectDelayTime = new Date().getTime();
+			jfarm.getObjectDetailsDone = false;
 			jfarm.prevHoveredObj = jfarm.hoveredObj;
 			sceneChanged = 1;
+		}
+		if(jfarm.prevHoveredObj == jfarm.hoveredObj){
+			// we get object details if we stay on it more than 1 sec
+			var cond  = jfarm.objectDelayTime + 1000 < new Date().getTime() && !jfarm.getObjectDetailsDone;
+			if(cond && jfarm.hoveredObj){
+				$("#object-wrapper").trigger("onGettingObjectDetails");
+				jfarm.getObjectDetails(jfarm.hoveredObj);
+			}
 		}
 
 		// player actions
@@ -1574,7 +1581,6 @@ jfarm = {
 				// sheetengine.calc.calculateChangedSheets();
 			}
 		}
-
 		
 
 		// Draw object location on the map

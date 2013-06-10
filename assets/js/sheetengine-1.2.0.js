@@ -2180,6 +2180,7 @@ var sheetengine = (function() {
             // console.log(objdata.centerp);
             createdObj.idDB = objdata.id;
             createdObj.cornerYard = objdata.cornerYard;
+            createdObj.type = objdata.type;
             // end own jfarm process
 
             createdObj.id = 'x'+yard.x+'y'+yard.y+'i'+j;

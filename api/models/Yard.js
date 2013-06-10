@@ -14,7 +14,8 @@ module.exports = {
 		neutral: 'boolean',
 		playerId: 'INT',
 		free: 'boolean',
-		fertility: 'INT'
+		fertility: 'INT',
+		humidity: 'INT'
 	}
 
 };

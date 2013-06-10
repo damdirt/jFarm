@@ -618,13 +618,14 @@ section {
 
 .standard-form select {
     float: right;
-    width: 180px;
+    width: 200px;
     margin-bottom: 20px !important;
     border: 1px solid #E5E5E5;
     color: #58595B;
     font-family: 'PT Sans';
     font-size: 10pt;
     padding: 8px;
+    -webkit-appearance: none;
 }
 
 /* Content */

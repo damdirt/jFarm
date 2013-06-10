@@ -6,7 +6,8 @@ module.exports = {
 
 	attributes	: {
 		name: 'TEXT',
-		content: 'TEXT'
+		content: 'TEXT',
+		objectTypeId: 'INT'
 	}
 
 };

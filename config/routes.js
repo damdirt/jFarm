@@ -106,6 +106,22 @@ module.exports.routes = {
 		action: 'createEdit'
 	},
 
+	// weapons
+	'/settings/weapontemplate': {
+		controller: 'weaponTemplate',
+		action: 'index'
+	},
+	'/settings/weapontemplate/createEdit': {
+		controller: 'weaponTemplate',
+		action: 'createEdit'
+	},
+
+	'/settings/weapontemplate/jsonlist': {
+		controller: 'weaponTemplate',
+		action: 'jsonList'
+	},
+
+
 	//------------------- END SETTINGS ----------------------
 
 	//------------------- PLAYER -----------------------------

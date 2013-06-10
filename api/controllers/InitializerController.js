@@ -20,7 +20,8 @@ var InitializerController = {
 							baserectcolor: '#5D7E36',
 							neutral: true,
 							free: true,
-							fertility: Math.floor(Math.random() * 101)
+							fertility: Math.floor(Math.random() * 101),
+							humidity: Math.floor(Math.random() * 101)
 						}).done(function(err, yard) {
 							// Error handling
 							if (err) {
@@ -35,13 +36,6 @@ var InitializerController = {
 				}
 			}
 		});
-
-		
-
-		
-
 	}
-
-
 };
 module.exports = InitializerController;

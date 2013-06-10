@@ -131,9 +131,5 @@ var PlayerController = {
 			}
 		}
 	}
-
-
-
-	}
 };
 module.exports = PlayerController;

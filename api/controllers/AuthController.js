@@ -98,7 +98,9 @@ var AuthController = {
 							name: 'yard(' + x + ';' + y + ')',
 							baserectcolor: global.properties.yardColor,
 							neutral: true,
-							free: true
+							free: true,
+							fertility: Math.floor(Math.random() * 101),
+							humidity: Math.floor(Math.random() * 101)
 						}).done(function(err, yard) {
 							// Error handling
 							if (err) {
