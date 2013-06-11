@@ -10,7 +10,4 @@ module.exports = {
 		objectType: 'TEXT',
 		cornerYard: 'TEXT'
 	}
-
-
-
 };

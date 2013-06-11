@@ -1,0 +1,76 @@
+<a href="/settings">Back to settings</a>
+<div class="content clear-fix">
+	<h1 class="title">Weapons<span class="line"></span></h1>
+	<div class="col pull-left w300">
+		<h2 class="title">Form<span class="line"></span></h2>
+		<form action="/settings/weapontemplate/createEdit" method="post" id="appObject_form" class="standard-form">
+			<input type="hidden" value="create" id="method" name="method" />
+			<input type="hidden" value="" id="id" name="id" />
+			<div class="controls">
+				<label for="name">name</label>
+				<input id="name" name="name" type="text" placeholder="name" class="boot-input" required>
+			</div>
+			<div class="controls">
+				<label for="damage">damage</label>
+				<input id="damage" name="damage" type="text" placeholder="damage" class="boot-input" required>
+			</div>
+			<div class="controls">
+				<label for="hitRatio" title="Odds to hit the opponent: 100% hits every time while 50% misses 1 time out of 2">hit ratio</label>
+				<input id="hitRatio" name="hitRatio" type="text" placeholder="hit ratio" class="boot-input" required>
+			</div>
+			<div class="controls">
+				<label for="hitPerSecond">Hit/sec</label>
+				<input id="hitPerSecond" name="hitPerSecond" type="text" placeholder="hit per second" class="boot-input" required>
+			</div>
+			<div class="controls">
+				<label for="price">price</label>
+				<input id="price" name="price" type="text" placeholder="price" class="boot-input" required>
+			</div>
+			<div class="controls">
+				<label for="coordx">x</label>
+				<input id="coordx" name="coordx" type="text" placeholder="x coord. relative to sheet" class="boot-input" required>
+			</div>
+			<div class="controls">
+				<label for="coordy">y</label>
+				<input id="coordy" name="coordy" type="text" placeholder="y coord. relative to sheet" class="boot-input" required>
+			</div>
+			<div class="controls">
+				<label for="centerp" title="center relative to sheet">center (json)</label>
+				<textarea id="centerp" name="centerp" placeholder="center relative to player" class="boot-input" required></textarea>
+			</div>
+			<div class="controls">
+				<label for="orientation">orientation (json)</label>
+				<textarea id="orientation" name="orientation" placeholder="orientation" class="boot-input" required></textarea>
+			</div>
+			<div class="controls">
+				<label for="img64">img64</label>
+				<textarea id="img64" name="img64" placeholder="image base64" class="boot-input" required></textarea>
+			</div>
+			<hr>
+			<button type="submit" class="btn-flat btn-flat-green">Save object</button>
+		</form>
+	</div>
+	<div class="col pull-left w300">
+		<h2 class="title">Weapons list<span class="line"></span></h2>
+		<div class="pag-objects">
+			<div class="objects-list">
+				<% _.each(weapontemplates, function (obj) { %>
+				<div class="object-line">
+					<div class="object-cell">
+						<%= obj.name %> 
+						<img src="<%= obj.img64 %>" alt="<%= obj.name %> "/>
+					</div>
+					<div class="object-cell">
+						<a href="javascript:void(0)" class="action-get" data-id="<%= obj.id %>" data-url="/weapontemplate/find/">Edit</a>
+					</div>
+					<div class="object-cell">
+						<a href="javascript:void(0)" class="action-delete" data-id="<%= obj.id %>" data-url="/weapontemplate/destroy/">Delete</a>
+					</div>
+				</div>
+				<% }) %>
+			</div>
+			<hr>
+			<div class="page_navigation"></div>
+		</div>
+	</div>
+</div>

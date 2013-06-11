@@ -55,7 +55,9 @@ var AuthController = {
 								level: 1,
 								money: 0,
 								respawnX: 0,
-								respawnY: 0
+								respawnY: 0,
+								health: 50,
+								regenerationSpeed: 5
 							}).done(function(err, player) {
 								if (err) {
 									res.view({
@@ -98,7 +100,9 @@ var AuthController = {
 							name: 'yard(' + x + ';' + y + ')',
 							baserectcolor: global.properties.yardColor,
 							neutral: true,
-							free: true
+							free: true,
+							fertility: Math.floor(Math.random() * 101),
+							humidity: Math.floor(Math.random() * 101)
 						}).done(function(err, yard) {
 							// Error handling
 							if (err) {

@@ -16,7 +16,9 @@ module.exports = {
 		respawnX: 'INT',
 		respawnY: 'INT',
 		currentX: 'INT',
-		currentY: 'INT'
+		currentY: 'INT',
+		health: 'INT',
+		regenerationSpeed: 'INT'
 	}
 
 };

@@ -1,3 +1,4 @@
+<a href="/settings">Back to settings</a>
 <div class="content clear-fix">
 	<h1 class="title">App objects<span class="line"></span></h1>
 	<div class="clear-fix">
@@ -9,6 +10,14 @@
 				<div class="controls">
 					<label for="name">name</label>
 					<input id="name" name="name" type="text" placeholder="name" class="boot-input" required></div>
+				<div class="controls">
+					<label for="gameobjecttype">object type</label>
+					<select name="gameobjecttype" id="gameobjecttype" class="boot-input" required>
+					<% _.each(gameObjectTypes, function (obj) { %>
+						<option value="<%= obj.id %>"><%= obj.name %></option>
+					<% }) %>
+					</select>
+				</div>
 				<div class="controls">
 					<label for="value">value</label>
 					<textarea id="value" name="value" required="true"></textarea>
@@ -24,7 +33,7 @@
 					<% _.each(appObjects, function (obj) { %>
 					<div class="object-line">
 						<div class="object-cell">
-							<%= obj.name %>
+							<%= obj.name %> <%= obj.objectTypeId %>
 						</div>
 						<div class="object-cell">
 							<a href="javascript:void(0)" class="action-get" data-id="<%= obj.id %>" data-url="/appobject/find/">Edit</a>
@@ -32,11 +41,11 @@
 						<div class="object-cell">
 							<a href="javascript:void(0)" class="action-delete" data-id="<%= obj.id %>" data-url="/appobject/destroy/">Delete</a>
 						</div>
+						<% }) %>
 					</div>
-					<% }) %>
+					<hr>
+					<div class="page_navigation"></div>
 				</div>
-				<hr>
-				<div class="page_navigation"></div>
 			</div>
 		</div>
 	</div>

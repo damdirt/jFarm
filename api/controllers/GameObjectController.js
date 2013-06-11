@@ -15,7 +15,7 @@ var GameObjectController = {
 				'Access-Control-Allow-Origin': '*' // implementation of CORS
 			});
 
-			if (req.param('x') && req.param('y') && req.param('object') && req.param('yards') && req.param('cornerYard')) {
+			if (req.param('x') && req.param('y') && req.param('object') && req.param('yards') && req.param('cornerYard') && req.param('objectType') && req.param('objectName')) {
 
 				// first, we parse yards param 
 				var yardsReq = [];
@@ -36,14 +36,14 @@ var GameObjectController = {
 						or: yardsReq,
 						playerId: req.session.player.id
 					}
-				}).done(function(err, yards){
+				}).done(function(err, yards) {
 
 					// All yards are free if we pass here, we can create an object :)
-					if(yards.length == yardsReq.length){
-						var xParam = parseInt(req.param('x'))
-							,yParam = parseInt(req.param('y'))
-							,objParam = req.param('object')
-							,cornerYardParam = req.param('cornerYard');
+					if (yards.length == yardsReq.length) {
+						var xParam = parseInt(req.param('x')),
+							yParam = parseInt(req.param('y')),
+							objParam = req.param('object'),
+							cornerYardParam = req.param('cornerYard');
 
 						// Beuuurk part beginning (better solution ???)
 
@@ -88,28 +88,74 @@ var GameObjectController = {
 									'error': err
 								}));
 							} else {
-								GameObject.create({
-									yardId: yard.id,
-									content: JSON.stringify(objParam),
-									cornerYard: cornerYardParam
-								}).done(function(err, obj) {
-									if (err) {
-										res.end(JSON.stringify({
-											'success': false,
-											'message': 'error occured during object creation',
-											'error': err
-										}));
-									} else {
-										res.end(JSON.stringify({
-											'success': true,
-											'message': 'Object created',
-											'error': null,
-											'centerp': objParam.centerpToReturn,
-											'cornerYard': cornerYardParam,
-											'id': obj.id
-										}));
-									}
-								});
+								switch (req.param('objectType')) {
+									case 'building':
+										Building.create({
+											name: req.param('objectName'),
+											currentStorageCapacity: 0,
+											ownerId: yard.playerId,
+											x: yard.x,
+											y: yard.y,
+											cornerYard: cornerYardParam,
+											buildingTemplateId: global.properties.buildingTemplates[req.param('objectName')].id,
+											content: JSON.stringify(objParam),
+											yardId: yard.id,
+											objectType: req.param('objectType')
+										}).done(function(err, obj) {
+											if (err) {
+												res.end(JSON.stringify({
+													'success': false,
+													'message': 'error occured during object creation',
+													'error': err
+												}));
+											} else {
+												res.end(JSON.stringify({
+													'success': true,
+													'message': 'Object created',
+													'error': null,
+													'centerp': objParam.centerpToReturn,
+													'cornerYard': cornerYardParam,
+													'id': obj.id,
+													'type': req.param('objectType')
+												}));
+											}
+										});
+										break;
+									case 'crop':
+										Crop.create({
+											name: req.param('objectName'),
+											ownerId: yard.playerId,
+											maturityLevel: 0,
+											healthLevel: 0,
+											x: yard.x,
+											y: yard.y,
+											cornerYard: cornerYardParam,
+											cropTemplateId: global.properties.buildingTemplates[req.param('objectName')].id,
+											content: JSON.stringify(objParam),
+											yardId: yard.id,
+											objectType: req.param('objectType')
+										}).done(function(err, obj) {
+											if (err) {
+												res.end(JSON.stringify({
+													'success': false,
+													'message': 'error occured during object creation',
+													'error': err
+												}));
+											} else {
+												res.end(JSON.stringify({
+													'success': true,
+													'message': 'Object created',
+													'error': null,
+													'centerp': objParam.centerpToReturn,
+													'cornerYard': cornerYardParam,
+													'id': obj.id,
+													'type': req.param('objectType')
+												}));
+											}
+										});
+										break;
+								}
+
 							}
 						});
 					} else {
@@ -122,73 +168,106 @@ var GameObjectController = {
 					}
 
 				});
-				} else {
-					res.end(JSON.stringify({
-						'success': false,
-						'message': 'parameter(s) missing',
-						'error': null
-					}));
-				}
-			}
-
-		},
-
-		getDetails: function(req, res){
-			if (!req.isAjax) {
-				res.redirect('/');
 			} else {
-				res.writeHead(200, {
-					'Content-Type': 'application/json',
-					'Access-Control-Allow-Origin': '*' // implementation of CORS
-				});
-
-				if(req.param('id')){
-					var id = parseInt(req.param('id'));
-
-					GameObject.find(id).done(function(err, obj){
-						if(err){
-							res.end(JSON.stringify({
-								'success': false,
-								'message': 'error occured during object finding',
-								'error': err
-							}));
-						} else {
-							// we find object's owner
-							Player.find(obj.playerId).done(function(err, player){
-								if(err){
-									res.end(JSON.stringify({
-										'success': false,
-										'message': 'error occured during object owner finding',
-										'error': err
-									}));
-								} else {
-									player.values = undefined;
-									// we return the object with player inside
-									obj.content = JSON.parse(obj.content);
-									obj.owner = player;
-									obj.values = undefined;
-									res.end(JSON.stringify({
-										'success': true,
-										'message': 'Object found',
-										'error': null,
-										'obj': obj
-									}));
-								}
-							});
-							
-						}
-					})
-				} else {
-					res.end(JSON.stringify({
-						'success': false,
-						'message': 'parameter(s) missing',
-						'error': null
-					}));
-				}
+				res.end(JSON.stringify({
+					'success': false,
+					'message': 'parameter(s) missing',
+					'error': null
+				}));
 			}
 		}
 
+	},
+
+	getDetails: function(req, res) {
+		if (!req.isAjax) {
+			res.redirect('/');
+		} else {
+			res.writeHead(200, {
+				'Content-Type': 'application/json',
+				'Access-Control-Allow-Origin': '*' // implementation of CORS
+			});
+
+			if (req.param('id') && req.param('type')) {
+				var id = parseInt(req.param('id'));
+				var type = req.param('type');
+				switch (type) {
+					case 'building':
+						Building.find(id).done(function(err, building) {
+							if (err) {
+								res.end(JSON.stringify({
+									'success': false,
+									'message': 'error occured during object finding',
+									'error': err
+								}));
+							} else if (building) {
+								returnObject(building);
+							}
+						});
+						break;
+					case 'crop':
+						Crop.find(id).done(function(err, crop) {
+							if (err) {
+								res.end(JSON.stringify({
+									'success': false,
+									'message': 'error occured during object finding',
+									'error': err
+								}));
+							} else if (crop) {
+								returnObject(crop);
+							}
+						});
+						break;
+					default:
+						returnObject(null);
+						break;
+				}
+
+				function returnObject(object) {
+					if (object) {
+						Player.find(object.ownerId).done(function(err, player) {
+							if (err) {
+								res.end(JSON.stringify({
+									'success': false,
+									'message': 'error occured during object owner finding',
+									'error': err
+								}));
+							} else {
+								player.values = undefined;
+								// we return the object with player inside
+								object.content = JSON.parse(object.content);
+								object.owner = player;
+								object.values = undefined;
+								var response = JSON.stringify({
+									'success': true,
+									'message': 'Object found',
+									'error': null,
+									'obj': object
+								})
+								console.log(JSON.parse(response));
+								res.end(response);
+							}
+						});
+					} else {
+						res.end(JSON.stringify({
+							'success': false,
+							'message': 'no object with this id',
+							'error': null
+						}));
+					}
+				}
+
+			} else {
+				res.end(JSON.stringify({
+					'success': false,
+					'message': 'parameter(s) missing',
+					'error': null
+				}));
+			}
+		}
+	}
 
 
-	};
-	module.exports = GameObjectController;
+
+};
+module.exports = GameObjectController;
