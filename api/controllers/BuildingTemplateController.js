@@ -4,7 +4,7 @@
 ---------------------*/
 var BuildingTemplateController = {
 
-
+	
 
 };
 module.exports = BuildingTemplateController;

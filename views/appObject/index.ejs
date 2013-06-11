@@ -10,14 +10,6 @@
 				<label for="name">name</label>
 				<input id="name" name="name" type="text" placeholder="name" class="boot-input" required></div>
 			<div class="controls">
-				<label for="gameobjecttype">object type</label>
-				<select name="gameobjecttype" id="gameobjecttype" class="boot-input" required>
-				<% _.each(gameObjectTypes, function (obj) { %>
-					<option value="<%= obj.id %>"><%= obj.name %></option>
-				<% }) %>
-				</select>
-			</div>
-			<div class="controls">
 				<label for="value">value</label>
 				<textarea id="value" name="value" required="true"></textarea>
 			</div>
