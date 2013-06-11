@@ -49,7 +49,7 @@ module.exports.adapters = {
     //     user        : 'jfarm',
     //     password    : 'Supinf0',
     //     database    : 'jfarm_dev'
-    // }
+    // }	
 
    
 

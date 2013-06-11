@@ -270,6 +270,10 @@ footer {
     position: absolute;
 }
 
+#content-actions #mapcanvas {
+    position: absolute;
+}
+
 .min-block {
     margin-top: 10px;
     background-color: #495461;

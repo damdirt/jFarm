@@ -95,7 +95,7 @@ var AppObjectController = {
 
 	appObjectList: function(req, res) {
 		// return list of appObjects
-
+		
 		AppObject.findAll().done(function(err, appObjects) {
 			if (err) {
 				res.send(err)
@@ -103,12 +103,10 @@ var AppObjectController = {
 				var jsonObj = [];
 				for (var i = 0; i < appObjects.length; i++) {
 					var obj = appObjects[i].content
-					//console.log(obj);
+					 //console.log(obj);
 					jsonObj[i] = JSON.parse(obj);
 				}
-				res.json({
-					"appObjects": jsonObj
-				});
+				res.json({ "appObjects": jsonObj});
 			}
 		});
 	}
