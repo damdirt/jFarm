@@ -1,8 +1,46 @@
 <div id="canvas-wrapper">
 	<canvas id="maincanvas" width="1200" height="460" onmousemove="jfarm.mousemove(event);"></canvas>
 </div>
+<div id="top-actions" class="borders-action clear-fix">
+	<div class="block pull-left clear-fix">
+		<div class="title-t pull-left txt-blue">
+			Create &bull;
+		</div>
+		<div class="pull-left">
+			<form action="/alliance/create" method="post" id="" class="standard-form">
+				<input type="hidden" value="create" id="method" name="method" />
+				<input type="hidden" value="<%= user.id %>" name="id" />
+				<div class="controls">
+					<div class="pull-left">
+						<input id="name" name="name" type="text" placeholder="name" class="boot-input" required>
+					</div>
+					<div class="pull-left">
+						<button type="submit" class="btn-flat btn-flat-blue">Save</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="block pull-right clear-fix">
+		<div class="pull-left">
+			<form action="/alliance/search" method="post" id="" class="standard-form">
+				<input type="hidden" value="search" id="method" name="method" />
+				<div class="controls">
+					<div class="pull-left">
+						<input id="name" name="name" type="text" placeholder="Alliance" class="boot-input" required>
+					</div>
+					<div class="pull-left">
+						<button type="submit" class="btn-flat btn-flat-green">Search</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="title-t pull-left txt-green">
+			&bull; Search
+		</div>
+	</div>
+</div>
 <div id="right-actions" class="clear-fix center">
-	<span>ESC to cancel</span> 
 	<div class="buttons clear-fix">
 		<button class="button pull-left"><i class="icon-leaf"></i></button>
 		<button class="button pull-left"><i class="icon-home"></i></button>
@@ -41,6 +79,8 @@
 			</ul>
 		</div>
 	</div>
+	<hr>
+	<span class="txt-green">ESC to cancel</span>
 </div>
 <div id="content-actions" class="borders-action clear-fix">
 	<div class="p10 clear-fix" >
@@ -138,7 +178,8 @@
 				</div>
 				<div class="content-b">
 					<div class="clear-fix">
-						<button type="button" class="btn-flat btn-flat-green pull-right popup">Weapons </button>
+						<button type="button" class="btn-flat btn-flat-green pull-right popup-r">Weapons </button>
+						<button type="button" class="btn-flat btn-flat-green pull-right popup-t">Alliances </button>
 					</div>
 					<div class="min-block" id="player-wrapper">
 						<span><strong>Money :</strong> <span id="player-money"></span></span><br />

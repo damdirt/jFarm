@@ -59,9 +59,7 @@ var AppObjectController = {
 						}
 					});
 				}
-
 			}
-
 		}
 	},
 

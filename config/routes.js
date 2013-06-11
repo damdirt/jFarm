@@ -143,6 +143,20 @@ module.exports.routes = {
 
 	//-------------------- END PLAYER ------------------------
 
+	//------------------- ALLIANCE -----------------------------
+
+	'/alliance/create': {
+		controller: 'alliance',
+		action: 'create'
+	},
+
+	'/alliance/search': {
+		controller: 'alliance',
+		action: 'search'
+	},
+
+	//-------------------- END ALLIANCE ------------------------
+
 	//-------------------- INITIALIZER ------------------------
 
 	'/init': {

@@ -10,6 +10,7 @@ $(function() {
 	})
 	// BUILDINGS
 	$(".showBuildings").on('click', function() {
+		$('#top-actions').hide();
 		$("#right-actions").toggle();
 	});
 
