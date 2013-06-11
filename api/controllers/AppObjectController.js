@@ -9,11 +9,10 @@ var AppObjectController = {
 			var methodParam = req.param('method'),
 				nameParam = req.param('name'),
 				idParam = req.param('id'),
-				valueParam = req.param('value'),
-				gameobjecttypeParam = req.param('gameobjecttype');
+				valueParam = req.param('value');
 
 			// check if post's params exist
-			if (!(methodParam || nameParam || valueParam || gameobjecttypeParam)) {
+			if (!(methodParam || nameParam || valueParam)) {
 				res.view({
 					user: req.session.user,
 					responseMessage: "No name or value specified!"
@@ -27,8 +26,7 @@ var AppObjectController = {
 						if (err || !obj) {
 							AppObject.create({
 								name: nameParam,
-								content: valueParam,
-								objectTypeId: gameobjecttypeParam
+								content: valueParam
 							}).done(function(err, obj) {
 								if (err) {
 									// Error handling during creating appObject
@@ -48,8 +46,7 @@ var AppObjectController = {
 						id: idParam
 					}, {
 						name: nameParam,
-						content: valueParam,
-						objectTypeId: gameobjecttypeParam
+						content: valueParam
 					}, function(err, appObject) {
 						// Error handling
 						if (err) {
@@ -85,16 +82,11 @@ var AppObjectController = {
 					responseMessage: err
 				})
 			} else {
-				GameObjectType.findAll().done(function(err, gameObjectTypes){
-					if(!err)
-						res.view({
-							user: req.session.user,
-							appObjects: appObjects,
-							gameObjectTypes: gameObjectTypes,
-							responseMessage: "AppObject list"
-						})
-				})
-				
+				res.view({
+					user: req.session.user,
+					appObjects: appObjects,
+					responseMessage: "AppObject list"
+				});
 			}
 		});
 	},

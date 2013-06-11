@@ -16,7 +16,6 @@ module.exports = {
 		content: 'TEXT',
 		yardId: 'INT',
 		objectType: 'TEXT'
-
 	}
 
 };
