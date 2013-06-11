@@ -184,12 +184,20 @@ module.exports.routes = {
 		controller: 'gameobject',
 		action: 'create'
 	},
+
 	'/gameobject/getdetails/:id/:type': {
 		controller: 'gameobject',
 		action: 'getDetails'
-	}
+	},
 
 	//-------------------- END YARD ---------------------
+
+	'/templates': {
+		controller: 'jfarm',
+		action: 'templates'
+	},
+
+
 
 	// Keep in mind default routes exist for each of your controllers
 	// So if you have a UserController with an action called "juggle" 

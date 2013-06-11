@@ -88,7 +88,7 @@ var AppObjectController = {
 					user: req.session.user,
 					appObjects: appObjects,
 					responseMessage: "AppObject list"
-				})
+				});
 			}
 		});
 	},
