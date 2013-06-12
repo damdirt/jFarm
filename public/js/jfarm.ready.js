@@ -8,6 +8,11 @@ $(function() {
 	$(document).on('keyup', function(event) {
 		jfarm.keyup(event);
 	})
+
+	// templates && game properties initialization
+	$('.game').on("initTemplatesUI", function(e, templates){
+		console.log(templates);
+	});
 	// BUILDINGS
 	$(".showBuildings").on('click', function() {
 		$("#right-actions").toggle();
@@ -40,13 +45,13 @@ $(function() {
 		// we check if player has enough money for crop/building
 		// jfarm.getPlayerDetails(null, function(player){
 
-		var $this = $(this),
-			value = $this.data('value'),
-			$li = $this.parent()
+			var $this = $(this),
+				value = $this.data('value'),
+				$li = $this.parent()
 
 			$('.crop, .building').parent().removeClass('active');
-		$li.addClass('active');
-		jfarm.drawnObj = jfarm.enumAppObjectsObj[value];
+			$li.addClass('active');
+			jfarm.drawnObj = jfarm.getAnyTemplateByName(value).name;
 		// })
 	});
 
@@ -57,8 +62,8 @@ $(function() {
 
 		$('.weapon, .accessory').parent().removeClass('active');
 		$this.parent().addClass('active');
-		if (jfarm.playerObjectsData[name] && name != jfarm.playerObjectData.name)
-			jfarm.playerObjectData = jfarm.playerObjectsData[name];
+		if (jfarm.getWeaponByName(name) && name != jfarm.playerWeaponData.name)
+			jfarm.playerWeaponData = jfarm.getWeaponByName(name);
 	});
 
 	$(".game-actions button").click(function() {
@@ -93,7 +98,7 @@ $(function() {
 	$("#tile-wrapper").on("getTileData", function(e, tile) {
 		$('#tile-owner').text(tile.player ? tile.player.name : "");
 		$('#tile-fertility').text(tile.fertility);
-		$('#tile-humidity').text("tile.humidity"); // TODO
+		$('#tile-humidity').text(tile.humidity); // TODO
 		$('#tile-state').text(tile.neutral ? "neutral" : "no");
 		$('#tile-free').text( !! tile.free ? "yes" : "no");
 	});
@@ -111,12 +116,5 @@ $(function() {
 		$('#object-type').text(obj.content.name);
 		$('#object-owner').text(obj.owner.name);
 		// $('#object-alliance').text(obj.content.name); // TODO
-	});
-
-	$.ajax({
-		url: "/settings/weapontemplate/jsonlist",
-		dataType: 'json'
-	}).done(function(response){
-		console.log(response);
 	});
 });

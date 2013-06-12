@@ -13,17 +13,17 @@ var JfarmController = {
 					if(!err){
 						BuildingTemplate.findAll().done(function(err, btpls){
 							if(!err){
-								GameProperty.findAll().done(function(err,gptpls){
+								GameProperty.findAll().done(function(err,properties){
 									if(!err){
 										res.end(JSON.stringify({
 											'success': true,
 											'message': 'Ok',
 											'error': null,
-											'message': {
-												'weaponsTpls': wtpls,
+											'templates': {
+												'weaponTpls': wtpls,
 												'cropTpls': ctpls,
 												'buildingTpls': btpls,
-												'gamePropertyTpls': gptpls,
+												'properties': properties,
 											}
 										}));
 									} else {

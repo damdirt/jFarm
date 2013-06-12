@@ -77,22 +77,14 @@ jfarm = {
 	,locationCorners: []
 	,currentLocationBaseSheets: []
 	,drawnObj: null
-	,enumAppObjectsObj: {
-		barn: "Barn"
-		,coldstorage: "Cold Storage"
-		,silo: "Silo"
-		,corn: "Corn"
-		,tomatoes: "Tomatoes"
-		,wheat: "Wheat"
-	}
-	,enumAppObjects: ["Barn", "Cold Storage", "Silo", "Corn", "Tomatoes", "Wheat"] // TODO : retrieve from DB ???
-	,appobjectsRots: {
-		Silo: {alphaD:0,betaD:0,gammaD:0},
-		Barn: {alphaD:0,betaD:0,gammaD:0},
-		ColdStorage: {alphaD:0,betaD:0,gammaD:0},
-		Wheat: {alphaD:0,betaD:0,gammaD:0},
-		Corn: {alphaD:0,betaD:0,gammaD:0},
-		Tomatoes: {alphaD:0,betaD:0,gammaD:0},
+	,enumAppObjects: []
+	,appobjectsRots: { // TOOD : pas beau
+		"silo": {alphaD:0,betaD:0,gammaD:0},
+		"barn": {alphaD:0,betaD:0,gammaD:0},
+		"cold storage": {alphaD:0,betaD:0,gammaD:0},
+		"wheat": {alphaD:0,betaD:0,gammaD:0},
+		"corn": {alphaD:0,betaD:0,gammaD:0},
+		"tomatoes": {alphaD:0,betaD:0,gammaD:0},
 	}
 
 	// player 
@@ -100,46 +92,8 @@ jfarm = {
 	,playerFarm: {} // contains all player buildings and crops available on the map
 
 	// playerObjects
-	,playerObjectChanged: false
-	,playerObjectData: {}
-	// contains all available "objects" (data actually) wearable by the player (weapons etc)
-	,playerObjectsData: { 
-		fork: {
-			name: "fork"
-			,centerp: {x:-3,y:2,z:10}
-			,rot: {alphaD:90,betaD:0,gammaD:90}
-			,x: 5
-			,y: 0
-		}
-		,bat: {
-			name: "bat"
-			,centerp: {x:-3,y:5,z:12}
-			,rot: {alphaD:45,betaD:0,gammaD:90}
-			,x: 10
-			,y: 0
-		}
-		,chainsaw: {
-			name: "chainsaw"
-			,centerp: {x:9,y:2,z:9}
-			,rot: {alphaD:0,betaD:0,gammaD:0}
-			,x: 0
-			,y: 9
-		}
-		,ak47: {
-			name: "ak47"
-			,centerp: {x:-3,y:5,z:12}
-			,rot: {alphaD:-45,betaD:0,gammaD:-90}
-			,x: 5
-			,y: 10
-		}
-		,watercan: {
-			name: "watercan"
-			,centerp: {x:-3,y:7,z:8}
-			,rot: {alphaD:30,betaD:0,gammaD:-90}
-			,x: 7
-			,y: 10
-		}
-	} 
+	,playerWeaponChanged: false
+	,playerWeaponData: {}
 	
 	,init: function() {
 
@@ -160,11 +114,6 @@ jfarm = {
 		// set tile width
 		sheetengine.scene.tilewidth = jfarm.tileWidth; // default is 300
 
-		
-		// var centerp = {x:0,y:0,z:0};
-		// var centerpuv = sheetengine.transforms.transformPoint(centerp);
-		// sheetengine.scene.center = {x:centerp.x, y:centerp.y, u:centerpuv.u, v:centerpuv.v};
-
 		// jfarm.respawnX & jfarm.respawnY are defined in home.ejs
 		var yardcenter = {
 			yardx: jfarm.respawnX,
@@ -179,10 +128,13 @@ jfarm = {
 		jfarm.densityMap = new sheetengine.DensityMap(5);
 		jfarm.densityMap.addSheets(sheetengine.sheets); // uncomment if some sheets are created before
 
-		jfarm.definePlayerObjects();
-
-		// we retrieve Player details from server
-		jfarm.requestAjax("/player/" + jfarm.playerId, null, jfarm.definePlayerObj);
+		// we retrieve templates from server
+		// weapons / crop / building / properties
+		jfarm.requestAjax("/templates", null, function(ajaxResponse){
+			jfarm.initTemplates(ajaxResponse);
+			// we retrieve Player details from server
+			jfarm.requestAjax("/player/" + jfarm.playerId, null, jfarm.definePlayerObj);
+		});
 
 		// define scene center
 		sheetengine.scene.setCenter(jfarm.startp);
@@ -197,6 +149,42 @@ jfarm = {
 		$('#maincanvas').on('click', jfarm.click);
 		jfarm.timer();
 		jfarm.sceneIsReady = 1;
+	},
+	initTemplates: function(ajaxResponse){
+		if(ajaxResponse.success){
+			var templates = ajaxResponse.templates;
+
+			// ui trigger
+			// $('.game').trigger("initTemplatesUI", [templates]); // TODO : place data-attributes in html page
+
+			// weapons
+			jfarm.weaponTpls = templates.weaponTpls;
+			for (var i = 0; i < jfarm.weaponTpls.length; i++) {
+				var img = new Image();
+				img.src = jfarm.weaponTpls[i].img64;
+				jfarm.weaponTpls[i].image = img;	
+				//json parsing of centerp & rot
+				jfarm.weaponTpls[i].centerp = JSON.parse(jfarm.weaponTpls[i].centerp);
+				jfarm.weaponTpls[i].rot = JSON.parse(jfarm.weaponTpls[i].rot);
+			};
+			// buildings
+			jfarm.buildingTpls = templates.buildingTpls;
+			for (var i = 0; i < jfarm.buildingTpls.length; i++) {
+				// we populate a array to find easier building || crop
+				jfarm.enumAppObjects.push(jfarm.buildingTpls[i].name);
+			};
+			// crops
+			jfarm.cropTpls = templates.cropTpls;
+			for (var i = 0; i < jfarm.cropTpls.length; i++) {
+				// we populate a array to find easier building || crop
+				jfarm.enumAppObjects.push(jfarm.cropTpls[i].name);
+			};
+			jfarm.gameProperties = templates.properties;
+
+		} else {
+			console.log(ajaxResponse.message);
+			jfarm.sceneIsReady = 0;
+		}
 	},
 	initObjectProperties: function(objects) {
 		// for (var i=0;i<objects.length;i++) {
@@ -273,13 +261,13 @@ jfarm = {
 		ctx.fillRect(10,11,1,2);
 
 		// set arm, it's fork by default
-		jfarm.playerObjectData = jfarm.playerObjectsData.fork;
-		var arm = new sheetengine.Sheet(jfarm.playerObjectData.centerp, jfarm.playerObjectData.rot, {w:25,h:25});
+		jfarm.playerWeaponData = jfarm.getWeaponByName("Fork");
+		var arm = new sheetengine.Sheet(jfarm.playerWeaponData.centerp, jfarm.playerWeaponData.rot, {w:25,h:25});
 
-		arm.context.drawImage(jfarm.playerObjectData.image, jfarm.playerObjectData.x, jfarm.playerObjectData.y);
+		arm.context.drawImage(jfarm.playerWeaponData.image, jfarm.playerWeaponData.x, jfarm.playerWeaponData.y);
 		arm.canvasChanged();
-		arm.name = jfarm.playerObjectData.name;
-		jfarm.playerObjectChanged = true;
+		arm.name = jfarm.playerWeaponData.name;
+		jfarm.playerWeaponChanged = true;
 
 		// define player object
 		jfarm.player = new sheetengine.SheetObject(
@@ -304,36 +292,7 @@ jfarm = {
 		sheetengine.calc.calculateAllSheets();
 		jfarm.redraw(true);
 	},
-	// weapons and player objects
-	definePlayerObjects: function(){
-		// FORK
-		var forkImg = new Image();
-		forkImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAZCAYAAADnstS2AAAALElEQVQ4jWNwtDb6zwAFBNmjiilSTAwmXTE6uH9y4v/7JydilxxVPKqY7ooB1c+3tcuPBsEAAAAASUVORK5CYII=";
-		jfarm.playerObjectsData.fork.image = forkImg;
-
-		// BAT
-		var batImg = new Image();
-		batImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAARCAYAAAAYNhYvAAAAqUlEQVQImTXOIQ4CMRAF0G9JuAEexxmWM+DwnACBXolY2hmNBscZdhOStiMRiA3pjOEEkGCLoMiXn5//8Yh+qcJDjr6FJnqZcDHhAhUeTbhYog8sUV/xhAmdTLhoohs0UVeTHjn6bcUFWfzahIsKH2HBNSZcstAe+XqY150d7n07NeGi0W8AAJr4naNf/SA8WnANAMAS9Tm4xR/nMbhZ7VAXgpvgf1+Fhy/N9oRkGdFVpwAAAABJRU5ErkJggg==";
-		jfarm.playerObjectsData.bat.image = batImg;
-		
-		// CHAINSAW
-		var chainsawImg = new Image();
-		chainsawImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAAfklEQVQokaXRoQ2AMBCFYUZAIIprHv4UjqGAkjR1hFnYA0HQrPQwkJBSTkCT3365u2Z7k/NqrgtKZTnXBfcmZ/blvWG/wBjzUtJLSQCTVhKMsSCGADh0Tg0Ak2i8ZhBD1/bcllXtRJ/g/VPuE7q2V3udMAYvNIihtXbUSp3wAI0rrQLjqZEtAAAAAElFTkSuQmCC";
-		jfarm.playerObjectsData.chainsaw.image = chainsawImg;
-
-		// AK-47
-		var akImg = new Image();
-		akImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAGCAYAAADOic7aAAAAhUlEQVQYlY3PIQoCYRDF8d8BNGwRLGYxKp7AahA2i0m8gMVk8iJ6AzF4ETF4AA9gMq1lFj7Wxc8Hf3g83swwfGuAdYYFxg10McQMKxxQZbhi3sAtKbyxCb9EH3ecwtcULZ/Yx+ADk8iq+gp2eKHXNpxqhCM6SXbGNHyBJy65Rf+oxPZX4QO++CCk+Lv1qQAAAABJRU5ErkJggg==";
-		jfarm.playerObjectsData.ak47.image = akImg;
-
-		// WATERING CAN
-		var watercanImg = new Image();
-		watercanImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAA6ElEQVQokYWRrU4DURCFT0WDQaExJOtKMCvonTG1ra9o74za25lXaMAgy8PgEQ3hHZq0CodBNSTY5iIWSNhstycZMT/fJDMHAFCW1h9KGoVoyxBtOYwV45SK8fiMxNaktiNZrOrwT1J/L0vrHwVZ/I3EN41yj8W+SP0ZQK/RewAwAqvnvyXquRmk1TUABKmKi8urNYAM4BUU7bELBACepwmr7Vk9B0kzAADJYtUFstgdqR/q3J4G0+l5DaptO0H1TOoHinb/715Se/l9Tjtoe56nSasdP5/9aAODVMVRSwDgdpZuOgca+gaCeIMuwChpKwAAAABJRU5ErkJggg==";
-		jfarm.playerObjectsData.watercan.image = watercanImg;
-
-		
-	},
-	setPlayerObject: function(){
+	setPlayerWeapon: function(){
 		var arm = jfarm.player.arm;
 		arm.context.clearRect(0,0,25, 25);
 
@@ -343,12 +302,12 @@ jfarm = {
 		// arm.context.strokeRect(0,0,25,25);
 
 		// fout la merde 
-		jfarm.player.setSheetPos(arm, sheetengine.geometry.clonePoint(jfarm.playerObjectData.centerp),jfarm.playerObjectData.rot);
+		jfarm.player.setSheetPos(arm, sheetengine.geometry.clonePoint(jfarm.playerWeaponData.centerp),jfarm.playerWeaponData.rot);
 
-		arm.context.drawImage(jfarm.playerObjectData.image, jfarm.playerObjectData.x, jfarm.playerObjectData.y);
+		arm.context.drawImage(jfarm.playerWeaponData.image, jfarm.playerWeaponData.x, jfarm.playerWeaponData.y);
 		arm.canvasChanged();
-		arm.name = jfarm.playerObjectData.name;
-		jfarm.playerObjectChanged = true;
+		arm.name = jfarm.playerWeaponData.name;
+		jfarm.playerWeaponChanged = true;
 	},
 
 	// character movements
@@ -829,6 +788,30 @@ jfarm = {
 		return basesheets;
 	},
 	// Data
+	getAnyTemplateByName: function(tplName){
+		return jfarm.getCropByName(tplName) || jfarm.getBuildingByName(tplName) || null;
+	},
+	getWeaponByName: function(weaponName){
+		for(var i=0; i < jfarm.weaponTpls.length; i++){
+			if(jfarm.weaponTpls[i].name.toLowerCase() == weaponName.toLowerCase())
+				return jfarm.weaponTpls[i];
+		}
+		return null;
+	},
+	getCropByName: function(cropName){
+		for(var i=0; i < jfarm.cropTpls.length; i++){
+			if(jfarm.cropTpls[i].name.toLowerCase() == cropName.toLowerCase())
+				return jfarm.cropTpls[i];
+		}
+		return null;
+	},
+	getBuildingByName: function(buildingName){
+		for(var i=0; i < jfarm.buildingTpls.length; i++){
+			if(jfarm.buildingTpls[i].name.toLowerCase() == buildingName.toLowerCase())
+				return jfarm.buildingTpls[i];
+		}
+		return null;
+	},
 	getObjectDetails: function(obj){
 		jfarm.requestAjax("/gameobject/getdetails/"+ obj.idDB+ "/" + obj.type , null, function(response){
 			if(response.success)
@@ -1055,7 +1038,7 @@ jfarm = {
 	},
 	createSelectedObj: function(basesheet){
 
-		var rot = jfarm.appobjectsRots[jfarm.drawnObj.replace(/\s/g, "")] // we retrieve object rot
+		var rot = jfarm.appobjectsRots[jfarm.drawnObj] // we retrieve object rot
 			,objc = jfarm.getDrawingCenterp(basesheet.centerp, jfarm.drawnObj)
 			,yard = sheetengine.scene.getYardFromPos(objc);
 		
@@ -1575,9 +1558,9 @@ jfarm = {
 				sceneChanged = 1;
 			}
 
-			// player object has changed
-			if(jfarm.player.arm.name != jfarm.playerObjectData.name){
-				jfarm.setPlayerObject();
+			// player weapon has changed
+			if(jfarm.player.arm.name != jfarm.playerWeaponData.name){
+				jfarm.setPlayerWeapon();
 				sceneChanged = 1;
 				// sheetengine.calc.calculateChangedSheets();
 			}
