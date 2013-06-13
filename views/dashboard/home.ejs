@@ -7,12 +7,12 @@
 			Create &bull;
 		</div>
 		<div class="pull-left">
-			<form action="/alliance/create" method="post" id="" class="standard-form">
+			<form action="/alliance/create" method="post" id="formCreateAlliance" class="standard-form">
 				<input type="hidden" value="create" id="method" name="method" />
 				<input type="hidden" value="<%= user.id %>" name="id" />
 				<div class="controls">
 					<div class="pull-left">
-						<input id="name" name="name" type="text" placeholder="name" class="boot-input" required>
+						<input id="name" name="name" type="text" placeholder="name" required>
 					</div>
 					<div class="pull-left">
 						<button type="submit" class="btn-flat btn-flat-blue">Save</button>
@@ -23,17 +23,27 @@
 	</div>
 	<div class="block pull-right clear-fix">
 		<div class="pull-left">
-			<form action="/alliance/search" method="post" id="" class="standard-form">
-				<input type="hidden" value="search" id="method" name="method" />
+			<button type="button" class="btn-flat btn-flat-green pull-right switch">Switch</button>
+		</div>
+		<div class="pull-left">
+			<div id="search-a" class="standard-form">
 				<div class="controls">
 					<div class="pull-left">
-						<input id="name" name="name" type="text" placeholder="Alliance" class="boot-input" required>
-					</div>
-					<div class="pull-left">
-						<button type="submit" class="btn-flat btn-flat-green">Search</button>
+						<input id="searchA" name="name" type="text" placeholder="Alliance">
+						<div class="results resultsA"></div>
+						<div class="resultShow resultShowA"></div>
 					</div>
 				</div>
-			</form>
+			</div>
+			<div id="search-p" class="standard-form">
+				<div class="controls">
+					<div class="pull-left">
+						<input id="searchP" name="name" type="text" placeholder="Player">
+						<div class="results resultsP"></div>	
+						<div class="resultShow resultShowP"></div>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div class="title-t pull-left txt-green">
 			&bull; Search

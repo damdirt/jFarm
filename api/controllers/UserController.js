@@ -16,12 +16,13 @@ var UserController = {
 
 
 	profile: function(req, res) {
-		var user = req.session.user
+		var user = req.session.user;
+		var player = req.session.player;
 		console.log(user);
 		// This will render the view: /Volumes/DATA/Documents/git/jFarm/views/dashboard/home.ejs
 		res.view({
 			user: user,
-			player: global.player
+			player: player
 		});
 
 	},

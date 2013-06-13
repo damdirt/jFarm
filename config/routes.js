@@ -141,6 +141,11 @@ module.exports.routes = {
 		action: 'conquer'
 	},
 
+	'/player/show/:id': {
+		controller: 'player',
+		action: 'show'
+	},
+
 	//-------------------- END PLAYER ------------------------
 
 	//------------------- ALLIANCE -----------------------------
@@ -148,11 +153,6 @@ module.exports.routes = {
 	'/alliance/create': {
 		controller: 'alliance',
 		action: 'create'
-	},
-
-	'/alliance/search': {
-		controller: 'alliance',
-		action: 'search'
 	},
 
 	//-------------------- END ALLIANCE ------------------------

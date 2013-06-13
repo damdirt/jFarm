@@ -156,8 +156,15 @@ $(function() {
 
 	// ALLIANCES
 	$('#top-actions').hide();
+	$('#search-p').hide();
 	$('.popup-t').on('click', function(e) {
 		$('#right-actions').hide();
 		$('#top-actions').toggle();
+	});
+
+	// change search bar
+	$('.switch').on('click', function() {
+		$('#search-a').toggle();
+		$('#search-p').toggle();
 	});
 });
