@@ -408,10 +408,6 @@ jfarm = {
 		// move towards target
 		var targetp = jfarm.moveTowardsTarget(obj, jfarm.maxmove);
 
-		// console.log(obj.centerp);
-		// console.log(sheetengine.scene.yardcenter);
-
-
 		if (jfarm.characterAtTargetObj(obj)) {
 			jfarm.characterArrived(obj);
 			return;
@@ -1434,7 +1430,6 @@ jfarm = {
 
 		return crop;
 	},
-
 	// event handlers
 	click: function(event) {
 		// if (jfarm.player.killed)
@@ -1588,7 +1583,7 @@ jfarm = {
 			}
 		}
 		if(jfarm.hoveredObjisClicked){
-			console.log(jfarm.hoveredObj);
+			// console.log(jfarm.hoveredObj);
 			if(jfarm.hoveredObj.type == "crop"){
 				console.log("Afficher un modal crop");
 			} else {

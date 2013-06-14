@@ -7,12 +7,12 @@
 			Create &bull;
 		</div>
 		<div class="pull-left">
-			<form action="/alliance/create" method="post" id="" class="standard-form">
+			<form action="/alliance/create" method="post" id="formCreateAlliance" class="standard-form">
 				<input type="hidden" value="create" id="method" name="method" />
-				<input type="hidden" value="<%= user.id %>" name="id" />
+				<input type="hidden" value="<%= player.id %>" name="id" />
 				<div class="controls">
 					<div class="pull-left">
-						<input id="name" name="name" type="text" placeholder="name" class="boot-input" required>
+						<input id="name" name="name" type="text" placeholder="name" required>
 					</div>
 					<div class="pull-left">
 						<button type="submit" class="btn-flat btn-flat-blue">Save</button>
@@ -23,23 +23,34 @@
 	</div>
 	<div class="block pull-right clear-fix">
 		<div class="pull-left">
-			<form action="/alliance/search" method="post" id="" class="standard-form">
-				<input type="hidden" value="search" id="method" name="method" />
+			<button type="button" class="btn-flat btn-flat-green pull-right switch">Switch</button>
+		</div>
+		<div class="pull-left">
+			<div id="search-a" class="standard-form">
 				<div class="controls">
 					<div class="pull-left">
-						<input id="name" name="name" type="text" placeholder="Alliance" class="boot-input" required>
-					</div>
-					<div class="pull-left">
-						<button type="submit" class="btn-flat btn-flat-green">Search</button>
+						<input id="searchA" name="name" type="text" placeholder="Alliance">
+						<div class="results resultsA"></div>
+						<div class="resultShow resultShowA"></div>
 					</div>
 				</div>
-			</form>
+			</div>
+			<div id="search-p" class="standard-form">
+				<div class="controls">
+					<div class="pull-left">
+						<input id="searchP" name="name" type="text" placeholder="Player">
+						<div class="results resultsP"></div>	
+						<div class="resultShow resultShowP"></div>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div class="title-t pull-left txt-green">
 			&bull; Search
 		</div>
 	</div>
 </div>
+<div id="top-actions-notif"></div>
 <div id="right-actions" class="clear-fix center">
 	<div class="buttons clear-fix">
 		<button class="button pull-left"><i class="icon-leaf"></i></button>
@@ -82,6 +93,7 @@
 	<hr>
 	<span class="txt-green">ESC to cancel</span>
 </div>
+<div id="content-actions-notif"></div>
 <div id="content-actions" class="borders-action clear-fix">
 	<div class="p10 clear-fix" >
 		<div class="w500 block pull-left" id="content-actions-left">
@@ -182,9 +194,9 @@
 						<button type="button" class="btn-flat btn-flat-green pull-right popup-t">Alliances </button>
 					</div>
 					<div class="min-block" id="player-wrapper">
-						<span><strong>Money :</strong> <span id="player-money"></span> ch.</span><br />
-						<!-- <span><strong>Level :</strong> <span id="player-level"></span></span><br /> -->
-						<!-- <span><strong>Alliance :</strong> <span id="player-alliance"></span></span><br /> -->
+						<span><strong>Money :</strong> <span id="player-money"></span></span><br />
+						<!-- <span><strong>Level :</strong> <span id="player-level"></span><%= player.level %></span><br /> -->
+						<span><strong>Alliance :</strong> <span id="player-alliance">no alliance</span></span><br />
 						<!-- <span><strong>Tiles :</strong> <span id="object-nbtiles"></span></span><br /> -->
 						<!-- <span><strong>Ghost mode :</strong> <span id="object-ghost"></span></span><br /> -->
 						<!-- <span><strong>Buildings :</strong> <span id="object-nbbuildings"></span></span> -->
