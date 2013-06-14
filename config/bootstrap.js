@@ -4,7 +4,7 @@
 // Make sure you call cb() when you're finished.
 module.exports.bootstrap = function(cb) {
 
-
+	global.subUsers = [];
 
 	global.loadProperties = function() {
 		GameProperty.findAll().done(function(err, props) {
