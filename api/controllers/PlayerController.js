@@ -139,6 +139,72 @@ var PlayerController = {
 				}));
 			}
 		}
+	},
+	search: function(req, res) {
+		var kwParam = req.param('kw')
+		// check if post's params exist
+		if (!(kwParam)) {
+			res.end(JSON.stringify({
+				user: req.session.user,
+				responseMessage: "No name or value specified!"
+			}));
+		} else {
+			// check if player's name already exist
+			Player.findAll({
+				name: {
+					contains: kwParam
+				}
+			}).done(function(err, players) {
+				if (err) {
+					res.end(JSON.stringify({
+						user: req.session.user,
+						players: {},
+						responseMessage: err
+					}))
+				} else {
+					res.end(JSON.stringify({
+						user: req.session.user,
+						players: players,
+						responseMessage: "player"
+					}))
+				}
+			});
+		}
+	},
+	show: function(req, res) {
+		var kwParam = req.param('kw')
+		// check if post's params exist
+		if (!(kwParam)) {
+			res.end(JSON.stringify({
+				user: req.session.user,
+				responseMessage: "No name or value specified!"
+			}));
+		} else {
+			// check if player's name already exist
+			Player.find({
+				id: kwParam
+			}).done(function(err, player) {
+				if (err) {
+					res.end(JSON.stringify({
+						user: req.session.user,
+						player: {},
+						responseMessage: err
+					}))
+				} else {
+					Alliance.find({
+						id: player.allianceId
+					}).done(function(err, alliance) {
+						res.end(JSON.stringify({
+							user: req.session.user,
+							currentPlayer: req.session.player,
+							player: player,
+							alliance: alliance,
+							responseMessage: "player"
+						}))
+					});
+				}
+			});
+		}
 	}
 };
 module.exports = PlayerController;

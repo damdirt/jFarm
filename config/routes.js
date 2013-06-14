@@ -141,7 +141,21 @@ module.exports.routes = {
 		action: 'conquer'
 	},
 
+	'/player/show/:id': {
+		controller: 'player',
+		action: 'show'
+	},
+
 	//-------------------- END PLAYER ------------------------
+
+	//------------------- ALLIANCE -----------------------------
+
+	'/alliance/create': {
+		controller: 'alliance',
+		action: 'create'
+	},
+
+	//-------------------- END ALLIANCE ------------------------
 
 	//-------------------- INITIALIZER ------------------------
 

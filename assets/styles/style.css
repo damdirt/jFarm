@@ -459,6 +459,94 @@ footer {
     font-size: 14pt;
 }
 
+/* ---------- TOP ACTIONS STYLES ----------  */
+
+#top-actions {
+    background-color: #F6F6F6;
+    height: 60px;
+    margin-top: 60px;
+    position: absolute;
+    top: 0;
+    width: 1190px;
+}
+
+#top-actions .block:first-child {
+    line-height: 60px;
+}
+
+#top-actions .block:last-child {
+    line-height: 60px;
+}
+
+.title-t {
+    padding: 0 15px;
+}
+
+#top-actions .standard-form {
+    width: auto;
+}
+
+#top-actions .standard-form input {
+    margin-top: 12px;
+    margin-right: -1px;
+}
+
+#top-actions .standard-form label {
+    margin-right: 10px;
+}
+
+#top-actions button {
+    border: 0 none;
+    padding: 9px 10px;
+    margin-top: 12px;
+}
+
+.results {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    border-top: 0;
+    margin-top: 47px;
+    position: absolute;
+    width: 196px;
+    -webkit-transition: left 150ms ease-in-out;
+    -moz-transition: left 150ms ease-in-out;
+    -ms-transition: left 150ms ease-in-out;
+    -o-transition: left 150ms ease-in-out;
+    transition: left 150ms ease-in-out;
+}
+
+#top-actions li {
+    padding: 0 10px;
+    line-height: 40px;
+}
+
+.results li {
+    cursor: pointer;
+}
+
+.results li:hover {
+    background-color: #F6F6F6;
+}
+
+.resultShow {
+    background-color: #FFFFFF;
+    border-left: 5px solid #F6F6F6;
+    border-bottom: 5px solid #F6F6F6;
+    margin-top: 60px;
+    padding: 0 10px;
+    position: absolute;
+    width: 255px;
+    -webkit-transition: left 150ms ease-in-out;
+    -moz-transition: left 150ms ease-in-out;
+    -ms-transition: left 150ms ease-in-out;
+    -o-transition: left 150ms ease-in-out;
+    transition: left 150ms ease-in-out;
+}
+
+.resultShow button {
+    padding: 5px !important;
+}
+
 /* ---------- RIGHT ACTIONS STYLES ---------- */
 
 #right-actions {
@@ -568,9 +656,47 @@ section {
     background-color: #333333;
 }
 
+.btn-flat-grey {
+    background-color: #3C454F;
+}
+
+.btn-flat-grey:hover {
+    background-color: #7ebd26;
+}
+
+.btn-flat-grey-light {
+    background-color: #F6F6F6;
+    color: #7ebd26;
+}
+
+.btn-flat-grey-light:hover {
+    background-color: #7ebd26;
+    color: #FFFFFF;
+}
+
+.btn-flat-red {
+    background-color: #F6F6F6;
+    color: #FF0000;
+}
+
+.btn-flat-red:hover {
+    background-color: #FF0000;
+    color: #FFFFFF;
+}
+
 /* ---------- BUTTONS/ICONS STYLES ---------- */
 .buttons button i{
   font-size: 20px;
+}
+
+/* ---------- TXT COLOR ---------- */
+
+.txt-blue {
+    color: #52A8EC;
+}
+
+.txt-green {
+    color: #7ebd26;
 }
 
 /* ---------- FORMS STYLES ---------- */
@@ -635,7 +761,7 @@ section {
 /* Content */
 
 .content {
-    padding: 20px 40px 140px;
+    padding: 20px 40px 20px;
 }
 
 .content a {

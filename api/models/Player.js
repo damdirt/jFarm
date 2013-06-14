@@ -18,7 +18,8 @@ module.exports = {
 		currentX: 'INT',
 		currentY: 'INT',
 		health: 'INT',
-		regenerationSpeed: 'INT'
+		regenerationSpeed: 'INT',
+		allianceId: 'INT'
 	}
 
 };
