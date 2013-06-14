@@ -7,14 +7,26 @@ $(function() {
 	// WINDOW
 	$(document).on('keyup', function(event) {
 		jfarm.keyup(event);
-	})
+	});
 
+	// UI CHANGES
 	// templates && game properties initialization
 	$('.game').on("initTemplatesUI", function(e, templates){
 		console.log(templates);
 	});
+
+	$('.game').on('onUIUpdatePlayer', function(e, player){
+		if(player){
+			$('#player-data-level').text(player.level);
+			$('#player-money').text(player.money);
+		} else {
+			console.log("No player");
+		}
+	});
+
 	// BUILDINGS
 	$(".showBuildings").on('click', function() {
+		$('#top-actions').hide();
 		$("#right-actions").toggle();
 	});
 
@@ -42,17 +54,30 @@ $(function() {
 	$('.crop, .building').on('click', function() {
 		// to be sure moving player button is pushed
 		$(".game-actions button:first").trigger('click');
-		// we check if player has enough money for crop/building
-		// jfarm.getPlayerDetails(null, function(player){
+		var $this = $(this),
+			value = $this.data('value'),
+			type = $this.data('type'),
+			$li = $this.parent();
 
-			var $this = $(this),
-				value = $this.data('value'),
-				$li = $this.parent()
+		// we get template of selected item
+		jfarm.drawnObj = jfarm.getAnyTemplateByName(value);
+		jfarm.drawnObj.type = type;
 
-			$('.crop, .building').parent().removeClass('active');
-			$li.addClass('active');
-			jfarm.drawnObj = jfarm.getAnyTemplateByName(value).name;
-		// })
+		jfarm.getPlayerDetails(null, function(player){
+			// we check if player has enough money for crop/building
+			if(player.money >= jfarm.drawnObj.price){
+				$('.crop, .building').each(function(index, elem){
+					var $elem = $(elem);
+					if($elem.data('value').toLowerCase() === jfarm.drawnObj.name.toLowerCase())
+						$elem.parent().addClass('active');
+					else 
+						$elem.parent().removeClass('active');
+				});
+			} else {
+				jfarm.drawnObj = null;
+				alert('Not enough money to purchase this item');
+			}
+		});
 	});
 
 	// WEAPONS & ACCESSORIES
@@ -67,6 +92,10 @@ $(function() {
 	});
 
 	$(".game-actions button").click(function() {
+		// in case of, we cancel drawing obj mode;
+		$('.crop, .building').parent().removeClass('active');
+		jfarm.drawnObj = null;
+
 		var $this = $(this),
 			action = $this.data("action"),
 			siblings = $this.siblings();
@@ -83,13 +112,13 @@ $(function() {
 	});
 
 	// PLAYER DETAILS
-	$('#content-actions').on('getPlayerData', function(e, player) {
-		$('#player-data-level').text(player.level);
-		$('#player-money').text(player.money + " ch.");
-		// $('#player-data-life').text(player.);
-		// $('#player-data-tiles').text(player.);
-		// $('#player-data-buildings').text(player.);
-	});
+	// $('#content-actions').on('getPlayerData', function(e, player) {
+	// 	$('#player-data-level').text(player.level);
+	// 	$('#player-money').text(player.money);
+	// 	// $('#player-data-life').text(player.);
+	// 	// $('#player-data-tiles').text(player.);
+	// 	// $('#player-data-buildings').text(player.);
+	// });
 
 	// TILES 
 	$("#tile-wrapper").on("onGettingTileDetails", function(e) {
@@ -105,7 +134,7 @@ $(function() {
 
 	// OBJECTS 
 	$('#object-wrapper').on('onGettingObjectDetails', function(e){
-		$(this).find('.tile-property-value').html("loading...");
+		$(this).find('.object-property-value').html("loading...");
 		$('#tile-owner').text("...");
 		$('#tile-fertility').text("...");
 		$('#tile-humidity').text("..."); // TODO
@@ -113,6 +142,7 @@ $(function() {
 		$('#tile-free').text("...");
 	});
 	$("#object-wrapper").on("getObjectData", function(e, obj) {
+		$(this).find('.title-b').text(jfarm.capitaliseFirstLetter(obj.objectType));
 		$('#object-type').text(obj.content.name);
 		$('#object-owner').text(obj.owner.name);
 		// $('#object-alliance').text(obj.content.name); // TODO

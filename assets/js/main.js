@@ -35,7 +35,6 @@ $(function() {
 		$(this).addClass("active");
 	});
 
-
 	var consoleTimeout;
 	$('.minicolors').each(function() {
 		$(this).minicolors({
@@ -144,7 +143,7 @@ $(function() {
 	});
 
 	// POPUP
-	$(".popup").on('click', function(e) {
+	$(".popup-r").on('click', function(e) {
 		$(".modal").toggle();
 		e.stopPropagation();
 	});
@@ -153,5 +152,12 @@ $(function() {
 	});
 	$(document).on('click', function() {
 		$(".modal").hide();
+	});
+
+	// ALLIANCES
+	$('#top-actions').hide();
+	$('.popup-t').on('click', function(e) {
+		$('#right-actions').hide();
+		$('#top-actions').toggle();
 	});
 });

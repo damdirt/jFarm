@@ -1,8 +1,46 @@
 <div id="canvas-wrapper">
 	<canvas id="maincanvas" width="1200" height="460" onmousemove="jfarm.mousemove(event);"></canvas>
 </div>
+<div id="top-actions" class="borders-action clear-fix">
+	<div class="block pull-left clear-fix">
+		<div class="title-t pull-left txt-blue">
+			Create &bull;
+		</div>
+		<div class="pull-left">
+			<form action="/alliance/create" method="post" id="" class="standard-form">
+				<input type="hidden" value="create" id="method" name="method" />
+				<input type="hidden" value="<%= user.id %>" name="id" />
+				<div class="controls">
+					<div class="pull-left">
+						<input id="name" name="name" type="text" placeholder="name" class="boot-input" required>
+					</div>
+					<div class="pull-left">
+						<button type="submit" class="btn-flat btn-flat-blue">Save</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="block pull-right clear-fix">
+		<div class="pull-left">
+			<form action="/alliance/search" method="post" id="" class="standard-form">
+				<input type="hidden" value="search" id="method" name="method" />
+				<div class="controls">
+					<div class="pull-left">
+						<input id="name" name="name" type="text" placeholder="Alliance" class="boot-input" required>
+					</div>
+					<div class="pull-left">
+						<button type="submit" class="btn-flat btn-flat-green">Search</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="title-t pull-left txt-green">
+			&bull; Search
+		</div>
+	</div>
+</div>
 <div id="right-actions" class="clear-fix center">
-	<span>ESC to cancel</span> 
 	<div class="buttons clear-fix">
 		<button class="button pull-left"><i class="icon-leaf"></i></button>
 		<button class="button pull-left"><i class="icon-home"></i></button>
@@ -11,15 +49,15 @@
 		<div class="crops">
 			<ul>
 				<li>
-					<img src="images/buildings/wheat.png" alt="Wheat" data-value="wheat" class="crop">
+					<img src="images/buildings/wheat.png" alt="Wheat" data-value="wheat" data-type="crop" class="crop">
 					<p>Wheat (20 ch.)</p>
 				</li>
 				<li>
-					<img src="images/buildings/corn.png" alt="Corn" data-value="corn" class="crop">
+					<img src="images/buildings/corn.png" alt="Corn" data-value="corn" data-type="crop" class="crop">
 					<p>Corn (20 ch.)</p>
 				</li>
 				<li>
-					<img src="images/buildings/tomatoes.png" alt="Tomatoes" data-value="tomatoes" class="crop">
+					<img src="images/buildings/tomatoes.png" alt="Tomatoes" data-value="tomatoes" data-type="crop" class="crop">
 					<p>Tomatoes (20 ch.)</p>
 				</li>
 			</ul>
@@ -27,20 +65,22 @@
 		<div class="buildings">
 			<ul>
 				<li>
-					<img src="images/buildings/silo.png" alt="Silo" data-value="silo" class="building">
+					<img src="images/buildings/silo.png" alt="Silo" data-value="silo" data-type="building" class="building">
 					<p>Silo (500 ch.)</p>
 				</li>
 				<li>
-					<img src="images/buildings/barn.png" alt="Barn" data-value="barn" class="building">
+					<img src="images/buildings/barn.png" alt="Barn" data-value="barn" data-type="building" class="building">
 					<p>Barn (1000 ch.)</p>
 				</li>
 				<li>
-					<img src="images/buildings/coldstorage.png" alt="Cold storage" data-value="cold storage" class="building">
+					<img src="images/buildings/coldstorage.png" alt="Cold storage" data-value="cold storage" data-type="building" class="building">
 					<p>Cold storage (2000 ch.)</p>
 				</li>
 			</ul>
 		</div>
 	</div>
+	<hr>
+	<span class="txt-green">ESC to cancel</span>
 </div>
 <div id="content-actions" class="borders-action clear-fix">
 	<div class="p10 clear-fix" >
@@ -63,9 +103,9 @@
 				<div class="block pull-left w230" id="object-wrapper">
 					<div class="title-b">Object</div>
 					<div class="min-block">
-						<span><strong>Type :</strong> <span id="object-type"></span></span><br />
-						<span><strong>Owner :</strong> <span id="object-owner"></span></span><br />
-						<span><strong>Alliance :</strong> <span id="object-alliance"></span></span><br />
+						<span><strong>Type :</strong> <span id="object-type" class="object-property-value"></span></span><br />
+						<span><strong>Owner :</strong> <span id="object-owner" class="object-property-value"></span></span><br />
+						<!-- <span><strong>Alliance :</strong> <span id="object-alliance"></span></span><br /> -->
 					</div>
 				</div>
 			</div>
@@ -133,15 +173,16 @@
 					   <button class="button pull-left active" title="move player's ass" data-action="movingPlayer"><i class="icon-screenshot"></i></button>
 					   <!-- <button class="button pull-left" title="select fucking object" data-action="selectingObject"><i class="icon-hand-up"></i></button> -->
 					   <button class="button pull-left" title="Conquer !!!!" data-action="conquer"><i class="icon-plus-sign"></i></button>
-					   <button class="button pull-left">?</button>
+					   <!-- <button class="button pull-left" title="Watering my crops !" data-action="water"><i class="icon-tint"></i></button> -->
 					</div>
 				</div>
 				<div class="content-b">
 					<div class="clear-fix">
-						<button type="button" class="btn-flat btn-flat-green pull-right popup">Weapons </button>
+						<button type="button" class="btn-flat btn-flat-green pull-right popup-r">Weapons </button>
+						<button type="button" class="btn-flat btn-flat-green pull-right popup-t">Alliances </button>
 					</div>
 					<div class="min-block" id="player-wrapper">
-						<span><strong>Money :</strong> <span id="player-money"></span></span><br />
+						<span><strong>Money :</strong> <span id="player-money"></span> ch.</span><br />
 						<!-- <span><strong>Level :</strong> <span id="player-level"></span></span><br /> -->
 						<!-- <span><strong>Alliance :</strong> <span id="player-alliance"></span></span><br /> -->
 						<!-- <span><strong>Tiles :</strong> <span id="object-nbtiles"></span></span><br /> -->

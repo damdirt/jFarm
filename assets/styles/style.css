@@ -459,6 +459,47 @@ footer {
     font-size: 14pt;
 }
 
+/* ---------- TOP ACTIONS STYLES ----------  */
+
+#top-actions {
+    background-color: #F6F6F6;
+    height: 60px;
+    margin-top: 60px;
+    position: absolute;
+    top: 0;
+    width: 1190px;
+}
+
+#top-actions .block:first-child {
+    line-height: 60px;
+}
+
+#top-actions .block:last-child {
+    line-height: 60px;
+}
+
+.title-t {
+    padding: 0 15px;
+}
+
+#top-actions .standard-form {
+    width: 270px;
+}
+
+#top-actions .standard-form input {
+    margin-top: 12px;
+    margin-right: -1px;
+}
+
+#top-actions .standard-form label {
+    margin-right: 10px;
+}
+
+#top-actions .standard-form button {
+    border: 0 none;
+    padding: 9px 10px;
+}
+
 /* ---------- RIGHT ACTIONS STYLES ---------- */
 
 #right-actions {
@@ -573,6 +614,16 @@ section {
   font-size: 20px;
 }
 
+/* ---------- TXT COLOR ---------- */
+
+.txt-blue {
+    color: #52A8EC;
+}
+
+.txt-green {
+    color: #7ebd26;
+}
+
 /* ---------- FORMS STYLES ---------- */
 
 #error {
@@ -635,7 +686,7 @@ section {
 /* Content */
 
 .content {
-    padding: 20px 40px 140px;
+    padding: 20px 40px 20px;
 }
 
 .content a {

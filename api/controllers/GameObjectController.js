@@ -6,7 +6,6 @@ var GameObjectController = {
 
 	create: function(req, res) {
 
-
 		if (!req.isAjax) {
 			res.redirect('/');
 		} else {
@@ -90,6 +89,8 @@ var GameObjectController = {
 							} else {
 								switch (req.param('objectType')) {
 									case 'building':
+										var tpl = global.properties.buildingTemplates[req.param('objectName')];
+
 										Building.create({
 											name: req.param('objectName'),
 											currentStorageCapacity: 0,
@@ -97,7 +98,7 @@ var GameObjectController = {
 											x: yard.x,
 											y: yard.y,
 											cornerYard: cornerYardParam,
-											buildingTemplateId: global.properties.buildingTemplates[req.param('objectName')].id,
+											buildingTemplateId: tpl.id,
 											content: JSON.stringify(objParam),
 											yardId: yard.id,
 											objectType: req.param('objectType')
@@ -109,19 +110,37 @@ var GameObjectController = {
 													'error': err
 												}));
 											} else {
-												res.end(JSON.stringify({
-													'success': true,
-													'message': 'Object created',
-													'error': null,
-													'centerp': objParam.centerpToReturn,
-													'cornerYard': cornerYardParam,
-													'id': obj.id,
-													'type': req.param('objectType')
-												}));
+												req.session.player.money = req.session.player.money - tpl.price;
+												Player.update({
+													id: req.session.player.id
+												}, {
+													money: req.session.player.money - tpl.price
+												}, function(err, player) {
+													if (err) {
+														res.end(JSON.stringify({
+															'success': false,
+															'message': 'error during player\'s money updating',
+															'error': err
+														}));
+													} else {
+														res.end(JSON.stringify({
+															'success': true,
+															'message': 'Object created',
+															'error': null,
+															'centerp': objParam.centerpToReturn,
+															'cornerYard': cornerYardParam,
+															'id': obj.id,
+															'type': req.param('objectType'),
+															'player': req.session.player
+														}));
+													}
+												});
 											}
 										});
 										break;
 									case 'crop':
+										var tpl = global.properties.cropTemplates[req.param('objectName')];
+
 										Crop.create({
 											name: req.param('objectName'),
 											ownerId: yard.playerId,
@@ -130,7 +149,7 @@ var GameObjectController = {
 											x: yard.x,
 											y: yard.y,
 											cornerYard: cornerYardParam,
-											cropTemplateId: global.properties.buildingTemplates[req.param('objectName')].id,
+											cropTemplateId: tpl.id,
 											content: JSON.stringify(objParam),
 											yardId: yard.id,
 											objectType: req.param('objectType')
@@ -142,20 +161,43 @@ var GameObjectController = {
 													'error': err
 												}));
 											} else {
-												res.end(JSON.stringify({
-													'success': true,
-													'message': 'Object created',
-													'error': null,
-													'centerp': objParam.centerpToReturn,
-													'cornerYard': cornerYardParam,
-													'id': obj.id,
-													'type': req.param('objectType')
-												}));
+												req.session.player.money = req.session.player.money - tpl.price;
+												Player.update({
+													id: req.session.player.id
+												}, {
+													money: req.session.player.money - tpl.price
+												}, function(err, player) {
+													console.log(player);
+													if (err) {
+														res.end(JSON.stringify({
+															'success': false,
+															'message': 'error during player\'s money updating',
+															'error': err
+														}));
+													} else {
+														res.end(JSON.stringify({
+															'success': true,
+															'message': 'Object created',
+															'error': null,
+															'centerp': objParam.centerpToReturn,
+															'cornerYard': cornerYardParam,
+															'id': obj.id,
+															'type': req.param('objectType'),
+															'player': req.session.player
+														}));
+													}
+												});
 											}
 										});
 										break;
+									default:
+										res.end(JSON.stringify({
+											'success': false,
+											'message': 'error occured during object creation (default case)',
+											'error': err
+										}));
+										break;
 								}
-
 							}
 						});
 					} else {
@@ -176,7 +218,6 @@ var GameObjectController = {
 				}));
 			}
 		}
-
 	},
 
 	getDetails: function(req, res) {
@@ -244,7 +285,6 @@ var GameObjectController = {
 									'error': null,
 									'obj': object
 								})
-								console.log(JSON.parse(response));
 								res.end(response);
 							}
 						});

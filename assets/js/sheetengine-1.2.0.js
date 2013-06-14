@@ -2132,18 +2132,15 @@ var sheetengine = (function() {
         var yard = yards[i];
           
         var offset = { x: (yard.x - scene.yardcenterstart.yardx)*scene.tilewidth, y: (yard.y - scene.yardcenterstart.yardy)*scene.tilewidth, z: 0 };
-        // var offset = { x: (yard.x)*scene.tilewidth, y: (yard.y)*scene.tilewidth, z: 0 };
-
 
         var basesheet = new sheetengine.BaseSheet(offset, {alphaD:-90, betaD:0, gammaD:0}, {w:scene.tilewidth, h:scene.tilewidth});
 
         // own jfarm process
         basesheet.yardx = yard.x;
         basesheet.yardy = yard.y;
-
         basesheet.name = yard.name;
 
-        if(!!!yard.free){
+        if(!yard.free){
           basesheet.color = '#CCC';
         } else {
           basesheet.color = yard.baserectcolor;
@@ -2172,9 +2169,9 @@ var sheetengine = (function() {
               continue;
 
             // own jfarm process
-            console.log(yard);
-            console.log(objdata.name);
-            console.log(objdata.cornerYard);
+            // console.log(yard);
+            // console.log(objdata.name);
+            // console.log(objdata.cornerYard);
             // console.log(yard.name);
             // console.log(offset);
             // console.log(objdata.centerp);
