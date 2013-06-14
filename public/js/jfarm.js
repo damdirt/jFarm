@@ -432,7 +432,7 @@ jfarm = {
 	moveCharacter: function(obj){
 		// move towards target
 		var targetp = jfarm.moveTowardsTarget(obj, jfarm.maxmove);
-
+		
 		if (jfarm.characterAtTargetObj(obj)) {
 			jfarm.characterArrived(obj);
 			return;
@@ -1425,7 +1425,6 @@ jfarm = {
 
 		return crop;
 	},
-
 	// event handlers
 	click: function(event) {
 		// if (jfarm.player.killed)

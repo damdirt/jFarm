@@ -1,7 +1,9 @@
 $(function() {
 
-	var serverRoot = 'http://localhost:1337';
-	var socket = io.connect(serverRoot);
+	//var serverRoot = 'http://localhost:1337';
+	//var socket = io.connect(serverRoot);
+
+	
 
 	// NAV MAIN ACTIVE
 	$("nav.main ul a").click(function() {
@@ -15,7 +17,7 @@ $(function() {
 	$("nav.sub").hide();
 	$("nav.main ul a:last").on('click', function() {
 		var tab = $(this),
-			index = tab.parent().index()-2,
+			index = tab.parent().index() - 2,
 			content = $("nav.sub").eq(index),
 			contents = $('nav.sub:visible');
 		if (content.is(':visible')) {
@@ -85,27 +87,27 @@ $(function() {
 	});
 
 	$(".action-get").on('click', function() {
-			var $this = $(this),
-				url = $this.data('url'),
-				id = $this.data('id');
+		var $this = $(this),
+			url = $this.data('url'),
+			id = $this.data('id');
 
-			socket.request(url + id, {
-				message: 'get' + id
-			}, function(response) {
-				if (response.id == id) {
-					$("#method").val('edit');
-					$("#id").val(id);
-					$("#name").val(response.name);
-					$("#value").val(response.content);
-				} else {
-					alert(response);
-				}
-			});
+		socket.request(url + id, {
+			message: 'get' + id
+		}, function(response) {
+			if (response.id == id) {
+				$("#method").val('edit');
+				$("#id").val(id);
+				$("#name").val(response.name);
+				$("#value").val(response.content);
+			} else {
+				alert(response);
+			}
+		});
 	});
 
 	// PAGINATION LISTS
 	$('.pag-objects').pajinate({
-		items_per_page : 5
+		items_per_page: 5
 	});
 
 	// FOOTER ON/OFF
@@ -113,7 +115,7 @@ $(function() {
 		var fActions = $("#content-actions");
 		fActions.animate({
 			height: 'toggle'
-		},1000, function(){
+		}, 1000, function() {
 			$(".round").toggleClass('off');
 		});
 	});
@@ -121,24 +123,24 @@ $(function() {
 	// TOOLTIP FOOTER
 	$("#main-circle div:not(:first)").hide();
 	$("#tooltip-b span:not(:first)").hide();
-	$("#labels label").on('click',function(){
+	$("#labels label").on('click', function() {
 		var tab = $(this),
-		    index = tab.index(),
-		    content = $("#main-circle div").eq(index),
-		    contents = content.siblings();
+			index = tab.index(),
+			content = $("#main-circle div").eq(index),
+			contents = content.siblings();
 
 		tab.addClass("current").parent()
-		    .siblings().removeClass('current');
+			.siblings().removeClass('current');
 		content.show();
 		contents.hide();
 
 		var tabLeg = $(this),
-		    indexLeg = tabLeg.index(),
-		    contentLeg = $("#tooltip-b span").eq(indexLeg),
-		    contentsLeg = contentLeg.siblings();
+			indexLeg = tabLeg.index(),
+			contentLeg = $("#tooltip-b span").eq(indexLeg),
+			contentsLeg = contentLeg.siblings();
 
 		tabLeg.addClass("current").parent()
-		    .siblings().removeClass('current');
+			.siblings().removeClass('current');
 		contentLeg.show();
 		contentsLeg.hide();
 	});

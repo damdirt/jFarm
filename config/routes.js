@@ -197,8 +197,6 @@ module.exports.routes = {
 		action: 'templates'
 	},
 
-
-
 	// Keep in mind default routes exist for each of your controllers
 	// So if you have a UserController with an action called "juggle" 
 	// a route will be automatically exist mapping it to /user/juggle.
