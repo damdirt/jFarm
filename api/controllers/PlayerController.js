@@ -42,10 +42,19 @@ var PlayerController = {
 	levelChoice: function(req, res) {
 		if (req.method == 'POST') {
 			var levelParam = req.param('level');
+			var levelMoney = parseFloat(global.properties[levelParam + 'LevelMoney']);
+			console.log(levelMoney);
+			var startMoney = parseFloat(global.properties['startMoney']);
+			console.log(startMoney);
+			var playerMoney = parseFloat((levelMoney * startMoney) / 100);
+			console.log(playerMoney);
+			
+
 			Player.update({
 				name: req.session.player.name
 			}, {
-				gameLevel: levelParam
+				gameLevel: levelParam,
+				money: playerMoney
 			}, function(err, player) {
 				if (err) {
 					returnMessage = err;
