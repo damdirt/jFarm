@@ -9,7 +9,7 @@
 		<div class="pull-left">
 			<form action="/alliance/create" method="post" id="formCreateAlliance" class="standard-form">
 				<input type="hidden" value="create" id="method" name="method" />
-				<input type="hidden" value="<%= user.id %>" name="id" />
+				<input type="hidden" value="<%= player.id %>" name="id" />
 				<div class="controls">
 					<div class="pull-left">
 						<input id="name" name="name" type="text" placeholder="name" required>
@@ -50,6 +50,7 @@
 		</div>
 	</div>
 </div>
+<div id="top-actions-notif"></div>
 <div id="right-actions" class="clear-fix center">
 	<div class="buttons clear-fix">
 		<button class="button pull-left"><i class="icon-leaf"></i></button>
@@ -92,6 +93,7 @@
 	<hr>
 	<span class="txt-green">ESC to cancel</span>
 </div>
+<div id="content-actions-notif"></div>
 <div id="content-actions" class="borders-action clear-fix">
 	<div class="p10 clear-fix" >
 		<div class="w500 block pull-left" id="content-actions-left">
@@ -193,8 +195,8 @@
 					</div>
 					<div class="min-block" id="player-wrapper">
 						<span><strong>Money :</strong> <span id="player-money"></span></span><br />
-						<!-- <span><strong>Level :</strong> <span id="player-level"></span></span><br /> -->
-						<!-- <span><strong>Alliance :</strong> <span id="player-alliance"></span></span><br /> -->
+						<!-- <span><strong>Level :</strong> <span id="player-level"></span><%= player.level %></span><br /> -->
+						<span><strong>Alliance :</strong> <span id="player-alliance">no alliance</span></span><br />
 						<!-- <span><strong>Tiles :</strong> <span id="object-nbtiles"></span></span><br /> -->
 						<!-- <span><strong>Ghost mode :</strong> <span id="object-ghost"></span></span><br /> -->
 						<!-- <span><strong>Buildings :</strong> <span id="object-nbbuildings"></span></span> -->

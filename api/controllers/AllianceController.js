@@ -51,7 +51,7 @@ var AllianceController = {
 											} else {
 												res.end(JSON.stringify({
 													'success': true,
-													'message': 'alliance created correctly',
+													'message': 'Alliance created !',
 													'error': null
 												}));
 											}
@@ -71,7 +71,7 @@ var AllianceController = {
 			} else {
 				res.end(JSON.stringify({
 					'success': false,
-					'message': 'error occured during create alliance (already have an alliance)',
+					'message': 'Sorry, you already have an alliance !',
 					'error': null
 				}));
 			}
@@ -170,7 +170,7 @@ var AllianceController = {
 					} else {
 						res.end(JSON.stringify({
 							'success': true,
-							'message': 'user added correctly',
+							'message': 'User added correctly !',
 							'error': null
 						}));
 					}
@@ -204,7 +204,7 @@ var AllianceController = {
 					} else {
 						res.end(JSON.stringify({
 							'success': true,
-							'message': 'user removed correctly'
+							'message': 'User removed correctly !'
 						}));
 					}
 				});
