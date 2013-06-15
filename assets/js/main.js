@@ -3,8 +3,6 @@ $(function() {
 	//var serverRoot = 'http://localhost:1337';
 	//var socket = io.connect(serverRoot);
 
-
-
 	// NAV MAIN ACTIVE
 	$("nav.main ul a").click(function() {
 		$("nav.main ul a").each(function() {
@@ -164,7 +162,21 @@ $(function() {
 			content = $("#modal-tabs-content .tab-content").eq(index),
 			contents = content.siblings();
 
-		tab.addClass("current").parent()
+		tab.addClass("current")
+			.siblings().removeClass('current');
+		content.show();
+		contents.hide();
+	});
+
+	// DISPLAY TEXT ACTIONS
+	$(".action-display .action-txt").hide();
+	$(".element-actions .action-element").on('mouseover', function() {
+		var tab = $(this),
+			index = tab.index(),
+			content = $(".action-display .action-txt").eq(index),
+			contents = content.siblings();
+
+		tab.addClass("current")
 			.siblings().removeClass('current');
 		content.show();
 		contents.hide();
@@ -182,5 +194,15 @@ $(function() {
 	$('.switch').on('click', function() {
 		$('#search-a').toggle();
 		$('#search-p').toggle();
+	});
+
+	// HIDE ELEMENTS BY ESC
+	$(document).on('keydown', function (e) {
+	    if (e.keyCode === 27) {
+	        $(".modal").hide();
+	        $(".modal-elements").hide();
+	        $("#top-actions").hide();
+	        $(".overlay").hide();
+	    }
 	});
 });

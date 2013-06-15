@@ -27,6 +27,7 @@ $(function() {
 	$(".resultShow").hide();
 	$("#top-actions-notif").hide();
 	$("#content-actions-notif").hide();
+	$(".overlay").hide();
 
 	// BUILDINGS
 	$(".showBuildings").on('click', function() {
