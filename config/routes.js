@@ -204,12 +204,22 @@ module.exports.routes = {
 		action: 'getDetails'
 	},
 
-	//-------------------- END YARD ---------------------
+	//-------------------- HARVESTING --------------------
+
+	'/harvesting/harvest': {
+		controller: 'Harvesting',
+		action: 'harvest'
+	},
+
+	//-------------------- END HARVESTING ----------------
+
+	//-------------------- TEMPLATES ---------------------
 
 	'/templates': {
 		controller: 'jfarm',
 		action: 'templates'
 	},
+	//-------------------- END TEMPLATES ---------------------
 
 	// Keep in mind default routes exist for each of your controllers
 	// So if you have a UserController with an action called "juggle" 

@@ -239,8 +239,9 @@ jfarm = {
 	// player 
 	definePlayerObj: function(playerData) {
 
-		// update ui player labels
-		$('.game').trigger('onUIUpdatePlayer', [playerData]);
+		// update ui player labels only for logged player
+		if(playerData.id == jfarm.playerId)
+			$('.game').trigger('onUIUpdatePlayer', [playerData]);
 
 		// character definition for animation with sheet motion
 		var body = new sheetengine.Sheet({x:0,y:0,z:15}, {alphaD:0,betaD:0,gammaD:0}, {w:11,h:14});
@@ -299,7 +300,7 @@ jfarm = {
 		jfarm.player.animationState = 0;
 		jfarm.player.speed = {x:0,y:0,z:0};
 		jfarm.player.health = 100;
-		jfarm.player.name = playerData.name || "It's me";
+		jfarm.player.name = playerData.name;
 		jfarm.player.data = playerData;
 
 		// set object dimming for player: character will dim other sheets, and other objects will not dim the character
@@ -939,7 +940,6 @@ jfarm = {
 				jfarm.drawingLocationCornersYards[1] = sheetengine.scene.getYardFromPos(jfarm.currentLocationBaseSheets[3].centerp);
 			break;
 			case "cold storage": // cold storage
-				console.log(obj);
 				jfarm.drawingLocationCornersYards[0] = jfarm.clickedYard; 
 				jfarm.drawingLocationCornersYards[1] = sheetengine.scene.getYardFromPos(jfarm.currentLocationBaseSheets[0].centerp);
 				jfarm.drawingLocationCornersYards[2] = sheetengine.scene.getYardFromPos(jfarm.currentLocationBaseSheets[4].centerp);
@@ -1110,7 +1110,6 @@ jfarm = {
 			var createdObj = null
 				,objc = ajaxResponse.centerp; // we retrieve building centerp in server response
 
-			console.log(jfarm.drawnObj.name);
 			switch(jfarm.drawnObj.name.toLowerCase()){
 				case "barn": // barn
 					createdObj = jfarm.defineBarn(objc);
@@ -1504,7 +1503,7 @@ jfarm = {
 			jfarm.hoveredYard = sheetengine.scene.getYardFromPos(jfarm.hoveredBaseSheet.centerp);
 
 		// get hovered object
-		if(!jfarm.drawnObj)
+		if(!jfarm.drawnObj && !jfarm.conquer)
 			jfarm.hoveredObj = jfarm.getHoveredObject(puv);
 
 		if (jfarm.hoveredObj){
