@@ -3,7 +3,7 @@ $(function() {
 	//var serverRoot = 'http://localhost:1337';
 	//var socket = io.connect(serverRoot);
 
-	
+
 
 	// NAV MAIN ACTIVE
 	$("nav.main ul a").click(function() {
@@ -144,7 +144,7 @@ $(function() {
 		contentsLeg.hide();
 	});
 
-	// POPUP
+	// MODAL
 	$(".popup-r").on('click', function(e) {
 		$(".modal").toggle();
 		e.stopPropagation();
@@ -155,6 +155,21 @@ $(function() {
 	$(document).on('click', function() {
 		$(".modal").hide();
 	});
+
+	// MODAL TABS
+	$("#modal-tabs-content .tab-content:not(:first)").hide();
+	$("#modal-tabs .tab-link").on('click', function() {
+		var tab = $(this),
+			index = tab.parent().index(),
+			content = $("#modal-tabs-content .tab-content").eq(index),
+			contents = content.siblings();
+
+		tab.addClass("current").parent()
+			.siblings().removeClass('current');
+		content.show();
+		contents.hide();
+	});
+
 	// ALLIANCES
 	$('#top-actions').hide();
 	$('#search-p').hide();
@@ -169,4 +184,3 @@ $(function() {
 		$('#search-p').toggle();
 	});
 });
-

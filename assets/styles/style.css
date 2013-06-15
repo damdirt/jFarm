@@ -303,16 +303,46 @@ footer {
     color: #333;
 }
 
-#content-actions .modal {
+.modal {
     background-color: #495461;
-    box-shadow: 1px 1px 8px #333333;
+    color: #FFFFFF;
     display: none;
-    margin-top: -359px;
+    margin-left: 410px;
+    margin-top: 60px;
     min-height: 260px;
-    padding: 15px;
+    opacity: 0.9;
     position: absolute;
-    right: 0;
-    width: 360px;
+    top: 0;
+    width: 390px;
+    z-index: 100;
+}
+
+.modal .tabs li {
+    display: inline;
+}
+
+.modal .tabs span {
+    display: block;
+    float: left;
+    padding: 10px 40px;
+    cursor: pointer;
+}
+
+.modal .tabs span:hover {
+    background-color: #AED973;
+}
+
+.modal .current {
+    background-color: #7EBD26;
+}
+
+.modal .current:hover {
+    background-color: #7EBD26 !important;
+    /*color: #FFFFFF !important;*/
+}
+
+#modal-tabs-content {
+    padding: 15px;
 }
 
 .weapons p {
@@ -559,6 +589,12 @@ footer {
     box-shadow: 1px 1px 8px #58595B;
 }
 
+.creator-esc {
+    background-color: #FFFFFF;
+    margin-top: 10px;
+    padding: 5px 0;
+}
+
 .crops p, .buildings p {
     margin: 0;
     text-align: center;
@@ -570,6 +606,70 @@ section {
 	background-color: #FFFFFF;
 	min-height: 600px;
 	box-shadow: 0 0 85px rgba(0, 0, 0, 0.3);
+}
+
+.modal-elements {
+    background-color: #F6F6F6;
+    margin-left: 120px;
+    margin-top: 80px;
+    min-width: 192px;
+    opacity: 0.9;
+    padding: 10px;
+    position: absolute;
+    top: 0;
+}
+
+.elements-actions {
+
+}
+
+.action-element {
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+    float: left;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.action-water {
+    background-image: url(/images/actions/water.png);
+    background-repeat: no-repeat;
+}
+
+.action-fertilize {
+    background-image: url(/images/actions/fertilize.png);
+    background-repeat: no-repeat;
+}
+
+.action-harvest {
+    background-image: url(/images/actions/harvest.png);
+    background-repeat: no-repeat;
+}
+
+.action-harvest-sail {
+    background-image: url(/images/actions/harvest-sail.png);
+    background-repeat: no-repeat;
+}
+
+.action-sail {
+    background-image: url(/images/actions/sail.png);
+    background-repeat: no-repeat;
+}
+
+#elements-stocked .action-element {
+    padding: 0 20px 0 0 !important;
+    float: right;
+    background-position: 50px 0;
+    width: 62px;
+}
+
+#modal-c {
+    /*display: none;*/
+}
+
+#modal-b {
+    display: none;
 }
 
 /* ---------- BUTTONS STYLES ---------- */

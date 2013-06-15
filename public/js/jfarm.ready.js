@@ -7,7 +7,6 @@ $(function() {
 	// WINDOW
 	$(document).on('keyup', function(event) {
 		jfarm.keyup(event);
-<<<<<<< HEAD
 	});
 
 	// UI CHANGES
@@ -25,12 +24,10 @@ $(function() {
 		}
 	});
 
-=======
-	})
 	$(".resultShow").hide();
 	$("#top-actions-notif").hide();
 	$("#content-actions-notif").hide();
->>>>>>> a96854bdf3913b510842c93626da0de3ef6cef66
+
 	// BUILDINGS
 	$(".showBuildings").on('click', function() {
 		$('#top-actions').hide();
