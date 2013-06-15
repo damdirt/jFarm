@@ -181,6 +181,9 @@ $(function() {
 		content.show();
 		contents.hide();
 	});
+	$(".modal-elements").mouseleave(function() {
+		$(".action-display .action-txt").hide();
+	});
 
 	// ALLIANCES
 	$('#top-actions').hide();

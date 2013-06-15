@@ -118,9 +118,7 @@ $(function() {
 
 	// PLAYER DETAILS
 	$('#content-actions').on('getPlayerData', function(e, player) {
-		console.log(player);
 		if (player.allianceId != null && player.allianceId != 0) {
-			// console.log(player);
 			$.ajax({
 				url: "/alliance/" + player.allianceId,
 				dataType: 'json'
