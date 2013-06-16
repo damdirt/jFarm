@@ -11,28 +11,34 @@ $(function() {
 
 	// UI CHANGES
 	// templates && game properties initialization
-	$('.game').on("initTemplatesUI", function(e, templates){
+	$('.game').on("initTemplatesUI", function(e, templates) {
 		console.log(templates);
 	});
 
-	$('.game').on('onUIUpdatePlayer', function(e, player){
-		if (player.allianceId != null && player.allianceId != 0) {
-			$.ajax({
-				url: "/alliance/" + player.allianceId,
-				dataType: 'json'
-			}).done(function(response) {
-				if (player.allianceId != null && player.allianceId != 0) {
-					$('#player-alliance').text(response.name);
-				};
-				if (player.id != response.ownerId) {
-					$("#player-alliance").append(' ' + '<a href="/player/leaveAlliance" id="leaveAlliance">Leave</a>');
-				};
-			});
-		} else {
-			$('#player-alliance').text("no alliance");
-		}
-		if(player){
+	$('.game').on('onUIUpdatePlayer', function(e, player) {
+		if (player) {
+			if (player.allianceId != null && player.allianceId != 0) {
+				$.ajax({
+					url: "/alliance/" + player.allianceId,
+					dataType: 'json'
+				}).done(function(response) {
+					if (player.allianceId != null && player.allianceId != 0) {
+						$('#player-alliance').text(response.name);
+					};
+					if (player.id != response.ownerId) {
+						$("#player-alliance").append(' ' + '<a href="/player/leaveAlliance" id="leaveAlliance">Leave</a>');
+					};
+				});
+			} else {
+				$('#player-alliance').text("no alliance");
+			}
 			$('#player-data-level').text(player.level);
+			// $.ajax({
+			// 	url: "/player/level",
+			// 	dataType: 'json'
+			// }).done(function(response) {
+			// 	$('#player-data-level').text(player.level);
+			// });
 			$('#player-money').text(player.money + " ch.");
 			if (player.allianceId != null && player.allianceId != 0) {
 				$.ajax({
@@ -54,6 +60,28 @@ $(function() {
 		}
 	});
 
+	// DISPLAY BUILDING POPUP DETAILS
+	$('.game').on('onBuildingClick', function(e,buildingId){
+		if (buildingId) {
+			$.ajax({
+				url: "/building/getStorageDetails/" + jfarm.clickedObj.id,
+				dataType: 'json'
+			}).done(function(response) {
+				$('#building-maxCapacity').text(response.template.capacity);
+				$("#building-currentCapacity").text(response.template.capacity);
+				for (var i = 0; i < response.harvestings.length; i++) {
+					$("#elements-harvesting").append('<li class="clear-fix"><div class="pull-left">' + response.harvestings[i].quantity + ' ' + response.harvestings[i].name + '</div><div class="action-element action-harvest"></div></li>');
+				};
+				for (var i = 0; i < response.storedItems.length; i++) {
+					$("#elements-stocked").append('<li class="clear-fix"><div class="pull-left">' + response.storedItems[i].quantity + ' ' + response.storedItems[i].name + '</div><div class="action-element action-sell"></div></li>');
+				};
+			});
+		}
+		else {
+			console.log(response);
+		}
+	});
+
 	$(".resultShow").hide();
 	$("#top-actions-notif").hide();
 	$("#content-actions-notif").hide();
@@ -61,7 +89,7 @@ $(function() {
 
 	// BUILDINGS
 	$(".showBuildings").on('click', function() {
-		$('#top-actions').hide();
+		$("#top-actions").hide();
 		$("#right-actions").toggle();
 	});
 
@@ -98,45 +126,49 @@ $(function() {
 		jfarm.drawnObj = jfarm.getAnyTemplateByName(value);
 		jfarm.drawnObj.type = type;
 
-		jfarm.getPlayerDetails(null, function(player){
+		jfarm.getPlayerDetails(null, function(player) {
 			// we check if player has enough money for crop/building
-			if(player.money >= jfarm.drawnObj.price){
+			if (player.money >= jfarm.drawnObj.price) {
 
-				if(jfarm.dimmedObj){
+				if (jfarm.dimmedObj) {
 					jfarm.dimmedObj.destroy(true);
 					jfarm.redraw();
 				}
 				// to draw object at mouse position
-				var objc = {x:0,y:0,z:0};
-				switch(jfarm.drawnObj.name.toLowerCase()){
+				var objc = {
+					x: 0,
+					y: 0,
+					z: 0
+				};
+				switch (jfarm.drawnObj.name.toLowerCase()) {
 					case "barn": // barn
-						jfarm.dimmedObj = jfarm.defineBarn(objc); 				
-					break;
+						jfarm.dimmedObj = jfarm.defineBarn(objc);
+						break;
 					case "cold storage": // cold storage
-						jfarm.dimmedObj = jfarm.defineColdStorage(objc);						
-					break;
+						jfarm.dimmedObj = jfarm.defineColdStorage(objc);
+						break;
 					case "silo": // silo
 						jfarm.dimmedObj = jfarm.defineSilo(objc);
-					break;
+						break;
 					case "corn": // corn
 						jfarm.dimmedObj = jfarm.defineCrops(objc, "Corn", "#fef094", true, "#319704");
-					break;
+						break;
 					case "tomatoes": // tomatoes
 						jfarm.dimmedObj = jfarm.defineTomatoesPlants(objc);
-					break;
+						break;
 					case "wheat": // wheat
 						jfarm.dimmedObj = jfarm.defineCrops(objc, "Wheat", "#fef094");
-					break;
+						break;
 					default:
 				}
 				jfarm.dimmedObj.hide();
 
 				// ui
-				$('.crop, .building').each(function(index, elem){
+				$('.crop, .building').each(function(index, elem) {
 					var $elem = $(elem);
-					if($elem.data('value').toLowerCase() === jfarm.drawnObj.name.toLowerCase())
+					if ($elem.data('value').toLowerCase() === jfarm.drawnObj.name.toLowerCase())
 						$elem.parent().addClass('active');
-					else 
+					else
 						$elem.parent().removeClass('active');
 				});
 			} else {
@@ -179,8 +211,8 @@ $(function() {
 
 	// PLAYER DETAILS
 	// $('#content-actions').on('getPlayerData', function(e, player) {
-		
-		
+
+
 	// 	$('#player-data-level').text(player.level);
 	// 	$('#player-money').text(player.money + " ch.");
 	// 	// $('#player-data-life').text(player.);
@@ -201,7 +233,7 @@ $(function() {
 	});
 
 	// OBJECTS 
-	$('#object-wrapper').on('onGettingObjectDetails', function(e){
+	$('#object-wrapper').on('onGettingObjectDetails', function(e) {
 		$(this).find('.object-property-value').html("loading...");
 		$('#tile-owner').text("...");
 		$('#tile-fertility').text("...");
@@ -216,7 +248,7 @@ $(function() {
 		// $('#object-alliance').text(obj.content.name); // TODO
 	});
 
-	$('#modal-c').on('init', function(e, mouseX, mouseY, obj){
+	$('#modal-c').on('init', function(e, mouseX, mouseY, obj) {
 		$(this).show();
 		// console.log(mouseY);
 		// console.log(mouseX);
@@ -224,11 +256,11 @@ $(function() {
 	});
 
 	// HARVEST
-	$('.action-harvest').on('click', function(){
+	$('.action-harvest').on('click', function() {
 		// if(jfarm.loadedObj)
 		// 	jfarm.harvest(jfarm.loadedObj, 45); // TODO : productivity
 		// else 
-		jfarm.getObjectDetails(jfarm.clickedObj,function(response){
+		jfarm.getObjectDetails(jfarm.clickedObj, function(response) {
 			jfarm.harvest(response.obj, 45); // TODO : productivity
 		});
 	});
@@ -236,7 +268,7 @@ $(function() {
 	// SEARCH ALLIANCE
 	$("#searchA").on('keyup', function(e) {
 		$(".results").show();
-		if(e.keyCode == 16) // shift 
+		if (e.keyCode == 16) // shift 
 			return;
 		$(".resultsA").html("");
 		var kw = $("#searchA").val();
@@ -247,9 +279,9 @@ $(function() {
 				data: "kw=" + kw
 			}).done(function(response) {
 				$.each(response.alliances, function(i) {
-					var allianceName = response.alliances[i].name
-						,allianceId = response.alliances[i].id;
-					$(".resultsA").append('<li class="showA clear-fix">' + '<input class="allianceId" type="hidden" value="' + allianceId +'">' + allianceName + '</li>');
+					var allianceName = response.alliances[i].name,
+						allianceId = response.alliances[i].id;
+					$(".resultsA").append('<li class="showA clear-fix">' + '<input class="allianceId" type="hidden" value="' + allianceId + '">' + allianceName + '</li>');
 				});
 			});
 		} else {
@@ -271,8 +303,8 @@ $(function() {
 				dataType: 'json',
 				data: "kw=" + kw
 			}).done(function(response) {
-				var allianceName = response.alliance.name
-					,allianceId = response.alliance.id;
+				var allianceName = response.alliance.name,
+					allianceId = response.alliance.id;
 				$(".resultShowA").append("<li>id : " + allianceId + "</li>" + "<li>Name : " + allianceName + "</li>" + '<li class="txt-green">Membres : ');
 				$.each(response.players, function(i) {
 					var playerName = response.players[i].name;
@@ -285,7 +317,7 @@ $(function() {
 	// SEARCH PLAYER
 	$("#searchP").on('keyup', function(e) {
 		$(".results").show();
-		if(e.keyCode == 16)
+		if (e.keyCode == 16)
 			return;
 		$(".resultsP").html("");
 		var kw = $("#searchP").val();
@@ -296,9 +328,9 @@ $(function() {
 				data: "kw=" + kw
 			}).done(function(response) {
 				$.each(response.players, function(i) {
-					var playerName = response.players[i].name
-						,playerId = response.players[i].id;
-					$(".resultsP").append('<li class="showP clear-fix">' + '<input class="playerId" type="hidden" value="' + playerId +'">' + playerName + '</li>');
+					var playerName = response.players[i].name,
+						playerId = response.players[i].id;
+					$(".resultsP").append('<li class="showP clear-fix">' + '<input class="playerId" type="hidden" value="' + playerId + '">' + playerName + '</li>');
 				});
 			});
 		} else {
@@ -320,18 +352,17 @@ $(function() {
 				dataType: 'json',
 				data: "kw=" + kw
 			}).done(function(response) {
-				var playerName = response.player.name
-					,playerId = response.player.id
-					,allianceId = response.player.allianceId
-					,currentPlayerId = response.currentPlayer.id
-					,form
-					,alliance;
+				var playerName = response.player.name,
+					playerId = response.player.id,
+					allianceId = response.player.allianceId,
+					currentPlayerId = response.currentPlayer.id,
+					form, alliance;
 				console.log(allianceId);
 				if (allianceId != null && allianceId != 0) {
-					var allianceOwnerId = response.alliance.ownerId
-						,alliance = response.alliance.name;
+					var allianceOwnerId = response.alliance.ownerId,
+						alliance = response.alliance.name;
 					if (currentPlayerId == allianceOwnerId) {
-						form = '<li><form action="/alliance/removePlayer" method="post" id="formRemPlayer">' + '<input type="hidden" name="playerId" value="' + playerId +'">' + '<button type="submit" class="btn-flat btn-flat-red">Remove</button></form></li>';
+						form = '<li><form action="/alliance/removePlayer" method="post" id="formRemPlayer">' + '<input type="hidden" name="playerId" value="' + playerId + '">' + '<button type="submit" class="btn-flat btn-flat-red">Remove</button></form></li>';
 					} else {
 						form = "";
 					}
@@ -341,17 +372,17 @@ $(function() {
 					$(".resultShowP").append("<li>id : " + playerId + "</li>" + "<li>Name : " + playerName + "</li>" + "<li>Alliance : " + alliance + "</li>" + form);
 				} else {
 					alliance = "Pas d'alliance";
-					form = '<li><form action="/alliance/addPlayer" method="post" id="formAddPlayer">' + '<input type="hidden" name="playerId" value="' + playerId +'">' + '<button type="submit" class="btn-flat btn-flat-grey-light">Add</button></form></li>';
+					form = '<li><form action="/alliance/addPlayer" method="post" id="formAddPlayer">' + '<input type="hidden" name="playerId" value="' + playerId + '">' + '<button type="submit" class="btn-flat btn-flat-grey-light">Add</button></form></li>';
 					$(".resultShowP").append("<li>id : " + playerId + "</li>" + "<li>Name : " + playerName + "</li>" + "<li>Alliance : " + alliance + "</li>" + form);
 				}
 			});
 		}
 	});
-	
+
 	// AJAX CREATE ALLIANCE
 	$("#formCreateAlliance").on('submit', function() {
 		var $form = $(this);
-		jfarm.requestAjax($form.attr('action'),$form.serialize(),function(response) {
+		jfarm.requestAjax($form.attr('action'), $form.serialize(), function(response) {
 			$("#top-actions-notif").fadeIn();
 			$("#top-actions-notif").html("<li>" + response.message + "</li>");
 			setTimeout(function() {
@@ -364,34 +395,40 @@ $(function() {
 
 	// AJAX ADD/REMOVE PLAYER FROM ALLIANCE
 	$(document).on('submit', '#formAddPlayer,#formRemPlayer', function() {
-		var $form = $(this);
-		jfarm.requestAjax($form.attr('action'),$form.serialize(),function(response) {
-			$("#top-actions-notif").fadeIn();
-			$("#top-actions-notif").html("<li>" + response.message + "</li>");
-			setTimeout(function() {
-				$("#top-actions-notif").fadeOut();
-				$("#top-actions-notif").html("");
-			}, 2000);
-			$(".resultShow").toggle();
-			$(".results").toggle();
-		});
+		var answer = confirm("Etes vous sur ?");
+		if (answer) {
+			var $form = $(this);
+			jfarm.requestAjax($form.attr('action'), $form.serialize(), function(response) {
+				$("#top-actions-notif").fadeIn();
+				$("#top-actions-notif").html("<li>" + response.message + "</li>");
+				setTimeout(function() {
+					$("#top-actions-notif").fadeOut();
+					$("#top-actions-notif").html("");
+				}, 2000);
+				$(".resultShow").toggle();
+				$(".results").toggle();
+			});
+		}
 		return false;
 	});
 
 	// AJAX PLAYER LEAVE ALLIANCE
 	$(document).on('click', '#leaveAlliance', function() {
-		var $link = $(this);
-		jfarm.requestAjax($link.attr('href'),null,function(response) {
-			$('#content-actions').trigger('onUIUpdatePlayer', [response.player]);
-			$("#content-actions-notif").fadeIn();
-			$("#content-actions-notif").html("<li>" + response.message + "</li>");
-			setTimeout(function() {
-				$("#content-actions-notif").fadeOut();
-				$("#content-actions-notif").html("");
-			}, 2000);
-		});
+		var answer = confirm("Etes vous sur de vouloir quitter l'alliance ?");
+		if (answer) {
+			var $link = $(this);
+			jfarm.requestAjax($link.attr('href'), null, function(response) {
+				$('#content-actions').trigger('onUIUpdatePlayer', [response.player]);
+				$("#content-actions-notif").fadeIn();
+				$("#content-actions-notif").html("<li>" + response.message + "</li>");
+				setTimeout(function() {
+					$("#content-actions-notif").fadeOut();
+					$("#content-actions-notif").html("");
+				}, 2000);
+			});
+		}
 		return false;
-	})
+	});
 
 	$(".resultShow").on('click', function(e) {
 		e.stopPropagation();

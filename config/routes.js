@@ -146,6 +146,11 @@ module.exports.routes = {
 		action: 'show'
 	},
 
+	'/player/level': {
+		controller: 'player',
+		action: 'setNbTilesAndLevel'
+	},
+
 	//-------------------- END PLAYER ------------------------
 
 	//------------------- ALLIANCE -----------------------------

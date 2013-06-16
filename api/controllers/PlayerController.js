@@ -120,6 +120,26 @@ var PlayerController = {
 								}));
 							}
 						});
+						var playerId = req.session.player.id;
+						Yard.findAll({
+							playerId: playerId
+						}).done(function(err, yards){
+							var nbTilesPlayer = yards.length;
+							var levelPlayer = nbTilesPlayer / 5;
+							Player.update({
+								id: playerId
+							}, {
+								nbTiles: nbTilesPlayer,
+								level: levelPlayer
+							}, function(err, player) {
+								// Error handling
+								if (err) {
+									console.log("test");
+								} else {
+									console.log("test");
+								}
+							});
+						});
 					} else {
 						res.end(JSON.stringify({
 							'success': false,
@@ -228,6 +248,48 @@ var PlayerController = {
 						'error': null
 					}));
 				}
+			});
+		} else {
+			res.end(JSON.stringify({
+				'success': false,
+				'message': 'req failed',
+				'player': req.session.player,
+				'error': null
+			}));
+		}
+	},
+	setNbTilesAndLevel: function(req, res) {
+		if (req.isAjax) {
+			var playerId = req.session.player.id;
+			Yard.findAll({
+				playerId: playerId
+			}).done(function(err, yards){
+				var nbTilesPlayer = yards.length;
+				var levelPlayer = nbTilesPlayer / 5;
+				Player.update({
+					id: playerId
+				}, {
+					nbTiles: nbTilesPlayer,
+					level: levelPlayer
+				}, function(err, player) {
+					// Error handling
+					if (err) {
+						res.end(JSON.stringify({
+						'success': false,
+						'message': 'req failed',
+						'player': req.session.player,
+						'error': null
+					}));
+					} else {
+						req.session.player.nbTiles = nbTilesPlayer;
+						res.end(JSON.stringify({
+						'success': true,
+						'message': 'req failed',
+						'player': req.session.player,
+						'error': null
+					}));
+					}
+				});
 			});
 		} else {
 			res.end(JSON.stringify({
