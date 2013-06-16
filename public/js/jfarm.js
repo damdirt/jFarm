@@ -1632,6 +1632,7 @@ jfarm = {
 		jfarm.clickedYard =  sheetengine.scene.getYardFromPos(jfarm.clickedBaseSheet.centerp);
 
 		$('#modal-c').hide();
+		$('#modal-b').hide();
 
 		// console.log(jfarm.clickedYard.yardx + "," + jfarm.clickedYard.yardy);
 		// console.log(yard);
@@ -1661,7 +1662,7 @@ jfarm = {
 			if(jfarm.clickedObj.type == 'crop'){
 				jfarm.setTarget(jfarm.player, jfarm.clickedObj.centerp);
 			} else {
-				$('game').trigger('onBuildingClick', [jfarm.clickedObj.id]);
+				$('.game').trigger('onBuildingClick', [jfarm.clickedObj.idDB]);
 			}
 		}
 	},

@@ -104,7 +104,7 @@ var BuildingController = {
 									.done(function(err, harvesting) {
 									if (!err) {
 										// we check quantity/capacity
-										if (harvesting.capacity + building.currentStorageCapacity < tpl.storageCapacity) {
+										if (harvesting.quantity + building.currentStorageCapacity < tpl.storageCapacity) {
 
 											// CREATION OF THE STORAGE ITEM
 											StorageItem.create({

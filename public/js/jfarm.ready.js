@@ -64,13 +64,16 @@ $(function() {
 	$('.game').on('onBuildingClick', function(e, buildingId) {
 		if (buildingId) {
 			$.ajax({
-				url: "/building/getStorageDetails/" + jfarm.clickedObj.id,
+				url: "/building/getstoragedetails/" + buildingId,
 				dataType: 'json'
 			}).done(function(response) {
-				$('#building-maxCapacity').text(response.template.capacity);
-				$("#building-currentCapacity").text(response.template.capacity);
+				$("#modal-b").show();
+				$('#building-maxCapacity').text('Max capacity : ' + response.template.storageCapacity);
+				$("#building-currentCapacity").text('Current capacity : ' + response.template.storageCapacity);
+				$("#elements-harvesting").html("");
+				console.log(response);
 				for (var i = 0; i < response.harvestings.length; i++) {
-					$("#elements-harvesting").append('<li class="clear-fix"><div class="pull-left">' + response.harvestings[i].quantity + ' ' + response.harvestings[i].name + '</div><div class="action-element action-harvest"></div></li>');
+					$("#elements-harvesting").append('<li class="clear-fix"><div class="pull-left">' + response.harvestings[i].quantity + ' ' + response.harvestings[i].name + '</div><div class="action-element action-harvest" data-harvestingId="' + response.harvestings[i].id + '" data-buildingId="' + buildingId + '" data-buildingTemplateId="' + response.building.buildingTemplateId + '"></div></li>');
 				};
 				for (var i = 0; i < response.storedItems.length; i++) {
 					$("#elements-stocked").append('<li class="clear-fix"><div class="pull-left">' + response.storedItems[i].quantity + ' ' + response.storedItems[i].name + '</div><div class="action-element action-sell"></div></li>');
@@ -79,6 +82,19 @@ $(function() {
 		} else {
 			console.log(response);
 		}
+	});
+	
+	$(document).on('click', '#modal-b .action-harvest' , function(e, harvestingId, buildingId, buildingTemplateId) {
+		harvestingId = $('#modal-b .action-harvest').attr('data-harvestingId');
+		buildingId = $('#modal-b .action-harvest').attr('data-buildingId');
+		buildingTemplateId = $('#modal-b .action-harvest').attr('data-buildingTemplateId');
+		console.log(buildingTemplateId);
+		$.ajax({
+			url: "/building/storeharvesting/" + harvestingId + "/" + buildingId + "/" + buildingTemplateId,
+			dataType: 'json'
+		}).done(function(response) {
+			
+		});
 	});
 
 	$('.game').on('onUIUpdateTile', function(e, tile) {

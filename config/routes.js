@@ -223,6 +223,11 @@ module.exports.routes = {
 		action: 'getStorageDetails'
 	},
 
+	'/building/storeharvesting/:harvestingId/:buildingId/:buildingTemplateId': {
+		controller: 'building',
+		action: 'storeHarvesting'
+	},
+
 	//-------------------- HARVESTING --------------------
 
 	'/harvesting/harvest': {
