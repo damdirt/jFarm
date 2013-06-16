@@ -115,17 +115,10 @@ $(function() {
 		// $('#object-alliance').text(obj.content.name); // TODO
 	});
 
-	$.ajax({
-		url: "/settings/weapontemplate/jsonlist",
-		dataType: 'json'
-	}).done(function(response) {
-		console.log(response);
-	});
-
 	// SEARCH ALLIANCE
 	$("#searchA").on('keyup', function(e) {
 		$(".results").show();
-		if(e.keyCode == 16)
+		if (e.keyCode == 16)
 			return;
 		$(".resultsA").html("");
 		var kw = $("#searchA").val();
@@ -138,7 +131,7 @@ $(function() {
 				$.each(response.alliances, function(i) {
 					var allianceName = response.alliances[i].name;
 					var allianceId = response.alliances[i].id;
-					$(".resultsA").append('<li class="showA clear-fix">' + '<input class="allianceId" type="hidden" value="' + allianceId +'">' + allianceName + '</li>');
+					$(".resultsA").append('<li class="showA clear-fix">' + '<input class="allianceId" type="hidden" value="' + allianceId + '">' + allianceName + '</li>');
 				});
 			});
 		} else {
@@ -174,7 +167,7 @@ $(function() {
 	// SEARCH PLAYER
 	$("#searchP").on('keyup', function(e) {
 		$(".results").show();
-		if(e.keyCode == 16)
+		if (e.keyCode == 16)
 			return;
 		$(".resultsP").html("");
 		var kw = $("#searchP").val();
@@ -187,7 +180,7 @@ $(function() {
 				$.each(response.players, function(i) {
 					var playerName = response.players[i].name;
 					var playerId = response.players[i].id;
-					$(".resultsP").append('<li class="showP clear-fix">' + '<input class="playerId" type="hidden" value="' + playerId +'">' + playerName + '</li>');
+					$(".resultsP").append('<li class="showP clear-fix">' + '<input class="playerId" type="hidden" value="' + playerId + '">' + playerName + '</li>');
 				});
 			});
 		} else {
@@ -220,7 +213,7 @@ $(function() {
 					var allianceOwnerId = response.alliance.ownerId;
 					alliance = response.alliance.name;
 					if (currentPlayerId == allianceOwnerId) {
-						form = '<li><form action="/alliance/removePlayer" method="post" id="formRemPlayer">' + '<input type="hidden" name="playerId" value="' + playerId +'">' + '<button type="submit" class="btn-flat btn-flat-red">Remove</button></form></li>';
+						form = '<li><form action="/alliance/removePlayer" method="post" id="formRemPlayer">' + '<input type="hidden" name="playerId" value="' + playerId + '">' + '<button type="submit" class="btn-flat btn-flat-red">Remove</button></form></li>';
 					} else {
 						form = "";
 					}
@@ -230,7 +223,7 @@ $(function() {
 					$(".resultShowP").append("<li>id : " + playerId + "</li>" + "<li>Name : " + playerName + "</li>" + "<li>Alliance : " + alliance + "</li>" + form);
 				} else {
 					alliance = "Pas d'alliance";
-					form = '<li><form action="/alliance/addPlayer" method="post" id="formAddPlayer">' + '<input type="hidden" name="playerId" value="' + playerId +'">' + '<button type="submit" class="btn-flat btn-flat-grey-light">Add</button></form></li>';
+					form = '<li><form action="/alliance/addPlayer" method="post" id="formAddPlayer">' + '<input type="hidden" name="playerId" value="' + playerId + '">' + '<button type="submit" class="btn-flat btn-flat-grey-light">Add</button></form></li>';
 					$(".resultShowP").append("<li>id : " + playerId + "</li>" + "<li>Name : " + playerName + "</li>" + "<li>Alliance : " + alliance + "</li>" + form);
 				}
 			});
@@ -239,7 +232,7 @@ $(function() {
 
 	$("#formCreateAlliance").on('submit', function() {
 		var $form = $(this);
-		jfarm.requestAjax($form.attr('action'),$form.serialize(),function(response) {
+		jfarm.requestAjax($form.attr('action'), $form.serialize(), function(response) {
 			console.log(response);
 		});
 		return false;
@@ -247,7 +240,7 @@ $(function() {
 
 	$(document).on('submit', '#formAddPlayer,#formRemPlayer', function() {
 		var $form = $(this);
-		jfarm.requestAjax($form.attr('action'),$form.serialize(),function(response) {
+		jfarm.requestAjax($form.attr('action'), $form.serialize(), function(response) {
 			console.log(response);
 			$(".resultShow").toggle();
 			$(".results").toggle();
@@ -261,4 +254,12 @@ $(function() {
 	$(document).on('click', function() {
 		$(".resultShow").hide();
 	});
+	window.onunload = window.onbeforeunload = (function() {
+		var didMyThingYet = false;
+		return function() {
+			if (didMyThingYet) return;
+			didMyThingYet = true;
+			jfarmio.sendLogout(jfarm.playerId);
+		}
+	}());
 });

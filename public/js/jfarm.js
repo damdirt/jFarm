@@ -139,7 +139,9 @@ jfarm = {
 			,x: 7
 			,y: 10
 		}
-	} 
+	}
+	// enemies
+	,enemies: {}
 	
 	,init: function() {
 
@@ -235,8 +237,9 @@ jfarm = {
 	// player 
 	definePlayerObj: function(playerData) {
 
-		// update ui player labels
-		$('#content-actions').trigger('getPlayerData', [playerData]);
+		// update ui player labels nly for loged player
+		if(playerData.id = jfarm.playerId)
+			$('#content-actions').trigger('getPlayerData', [playerData]);
 
 		// character definition for animation with sheet motion
 		var body = new sheetengine.Sheet({x:0,y:0,z:15}, {alphaD:0,betaD:0,gammaD:0}, {w:11,h:14});
@@ -295,7 +298,7 @@ jfarm = {
 		jfarm.player.animationState = 0;
 		jfarm.player.speed = {x:0,y:0,z:0};
 		jfarm.player.health = 100;
-		jfarm.player.name = playerData.name || "It's me";
+		jfarm.player.name = playerData.name;
 		jfarm.player.data = playerData;
 
 		// set object dimming for player: character will dim other sheets, and other objects will not dim the character
@@ -303,6 +306,107 @@ jfarm = {
 
 		sheetengine.calc.calculateAllSheets();
 		jfarm.redraw(true);
+		jfarmio.sendData(jfarm.player, 'login');
+	},
+
+	createCharacter: function(centerp, obj) {
+		// character definition for animation with sheet motion
+		var body = new sheetengine.Sheet({x:0,y:0,z:15}, {alphaD:0,betaD:0,gammaD:0}, {w:11,h:14});
+		var backhead = new sheetengine.Sheet({x:0,y:-1,z:19}, {alphaD:0,betaD:0,gammaD:0}, {w:8,h:6});
+		backhead.context.fillStyle = obj.player.hairColor || '#550';
+		backhead.context.fillRect(0,0,8,6);
+		// legs
+		var leg1 = new sheetengine.Sheet({x:-3,y:0,z:4}, {alphaD:0,betaD:0,gammaD:0}, {w:5,h:8});
+		leg1.context.fillStyle = obj.player.pantsColor || '#00F';
+		leg1.context.fillRect(0,0,5,10);
+		var leg2 = new sheetengine.Sheet({x:3,y:0,z:4}, {alphaD:0,betaD:0,gammaD:0}, {w:5,h:8});
+		leg2.context.fillStyle = obj.player.pantsColor || '#00F';
+		leg2.context.fillRect(0,0,5,10);
+		leg1.angle = 0;
+		leg2.angle = 0;
+		
+		var ctx = body.context;
+		
+		// head
+		ctx.fillStyle = obj.player.skinColor || '#FF0';
+		ctx.fillRect(2,2,7,4);
+		ctx.fillStyle = obj.player.hairColor || '#550';
+		ctx.fillRect(2,0,7,2);
+		ctx.fillRect(2,2,1,1);
+		ctx.fillRect(8,2,1,1);
+
+		// body
+		ctx.fillStyle = obj.player.tshirtColor || '#F0F';
+		ctx.fillRect(0,6,11,7);
+		  
+		// hands
+		ctx.fillStyle = obj.player.skinColor || '#FF0';
+		ctx.fillRect(0,11,1,2);
+		ctx.fillRect(10,11,1,2);
+
+		// define player object
+		newPlayer = new sheetengine.SheetObject(
+							  {x:centerp.x,y:centerp.y,z:centerp.z}
+							, {alphaD:0,betaD:0,gammaD:0}
+							, [body,backhead,leg1,leg2]
+							, {w:40,h:40,relu:20,relv:30}
+						);
+		newPlayer.leg1 = leg1;
+		newPlayer.leg2 = leg2;
+		
+		newPlayer.animationState = obj.animationState;
+		newPlayer.speed = {x:0,y:0,z:0};
+		newPlayer.health = obj.player.health;
+		newPlayer.name = obj.player.name;
+		newPlayer.data = obj.player;
+
+		// set object dimming for player: character will dim other sheets, and other objects will not dim the character
+		newPlayer.setDimming(true, true);
+		sheetengine.calc.calculateAllSheets();
+		return newPlayer;
+	},
+	recvData: function(data) {
+		if (jfarm.enemies.hasOwnProperty('e'+data.player.id)) {
+			var enemy = jfarm.enemies['e'+data.player.id];
+			var centerp = jfarm.correctPointAfterReceive(data.centerp);
+			var moved = centerp.x != enemy.centerp.x || centerp.y != enemy.centerp.y || centerp.z != enemy.centerp.z;
+			enemy.setPosition(centerp);
+			enemy.setOrientation(data.rot);
+			if (moved) {
+				enemy.animationState = data.animationState;
+				jfarm.animateCharacter(enemy, enemy.animationState);
+				sheetengine.calc.calculateChangedSheets();
+				jfarm.redraw();
+			}
+		} else {
+			jFarm.newEnemy(data);
+		}
+	},
+	recvLogout: function(id) {
+		console.log(id);
+		if (jfarm.enemies.hasOwnProperty('e'+id)) {
+			var enemy = jfarm.enemies['e'+id];
+			enemy.destroy(true);
+			delete jfarm.enemies['e'+id];
+			sheetengine.calc.calculateChangedSheets();
+			jfarm.redraw();
+		}
+	},
+	newEnemy: function(data) {
+		if (!jfarm.enemies.hasOwnProperty('e'+data.player.id)) {
+		var centerp = jfarm.correctPointAfterReceive(data.centerp);
+		var enemyobj = jfarm.createCharacter(centerp, data);
+		jfarm.redraw(true);
+		jfarm.enemies['e'+data.player.id] = enemyobj;
+		}
+	},
+	correctPointBeforeSend: function(point) {
+		var relCenter = {x:sheetengine.scene.tilewidth * sheetengine.scene.yardcenterstart.yardx, y:sheetengine.scene.tilewidth*sheetengine.scene.yardcenterstart.yardy, z:0};
+		return sheetengine.geometry.addPoint(point, relCenter);
+	},
+	correctPointAfterReceive: function(point) {
+		var relCenter = {x:sheetengine.scene.tilewidth * sheetengine.scene.yardcenterstart.yardx, y:sheetengine.scene.tilewidth*sheetengine.scene.yardcenterstart.yardy, z:0};
+		return sheetengine.geometry.subPoint(point, relCenter);
 	},
 	// weapons and player objects
 	definePlayerObjects: function(){
@@ -433,6 +537,9 @@ jfarm = {
 		// move towards target
 		var targetp = jfarm.moveTowardsTarget(obj, jfarm.maxmove);
 		
+
+		jfarmio.sendData(obj,'move');
+
 		if (jfarm.characterAtTargetObj(obj)) {
 			jfarm.characterArrived(obj);
 			return;
@@ -1425,6 +1532,7 @@ jfarm = {
 
 		return crop;
 	},
+	
 	// event handlers
 	click: function(event) {
 		// if (jfarm.player.killed)
@@ -1532,7 +1640,7 @@ jfarm = {
 	timer: function() {
 		var startTime = new Date().getTime()
 			,sceneChanged = 0;
-		
+
 		// hovered basesheets
 		if(jfarm.preHoveredBaseSheet != jfarm.hoveredBaseSheet && !jfarm.drawnObj){
 			jfarm.tileDelayTime = new Date().getTime();
@@ -1580,6 +1688,13 @@ jfarm = {
 				sceneChanged = 1;
 				// sheetengine.calc.calculateChangedSheets();
 			}
+
+			//console.log(jfarm.player.moved);
+			if(jfarm.player.moved == true && jfarm.player.arrived == false){
+				jfarmio.sendData(jfarm.player, 'move');
+			}
+
+
 		}
 		
 
@@ -1648,4 +1763,6 @@ jfarm = {
 
 $(function(){
 	jfarm.init();
+	// io listener
+	jfarmio.listener();
 });

@@ -9,7 +9,8 @@ module.exports = {
 		username: 'TEXT',
 		email: 'TEXT',
 		password: 'TEXT',
-        administrator: 'boolean'
+        administrator: 'boolean',
+        online: 'boolean'
 
 	}
 
