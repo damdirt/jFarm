@@ -732,7 +732,7 @@ jfarm = {
 	},
 	// drawing
 	redraw: function(full) {
-		console.log("redraw");
+		// console.log("redraw");
 		sheetengine.drawing.drawScene(full);
 		
 		// static drawing
@@ -1626,7 +1626,7 @@ jfarm = {
 			if(jfarm.clickedObj.type == 'crop'){
 				jfarm.setTarget(jfarm.player, jfarm.clickedObj.centerp);
 			} else {
-				$('.game').trigger('onBuildingClick', [jfarm.clickedObj.id]);
+				$('.game').trigger('onBuildingClick', [jfarm.clickedObj.idDB]);
 			}
 		}
 	},

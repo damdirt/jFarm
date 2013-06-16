@@ -114,31 +114,52 @@ var BuildingController = {
 												cropTemplateId: harvesting.cropTemplateId,
 												buildingId: buildingIdParam
 											}).done(function(err, item) {
-												if (!err) {
-													// we destroy old harvesting
-													Harvesting.destroy(harvestingIdParam, function(err) {
-														if (!err) {
-															res.end(JSON.stringify({
-																success: true,
-																message: "StorageItem created",
-																error: null,
-																item: item
-															}));
-														} else {
-															res.end(JSON.stringify({
-																success: false,
-																message: "Error during Harvesting deleting",
-																error: err
-															}));
-														}
-													});
-												} else {
-													res.end(JSON.stringify({
-														success: false,
-														message: "Error during StorageItem creation",
-														error: err
-													}));
-												}
+												Harvesting.findAll({
+													playerId: req.session.player.id
+												}).done(function(err, harvestings) {
+													if (!err) {
+														// storage items
+														StorageItem.findAll({
+															buildingId: building.id
+														}).done(function(err, items) {
+															if (!err) {
+																// we destroy old harvesting
+																Harvesting.destroy(harvestingIdParam, function(err) {
+																	if (!err) {
+																		res.end(JSON.stringify({
+																			success: true,
+																			message: "StorageItem created",
+																			error: null,
+																			template: tpl,
+																			item: item,
+																			storedItems: items,
+																			harvestings: harvestings,
+																			building: building
+																		}));
+																	} else {
+																		res.end(JSON.stringify({
+																			success: false,
+																			message: "Error during Harvesting deleting",
+																			error: err
+																		}));
+																	}
+																});
+															} else {
+																res.end(JSON.stringify({
+																	success: false,
+																	message: "Error during StorageItem creation",
+																	error: err
+																}));
+															}
+														});
+													} else {
+														res.end(JSON.stringify({
+															success: false,
+															message: "Error during retrieving list of storage items",
+															error: err
+														}));
+													}
+												});
 											});
 										} else {
 											res.end(JSON.stringify({
