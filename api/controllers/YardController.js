@@ -4,6 +4,156 @@
 ---------------------*/
 var YardController = {
 
+	fertilize: function(req, res) {
+		if (!req.isAjax) {
+			res.redirect('/');
+		} else {
+			res.writeHead(200, {
+				'Content-Type': 'application/json',
+				'Access-Control-Allow-Origin': '*' // implementation of CORS
+			});
+
+			if (req.param('x') && req.param('y')) {
+				var xParam = parseInt(req.param('x'));
+				var yParam = parseInt(req.param('y'));
+
+				Yard.find({
+					x: xParam,
+					y: yParam
+				}).done(function(err, yard) {
+					if (err) {
+						res.end(JSON.stringify({
+							'success': false,
+							'message': 'no yard at this position',
+							'error': err
+						}));
+					} else {
+						var fertility = (yard.fertility + 10 < 100) ? yard.fertility + 10 : 100;
+						Yard.update({
+							x: xParam,
+							y: yParam
+						}, {
+							fertility: fertility
+						}, function(err, yardUpdated) {
+							if (err) {
+								res.end(JSON.stringify({
+									'success': false,
+									'message': 'no yard at this position',
+									'error': err
+								}));
+							} else {
+								// we udpate player's money (fertilizer costs 10ch.)
+								req.session.player.money = req.session.player.money - 10;
+								Player.update(
+									req.session.player.id, {
+									money: req.session.player.money
+								}, function(err) {
+									if (err) {
+										res.end(JSON.stringify({
+											'success': false,
+											'message': 'error during player\'s money updating',
+											'error': err
+										}));
+									} else {
+										yard.values = undefined;
+										yard.fertility = fertility;
+										Player.find({
+											id: yard.playerId
+										}).done(function(err, player) {
+											if (!player) {
+												yard.player = null;
+											} else {
+												player.values = undefined;
+												yard.player = player;
+											}
+											res.end(JSON.stringify({
+												'success': true,
+												'message': 'Tile\'s fertility updated to ' + fertility + " %",
+												'error': null,
+												'yard': yard,
+											}));
+										});
+									}
+								});
+							}
+						});
+					}
+				});
+			} else {
+				res.end(JSON.stringify({
+					'success': false,
+					'message': 'parameter(s) missing',
+					'error': null
+				}));
+			}
+		}
+	},
+	water: function(req, res) {
+		if (!req.isAjax) {
+			res.redirect('/');
+		} else {
+			res.writeHead(200, {
+				'Content-Type': 'application/json',
+				'Access-Control-Allow-Origin': '*' // implementation of CORS
+			});
+
+			if (req.param('x') && req.param('y')) {
+				var xParam = parseInt(req.param('x'));
+				var yParam = parseInt(req.param('y'));
+
+				Yard.update({
+					x: xParam,
+					y: yParam
+				}, {
+					humidity: 100
+				}, function(err, yard) {
+					if (err) {
+						res.end(JSON.stringify({
+							'success': false,
+							'message': 'no yard at this position',
+							'error': err
+						}));
+					} else {
+						Yard.find({
+							x: xParam,
+							y: yParam
+						}).done(function(arr, yard) {
+							if (err) {
+								res.end(JSON.stringify({
+									'success': false,
+									'message': 'no yard at this position',
+									'error': err
+								}));
+							} else {
+								Player.find({
+									id: yard.playerId
+								}).done(function(err, player) {
+									if (!player) {
+										yard.player = null;
+									} else {
+										player.values = undefined;
+										yard.player = player;
+									}
+									res.end(JSON.stringify({
+										'success': true,
+										'message': 'Tile\'s humidity updated to 100%',
+										'error': null,
+										'yard': yard,
+									}));
+								});
+							}
+						});
+					}
+				});
+			} else {
+				res.end(JSON.stringify({
+					'success': false,
+					'message': 'parameter(s) missing',
+					'error': null
+				}));
+			}
+		}
+	},
 
 	getYard: function(req, res) {
 		if (!req.isAjax) {

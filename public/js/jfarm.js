@@ -401,13 +401,8 @@ jfarm = {
 		obj.animationState = 0;
 		jfarm.resetCharacterAnimation(obj);
 
-		if(jfarm.clickedObj && jfarm.clickedObj.type == "crop"){
-			console.log("crop");
-			$('#modal-c').trigger('init', [jfarm.clickedObj]);
-			jfarm.player.onCrop = false;
-		} else {
-			$('#modal-c').hide();
-		}
+		if(jfarm.clickedObj && jfarm.clickedObj.type == "crop")
+			$('#modal-c').show();
 		
 		if (obj.targetObj) {
 			// turn towards target
@@ -581,17 +576,16 @@ jfarm = {
 	},	
 
 	// harvest, storage and market
-	harvest: function(obj, productivity){
+	harvest: function(obj, quantity){
 		// we don't need to pass these info
 		obj.owner = undefined;
 		obj.content = undefined;
 		// first client check
-		console.log(obj);
 		if(obj.objectType == 'crop'){
 			jfarm.requestAjax('/harvesting/harvest',
 				{
 					cropObj: obj,
-					productivity: productivity 
+					quantity: quantity 
 				}, function(response){
 					if(response.success){
 						jfarm.clickedObj.destroy();
@@ -603,6 +597,31 @@ jfarm = {
 				});
 		} else {
 			console.log("harvest another thing that crop ??? really ? ");
+		}
+	},
+	fertilize: function(yard){
+		if(yard){
+			jfarm.requestAjax('/yard/fertilize/' + yard.yardx + "/"+ yard.yardy,null,function(response){
+				if(response.success){
+					$("#content-actions-notif").trigger('launch', [response.message]);
+					$('.game').trigger('onUIUpdateTile', [response.yard]);
+					$('.game').trigger('onUIUpdatePlayer', [response.yard.player]);
+				} else {
+					console.log(response.message);
+				}
+			});
+		}
+	},
+	waterTile: function(yard){
+		if(yard){
+			jfarm.requestAjax('/yard/water/' + yard.yardx + "/"+ yard.yardy,null,function(response){
+				if(response.success){
+					$("#content-actions-notif").trigger('launch', [response.message]);
+					$('.game').trigger('onUIUpdateTile', [response.yard]);
+				} else {
+					console.log(response.message);
+				}
+			});
 		}
 	},
 	// drawing
@@ -1503,13 +1522,15 @@ jfarm = {
 			,y = event.clientY - sheetengine.canvas.offsetTop + pageYOffset
 		var puv = {u:x, v:y };
 
+		// get clicked basesheet/tile
 		jfarm.clickedBaseSheet = jfarm.getBaseSheetByPuv(puv);
 		jfarm.clickedYard =  sheetengine.scene.getYardFromPos(jfarm.clickedBaseSheet.centerp);
+
+		$('#modal-c').hide();
 
 		// console.log(jfarm.clickedYard.yardx + "," + jfarm.clickedYard.yardy);
 		// console.log(yard);
 		// console.log(jfarm.clickedBaseSheet);
-		// get clicked basesheet/tile
 		
 		if (!jfarm.hoveredObj) {
 			if(jfarm.clickedBaseSheet){
@@ -1532,14 +1553,11 @@ jfarm = {
 		} else {
 			jfarm.clickedObj = jfarm.hoveredObj;
 			// set target object centerp
-			if(jfarm.clickedObj.type == 'crop')
+			if(jfarm.clickedObj.type == 'crop'){
 				jfarm.setTarget(jfarm.player, jfarm.clickedObj.centerp);
-
-			// if(jfarm.clickedObj.type == "crop"){
-			// 	$('#modal-c').trigger('init', [x,y,jfarm.clickedObj]);
-			// } else {
-			// 	$('#modal-b').trigger('init', [x,y,jfarm.clickedObj]);
-			// }
+			} else {
+				$('game').trigger('onBuildingClick', [jfarm.clickedObj.id]);
+			}
 		}
 	},
 	mousemove: function(event) {
@@ -1631,7 +1649,7 @@ jfarm = {
 				$("#tile-wrapper").trigger("onGettingTileDetails");
 				jfarm.getTileDetails(jfarm.hoveredYard, function(response){
 					if(response.success)
-						$("#tile-wrapper").trigger("getTileData", [response.yard]);
+						$('.game').trigger('onUIUpdateTile', [response.yard]);
 				},null,function(response){
 					jfarm.getTileDetailsDone = true;
 					jfarm.loadedYard = response.yard;
@@ -1665,7 +1683,7 @@ jfarm = {
 				if(jfarm.hoveredObj.type == "crop")
 					jfarm.getTileDetails(jfarm.hoveredYard, function(response){
 						if(response.success)
-							$("#tile-wrapper").trigger("getTileData", [response.yard]);
+							$('.game').trigger('onUIUpdateTile', [response.yard]);
 					});
 			}
 		}
