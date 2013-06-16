@@ -64,16 +64,19 @@ $(function() {
 		});
 	});
 
-	// DELETE PROCESS
+// DELETE PROCESS
 	$(".action-delete").on('click', function() {
 		if (confirm('Confirm remove ?')) {
 			var $this = $(this),
 				url = $this.data('url'),
 				id = $this.data('id');
-
-			socket.request(url + id, {
-				message: 'delete' + id
-			}, function(response) {
+			$.ajax({
+				url: url + id,
+				dataType: 'json',
+				data: {
+					message: 'delete' + id
+				}
+			}).done(function(response) {
 				if (response.id == id) {
 					$this.parents('.object-line').fadeOut();
 				} else {
@@ -87,10 +90,13 @@ $(function() {
 		var $this = $(this),
 			url = $this.data('url'),
 			id = $this.data('id');
-
-		socket.request(url + id, {
-			message: 'get' + id
-		}, function(response) {
+		$.ajax({
+			url: url + id,
+			dataType: 'json',
+			data: {
+				message: 'get' + id
+			}
+		}).done(function(response) {
 			if (response.id == id) {
 				$("#method").val('edit');
 				$("#id").val(id);
@@ -100,6 +106,7 @@ $(function() {
 				alert(response);
 			}
 		});
+
 	});
 
 	// PAGINATION LISTS

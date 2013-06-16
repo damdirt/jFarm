@@ -32,7 +32,8 @@ var AuthController = {
 						username: usernameParam,
 						email: emailParam,
 						password: passwordHash.generate(passwordParam),
-						administrator: false
+						administrator: false,
+						online: false
 					}).done(function(err, user) {
 
 						// Error handling
@@ -154,6 +155,15 @@ var AuthController = {
 
 
 	logout: function(req, res) {
+		User.update({
+			id: req.session.user.id
+		}, {
+			online: false
+		}, function(err, user) {
+			if (err) {
+				console.log(err);
+			}
+		});
 		req.session.authenticated = false;
 		req.session.user = null;
 		req.session.player = null;
@@ -192,18 +202,35 @@ var AuthController = {
 					// Login succeeded
 					if (user) {
 						if (passwordHash.verify(passwordParam, user.password)) {
-							req.session.authenticated = true;
-							req.session.user = user;
-							Player.find({
-								name: usernameParam
-							}).done(function(err, player) {
-								if (player) {
-									req.session.player = player;
-									res.redirect('/');
-								} else {
-									req.session.player = ""
-								}
-							});
+							if (user.online == true) {
+								res.view({
+									layout: "minLayout",
+									error: "User already connected !"
+								})
+							} else {
+								req.session.authenticated = true;
+								req.session.user = user;
+								User.update({
+									id: user.id
+								}, {
+									online: true
+								}, function(err, user) {
+									if (err) {
+										console.log(err);
+									}
+								});
+								Player.find({
+									name: usernameParam
+								}).done(function(err, player) {
+									if (player) {
+
+										req.session.player = player;
+										res.redirect('/');
+									} else {
+										req.session.player = ""
+									}
+								});
+							}
 
 						} else {
 							res.view({

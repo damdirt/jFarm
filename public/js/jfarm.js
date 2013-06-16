@@ -98,10 +98,11 @@ jfarm = {
 	// player 
 	,startp: {x:0,y:0,z:0}
 	,playerFarm: {} // contains all player buildings and crops available on the map
-
-	// playerObjects
 	,playerWeaponChanged: false
 	,playerWeaponData: {}
+	
+	// enemies
+	,enemies: {}
 	
 	,init: function() {
 
@@ -311,6 +312,107 @@ jfarm = {
 
 		sheetengine.calc.calculateAllSheets();
 		jfarm.redraw(true);
+		jfarmio.sendData(jfarm.player, 'login');
+	},
+
+	createCharacter: function(centerp, obj) {
+		// character definition for animation with sheet motion
+		var body = new sheetengine.Sheet({x:0,y:0,z:15}, {alphaD:0,betaD:0,gammaD:0}, {w:11,h:14});
+		var backhead = new sheetengine.Sheet({x:0,y:-1,z:19}, {alphaD:0,betaD:0,gammaD:0}, {w:8,h:6});
+		backhead.context.fillStyle = obj.player.hairColor || '#550';
+		backhead.context.fillRect(0,0,8,6);
+		// legs
+		var leg1 = new sheetengine.Sheet({x:-3,y:0,z:4}, {alphaD:0,betaD:0,gammaD:0}, {w:5,h:8});
+		leg1.context.fillStyle = obj.player.pantsColor || '#00F';
+		leg1.context.fillRect(0,0,5,10);
+		var leg2 = new sheetengine.Sheet({x:3,y:0,z:4}, {alphaD:0,betaD:0,gammaD:0}, {w:5,h:8});
+		leg2.context.fillStyle = obj.player.pantsColor || '#00F';
+		leg2.context.fillRect(0,0,5,10);
+		leg1.angle = 0;
+		leg2.angle = 0;
+		
+		var ctx = body.context;
+		
+		// head
+		ctx.fillStyle = obj.player.skinColor || '#FF0';
+		ctx.fillRect(2,2,7,4);
+		ctx.fillStyle = obj.player.hairColor || '#550';
+		ctx.fillRect(2,0,7,2);
+		ctx.fillRect(2,2,1,1);
+		ctx.fillRect(8,2,1,1);
+
+		// body
+		ctx.fillStyle = obj.player.tshirtColor || '#F0F';
+		ctx.fillRect(0,6,11,7);
+		  
+		// hands
+		ctx.fillStyle = obj.player.skinColor || '#FF0';
+		ctx.fillRect(0,11,1,2);
+		ctx.fillRect(10,11,1,2);
+
+		// define player object
+		newPlayer = new sheetengine.SheetObject(
+							  {x:centerp.x,y:centerp.y,z:centerp.z}
+							, {alphaD:0,betaD:0,gammaD:0}
+							, [body,backhead,leg1,leg2]
+							, {w:40,h:40,relu:20,relv:30}
+						);
+		newPlayer.leg1 = leg1;
+		newPlayer.leg2 = leg2;
+		
+		newPlayer.animationState = obj.animationState;
+		newPlayer.speed = {x:0,y:0,z:0};
+		newPlayer.health = obj.player.health;
+		newPlayer.name = obj.player.name;
+		newPlayer.data = obj.player;
+
+		// set object dimming for player: character will dim other sheets, and other objects will not dim the character
+		newPlayer.setDimming(true, true);
+		sheetengine.calc.calculateAllSheets();
+		return newPlayer;
+	},
+	recvData: function(data) {
+		if (jfarm.enemies.hasOwnProperty('e'+data.player.id)) {
+			var enemy = jfarm.enemies['e'+data.player.id];
+			var centerp = jfarm.correctPointAfterReceive(data.centerp);
+			var moved = centerp.x != enemy.centerp.x || centerp.y != enemy.centerp.y || centerp.z != enemy.centerp.z;
+			enemy.setPosition(centerp);
+			enemy.setOrientation(data.rot);
+			if (moved) {
+				enemy.animationState = data.animationState;
+				jfarm.animateCharacter(enemy, enemy.animationState);
+				sheetengine.calc.calculateChangedSheets();
+				jfarm.redraw();
+			}
+		} else {
+			jFarm.newEnemy(data);
+		}
+	},
+	recvLogout: function(id) {
+		console.log(id);
+		if (jfarm.enemies.hasOwnProperty('e'+id)) {
+			var enemy = jfarm.enemies['e'+id];
+			enemy.destroy(true);
+			delete jfarm.enemies['e'+id];
+			sheetengine.calc.calculateChangedSheets();
+			jfarm.redraw();
+		}
+	},
+	newEnemy: function(data) {
+		if (!jfarm.enemies.hasOwnProperty('e'+data.player.id)) {
+		var centerp = jfarm.correctPointAfterReceive(data.centerp);
+		var enemyobj = jfarm.createCharacter(centerp, data);
+		jfarm.redraw(true);
+		jfarm.enemies['e'+data.player.id] = enemyobj;
+		}
+	},
+	correctPointBeforeSend: function(point) {
+		var relCenter = {x:sheetengine.scene.tilewidth * sheetengine.scene.yardcenterstart.yardx, y:sheetengine.scene.tilewidth*sheetengine.scene.yardcenterstart.yardy, z:0};
+		return sheetengine.geometry.addPoint(point, relCenter);
+	},
+	correctPointAfterReceive: function(point) {
+		var relCenter = {x:sheetengine.scene.tilewidth * sheetengine.scene.yardcenterstart.yardx, y:sheetengine.scene.tilewidth*sheetengine.scene.yardcenterstart.yardy, z:0};
+		return sheetengine.geometry.subPoint(point, relCenter);
 	},
 	setPlayerWeapon: function(){
 		var arm = jfarm.player.arm;
@@ -401,13 +503,8 @@ jfarm = {
 		obj.animationState = 0;
 		jfarm.resetCharacterAnimation(obj);
 
-		if(jfarm.clickedObj && jfarm.clickedObj.type == "crop"){
-			console.log("crop");
-			$('#modal-c').trigger('init', [jfarm.clickedObj]);
-			jfarm.player.onCrop = false;
-		} else {
-			$('#modal-c').hide();
-		}
+		if(jfarm.clickedObj && jfarm.clickedObj.type == "crop")
+			$('#modal-c').show();
 		
 		if (obj.targetObj) {
 			// turn towards target
@@ -417,6 +514,8 @@ jfarm = {
 	moveCharacter: function(obj){
 		// move towards target
 		var targetp = jfarm.moveTowardsTarget(obj, jfarm.maxmove);
+
+		jfarmio.sendData(obj,'move');
 
 		if (jfarm.characterAtTargetObj(obj)) {
 			jfarm.characterArrived(obj);
@@ -581,17 +680,16 @@ jfarm = {
 	},	
 
 	// harvest, storage and market
-	harvest: function(obj, productivity){
+	harvest: function(obj, quantity){
 		// we don't need to pass these info
 		obj.owner = undefined;
 		obj.content = undefined;
 		// first client check
-		console.log(obj);
 		if(obj.objectType == 'crop'){
 			jfarm.requestAjax('/harvesting/harvest',
 				{
 					cropObj: obj,
-					productivity: productivity 
+					quantity: quantity 
 				}, function(response){
 					if(response.success){
 						jfarm.clickedObj.destroy();
@@ -603,6 +701,31 @@ jfarm = {
 				});
 		} else {
 			console.log("harvest another thing that crop ??? really ? ");
+		}
+	},
+	fertilize: function(yard){
+		if(yard){
+			jfarm.requestAjax('/yard/fertilize/' + yard.yardx + "/"+ yard.yardy,null,function(response){
+				if(response.success){
+					$("#content-actions-notif").trigger('launch', [response.message]);
+					$('.game').trigger('onUIUpdateTile', [response.yard]);
+					$('.game').trigger('onUIUpdatePlayer', [response.yard.player]);
+				} else {
+					console.log(response.message);
+				}
+			});
+		}
+	},
+	waterTile: function(yard){
+		if(yard){
+			jfarm.requestAjax('/yard/water/' + yard.yardx + "/"+ yard.yardy,null,function(response){
+				if(response.success){
+					$("#content-actions-notif").trigger('launch', [response.message]);
+					$('.game').trigger('onUIUpdateTile', [response.yard]);
+				} else {
+					console.log(response.message);
+				}
+			});
 		}
 	},
 	// drawing
@@ -1494,6 +1617,7 @@ jfarm = {
 
 		return crop;
 	},
+	
 	// event handlers
 	click: function(event) {
 		// if (jfarm.player.killed)
@@ -1503,13 +1627,15 @@ jfarm = {
 			,y = event.clientY - sheetengine.canvas.offsetTop + pageYOffset
 		var puv = {u:x, v:y };
 
+		// get clicked basesheet/tile
 		jfarm.clickedBaseSheet = jfarm.getBaseSheetByPuv(puv);
 		jfarm.clickedYard =  sheetengine.scene.getYardFromPos(jfarm.clickedBaseSheet.centerp);
+
+		$('#modal-c').hide();
 
 		// console.log(jfarm.clickedYard.yardx + "," + jfarm.clickedYard.yardy);
 		// console.log(yard);
 		// console.log(jfarm.clickedBaseSheet);
-		// get clicked basesheet/tile
 		
 		if (!jfarm.hoveredObj) {
 			if(jfarm.clickedBaseSheet){
@@ -1532,14 +1658,11 @@ jfarm = {
 		} else {
 			jfarm.clickedObj = jfarm.hoveredObj;
 			// set target object centerp
-			if(jfarm.clickedObj.type == 'crop')
+			if(jfarm.clickedObj.type == 'crop'){
 				jfarm.setTarget(jfarm.player, jfarm.clickedObj.centerp);
-
-			// if(jfarm.clickedObj.type == "crop"){
-			// 	$('#modal-c').trigger('init', [x,y,jfarm.clickedObj]);
-			// } else {
-			// 	$('#modal-b').trigger('init', [x,y,jfarm.clickedObj]);
-			// }
+			} else {
+				$('game').trigger('onBuildingClick', [jfarm.clickedObj.id]);
+			}
 		}
 	},
 	mousemove: function(event) {
@@ -1615,7 +1738,7 @@ jfarm = {
 	timer: function() {
 		var startTime = new Date().getTime()
 			,sceneChanged = 0;
-		
+
 		// hovered basesheets
 		if(jfarm.preHoveredBaseSheet != jfarm.hoveredBaseSheet && !jfarm.drawnObj){
 			jfarm.tileDelayTime = new Date().getTime();
@@ -1631,7 +1754,7 @@ jfarm = {
 				$("#tile-wrapper").trigger("onGettingTileDetails");
 				jfarm.getTileDetails(jfarm.hoveredYard, function(response){
 					if(response.success)
-						$("#tile-wrapper").trigger("getTileData", [response.yard]);
+						$('.game').trigger('onUIUpdateTile', [response.yard]);
 				},null,function(response){
 					jfarm.getTileDetailsDone = true;
 					jfarm.loadedYard = response.yard;
@@ -1665,7 +1788,7 @@ jfarm = {
 				if(jfarm.hoveredObj.type == "crop")
 					jfarm.getTileDetails(jfarm.hoveredYard, function(response){
 						if(response.success)
-							$("#tile-wrapper").trigger("getTileData", [response.yard]);
+							$('.game').trigger('onUIUpdateTile', [response.yard]);
 					});
 			}
 		}
@@ -1688,6 +1811,11 @@ jfarm = {
 				sceneChanged = 1;
 				// sheetengine.calc.calculateChangedSheets();
 			}
+
+			if(jfarm.player.moved == true && jfarm.player.arrived == false){
+				jfarmio.sendData(jfarm.player, 'move');
+			}
+
 			if(jfarm.conquerDone){
 				sheetengine.drawing.drawScene(true);
 				jfarm.conquerDone = false;
@@ -1733,4 +1861,6 @@ jfarm = {
 
 $(function(){
 	jfarm.init();
+	// io listener
+	jfarmio.listener();
 });

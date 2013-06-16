@@ -61,7 +61,7 @@ $(function() {
 	});
 
 	// DISPLAY BUILDING POPUP DETAILS
-	$('.game').on('onBuildingClick', function(e,buildingId){
+	$('.game').on('onBuildingClick', function(e, buildingId) {
 		if (buildingId) {
 			$.ajax({
 				url: "/building/getStorageDetails/" + jfarm.clickedObj.id,
@@ -76,11 +76,20 @@ $(function() {
 					$("#elements-stocked").append('<li class="clear-fix"><div class="pull-left">' + response.storedItems[i].quantity + ' ' + response.storedItems[i].name + '</div><div class="action-element action-sell"></div></li>');
 				};
 			});
-		}
-		else {
+		} else {
 			console.log(response);
 		}
 	});
+
+	$('.game').on('onUIUpdateTile', function(e, tile) {
+		$('#tile-free').text( !! tile.free ? "yes" : "no");
+		$('#tile-state').text(tile.neutral ? "neutral" : "owned");
+		$('#tile-owner').text(tile.player ? tile.player.name : "");
+		$('#tile-humidity').text(tile.humidity + " %"); // TODO
+		$('#tile-fertility').text(tile.fertility + " %");
+	});
+
+	$('.game').on('onUIUpdatingTile', function(e, tile) {});
 
 	$(".resultShow").hide();
 	$("#top-actions-notif").hide();
@@ -224,13 +233,6 @@ $(function() {
 	$("#tile-wrapper").on("onGettingTileDetails", function(e) {
 		$(this).find('.tile-property-value').html("loading...");
 	});
-	$("#tile-wrapper").on("getTileData", function(e, tile) {
-		$('#tile-free').text( !! tile.free ? "yes" : "no");
-		$('#tile-state').text(tile.neutral ? "neutral" : "owned");
-		$('#tile-owner').text(tile.player ? tile.player.name : "");
-		$('#tile-humidity').text(tile.humidity + " %"); // TODO
-		$('#tile-fertility').text(tile.fertility + " %");
-	});
 
 	// OBJECTS 
 	$('#object-wrapper').on('onGettingObjectDetails', function(e) {
@@ -248,20 +250,21 @@ $(function() {
 		// $('#object-alliance').text(obj.content.name); // TODO
 	});
 
-	$('#modal-c').on('init', function(e, mouseX, mouseY, obj) {
-		$(this).show();
-		// console.log(mouseY);
-		// console.log(mouseX);
-		// console.log(obj);
-	});
-
 	// HARVEST
 	$('.action-harvest').on('click', function() {
-		// if(jfarm.loadedObj)
-		// 	jfarm.harvest(jfarm.loadedObj, 45); // TODO : productivity
-		// else 
-		jfarm.getObjectDetails(jfarm.clickedObj, function(response) {
-			jfarm.harvest(response.obj, 45); // TODO : productivity
+		jfarm.harvest(jfarm.clickedObj, 45); // TODO : quantity
+	});
+	// WATER 
+	$('.action-water').on('click', function() {
+		jfarm.waterTile(jfarm.clickedYard);
+	});
+	// FERTILIZE
+	$('.action-fertilize').on('click', function() {
+		// we check if player has enough money for fertilizer
+		jfarm.getPlayerDetails(null, function(player) {
+			if (player.money >= 20) {
+				jfarm.fertilize(jfarm.clickedYard);
+			}
 		});
 	});
 
@@ -379,16 +382,29 @@ $(function() {
 		}
 	});
 
+
+	// NOTIFICATIONS
+	$("#top-actions-notif").on('launch', function(e, msg) {
+		var $this = $(this);
+		$this.fadeIn().html("<li>" + msg + "</li>");
+		setTimeout(function() {
+			$("#top-actions-notif").fadeOut().html("");
+		}, 2000);
+	});
+
+	$("#content-actions-notif").on('launch', function(e, msg) {
+		var $this = $(this);
+		$this.fadeIn().html("<li>" + msg + "</li>");
+		setTimeout(function() {
+			$("#content-actions-notif").fadeOut().html("");
+		}, 2000);
+	});
+
 	// AJAX CREATE ALLIANCE
 	$("#formCreateAlliance").on('submit', function() {
 		var $form = $(this);
 		jfarm.requestAjax($form.attr('action'), $form.serialize(), function(response) {
-			$("#top-actions-notif").fadeIn();
-			$("#top-actions-notif").html("<li>" + response.message + "</li>");
-			setTimeout(function() {
-				$("#top-actions-notif").fadeOut();
-				$("#top-actions-notif").html("");
-			}, 2000);
+			$("#top-actions-notif").trigger('launch', [response.message]);
 		});
 		return false;
 	});
@@ -399,32 +415,24 @@ $(function() {
 		if (answer) {
 			var $form = $(this);
 			jfarm.requestAjax($form.attr('action'), $form.serialize(), function(response) {
-				$("#top-actions-notif").fadeIn();
-				$("#top-actions-notif").html("<li>" + response.message + "</li>");
-				setTimeout(function() {
-					$("#top-actions-notif").fadeOut();
-					$("#top-actions-notif").html("");
-				}, 2000);
+				$("#top-actions-notif").trigger('launch', [response.message]);
 				$(".resultShow").toggle();
 				$(".results").toggle();
 			});
 		}
 		return false;
+
 	});
 
 	// AJAX PLAYER LEAVE ALLIANCE
 	$(document).on('click', '#leaveAlliance', function() {
 		var answer = confirm("Etes vous sur de vouloir quitter l'alliance ?");
 		if (answer) {
+
 			var $link = $(this);
 			jfarm.requestAjax($link.attr('href'), null, function(response) {
 				$('#content-actions').trigger('onUIUpdatePlayer', [response.player]);
-				$("#content-actions-notif").fadeIn();
-				$("#content-actions-notif").html("<li>" + response.message + "</li>");
-				setTimeout(function() {
-					$("#content-actions-notif").fadeOut();
-					$("#content-actions-notif").html("");
-				}, 2000);
+				$("#content-actions-notif").trigger('launch', [response.message]);
 			});
 		}
 		return false;
@@ -436,4 +444,12 @@ $(function() {
 	$(document).on('click', function() {
 		$(".resultShow").hide();
 	});
+	window.onunload = window.onbeforeunload = (function() {
+		var didMyThingYet = false;
+		return function() {
+			if (didMyThingYet) return;
+			didMyThingYet = true;
+			jfarmio.sendLogout(jfarm.playerId);
+		}
+	}());
 });

@@ -1,5 +1,5 @@
 /*---------------------
-	:: Harversting
+	:: StorageItem
 	-> model
 ---------------------*/
 module.exports = {
@@ -7,6 +7,7 @@ module.exports = {
 		name: 'TEXT',
 		quantity: 'INT',
 		playerId: 'INT',
-		cropTemplateId: 'INT'
+		cropTemplateId: 'INT',
+		buildingId: 'INT'
 	}
 };

@@ -241,7 +241,17 @@ var GameObjectController = {
 									'error': err
 								}));
 							} else if (building) {
-								returnObject(building);
+								BuildingTemplate.find(building.buildingTemplateId).done(function(err, tpl) {
+									if (!err) {
+										returnObject(building, tpl);
+									} else {
+										res.end(JSON.stringify({
+											'success': false,
+											'message': 'error occured during building template finding',
+											'error': err
+										}));
+									}
+								});
 							}
 						});
 						break;
@@ -254,7 +264,17 @@ var GameObjectController = {
 									'error': err
 								}));
 							} else if (crop) {
-								returnObject(crop);
+								CropTemplate.find(crop.cropTemplateId).done(function(err, tpl) {
+									if (!err) {
+										returnObject(crop, tpl);
+									} else {
+										res.end(JSON.stringify({
+											'success': false,
+											'message': 'error occured during building template finding',
+											'error': err
+										}));
+									}
+								});
 							}
 						});
 						break;
@@ -263,7 +283,7 @@ var GameObjectController = {
 						break;
 				}
 
-				function returnObject(object) {
+				function returnObject(object, template) {
 					if (object) {
 						Player.find(object.ownerId).done(function(err, player) {
 							if (err) {
@@ -277,6 +297,7 @@ var GameObjectController = {
 								// we return the object with player inside
 								object.content = JSON.parse(object.content);
 								object.owner = player;
+								object.template = template;
 								object.values = undefined;
 								var response = JSON.stringify({
 									'success': true,

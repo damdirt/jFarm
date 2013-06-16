@@ -6,12 +6,13 @@
 
 var DashboardController = {
 	home: function(req, res) {
-		
+
 		var user = req.session.user;
-		console.log(req.session.player);
 
-		
 
+		req.socket.on('disconnect', function() {
+			console.log("logout");
+		});
 
 		res.view({
 			user: user,
@@ -23,6 +24,31 @@ var DashboardController = {
 		res.view({
 			user: user
 		});
+	},
+	action: function(req, res) {
+		data = req.param('data');
+
+		switch (data.action) {
+			case 'login':
+				req.socket.broadcast.emit('login', data);
+				res.json({
+					playingUsers: global.playingUsers
+				})
+				global.playingUsers['e' + data.player.id] = data;
+				break;
+			case 'move':
+				global.playingUsers['e' + data.player.id] = data;
+				req.socket.broadcast.emit('data', data);
+				break;
+			case 'logout':
+				console.log("logout");
+				console.log(data.playerId);
+				if (global.playingUsers.hasOwnProperty('e' + data.playerId)) {
+					global.playingUsers['e' + data.playerId] = undefined;
+					req.socket.broadcast.emit('logout', data);
+				}
+				break;
+		}
 	}
 };
 module.exports = DashboardController;

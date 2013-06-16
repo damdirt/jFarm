@@ -193,6 +193,14 @@ module.exports.routes = {
 		controller: 'yard',
 		action: 'growMap'
 	},
+	'/yard/water/:x/:y': {
+		controller: 'yard',
+		action: 'water'
+	},
+	'/yard/fertilize/:x/:y': {
+		controller: 'yard',
+		action: 'fertilize'
+	},
 
 	//-------------------- END YARD ---------------------
 
@@ -207,6 +215,12 @@ module.exports.routes = {
 	'/gameobject/getdetails/:id/:type': {
 		controller: 'gameobject',
 		action: 'getDetails'
+	},
+
+	//-------------------- BUILDING ------------------------
+	'/building/getstoragedetails/:id': {
+		controller: 'building',
+		action: 'getStorageDetails'
 	},
 
 	//-------------------- HARVESTING --------------------
@@ -225,6 +239,14 @@ module.exports.routes = {
 		action: 'templates'
 	},
 	//-------------------- END TEMPLATES ---------------------
+
+
+	//---------------------  SOCKET ---------------------
+
+	'/io/action': {
+		controller: 'dashboard',
+		action: 'action'
+	}
 
 	// Keep in mind default routes exist for each of your controllers
 	// So if you have a UserController with an action called "juggle" 
