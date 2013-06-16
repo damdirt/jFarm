@@ -151,6 +151,7 @@ $(function() {
 
 	// MODAL
 	$(".popup-r").on('click', function(e) {
+		$("#top-actions").hide();
 		$(".modal").toggle();
 		e.stopPropagation();
 	});

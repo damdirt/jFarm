@@ -9,4 +9,4 @@ function defineMinCharacter(respawnX,respawnY) {
 	ctx.fillStyle = '#FFFFFF';
 	ctx.fill();
 };
-defineMinCharacter(25,25);
+defineMinCharacter(5,5);

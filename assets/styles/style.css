@@ -616,6 +616,10 @@ section {
     box-shadow: 1px 1px 4px #58595B;
 }
 
+.element-actions {
+    z-index: 30;
+}
+
 .action-element {
     cursor: pointer;
     float: left;
@@ -644,12 +648,12 @@ section {
     background-repeat: no-repeat;
 }
 
-.action-harvest-sail {
+.action-harvest-sell {
     background-image: url(/images/actions/harvest-sail.png);
     background-repeat: no-repeat;
 }
 
-.action-sail {
+.action-sell {
     background-image: url(/images/actions/sail.png);
     background-repeat: no-repeat;
 }
@@ -658,7 +662,7 @@ section {
     text-align: center;
 }
 
-#elements-stocked .action-element {
+#modal-b .action-element {
     padding: 0 20px 0 0 !important;
     float: right;
     background-position: 50px 0;
@@ -666,11 +670,11 @@ section {
 }
 
 #modal-c {
-    /*display: none;*/
+    display: none;
 }
 
 #modal-b {
-    display: none;
+    /*display: none;*/
 }
 
 .overlay
