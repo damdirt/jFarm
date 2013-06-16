@@ -2140,11 +2140,9 @@ var sheetengine = (function() {
         basesheet.yardy = yard.y;
         basesheet.name = yard.name;
 
-        if(!yard.free){
-          basesheet.color = '#CCC';
-        } else {
-          basesheet.color = yard.baserectcolor;
-        }
+        // color is different if basesheet is neutral or free
+        basesheet.color = (yard.neutral) ? yard.baserectcolor : (yard.free) ? '#CCC' : yard.baserectcolor;
+
         basesheet.free = !!yard.free;
         basesheet.neutral = !!yard.neutral;
         basesheet.playerId = !!yard.playerId;

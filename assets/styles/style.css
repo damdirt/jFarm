@@ -612,6 +612,10 @@ section {
     padding: 10px;
     position: absolute;
     top: 0;
+    display: none;
+}
+
+.elements-actions {
     z-index: 30;
     box-shadow: 1px 1px 4px #58595B;
 }
