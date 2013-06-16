@@ -5,7 +5,7 @@ function defineMinCharacter(respawnX,respawnY) {
 	ctx.fillRect(20,20,220,220);
 
 	ctx.beginPath();
-	ctx.arc(respawnX, respawnY, 4, 0, 2 * Math.PI);
+	ctx.arc(respawnX, respawnY, 2, 0, 2 * Math.PI);
 	ctx.fillStyle = '#FFFFFF';
 	ctx.fill();
 };

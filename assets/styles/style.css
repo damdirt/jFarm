@@ -303,16 +303,41 @@ footer {
     color: #333;
 }
 
-#content-actions .modal {
+.modal {
     background-color: #495461;
-    box-shadow: 1px 1px 8px #333333;
+    color: #FFFFFF;
     display: none;
-    margin-top: -359px;
+    margin-left: 410px;
+    margin-top: 60px;
     min-height: 260px;
-    padding: 15px;
+    opacity: 0.9;
     position: absolute;
-    right: 0;
-    width: 360px;
+    top: 0;
+    width: 390px;
+    z-index: 100;
+}
+
+#modal-tabs {
+    background-color: #7EBD26;
+}
+
+.modal .tabs li {
+    display: inline;
+}
+
+.modal .tabs span {
+    display: block;
+    float: left;
+    padding: 10px 40px;
+    cursor: pointer;
+}
+
+.modal .current {
+    background-color: #495461;
+}
+
+#modal-tabs-content {
+    padding: 15px;
 }
 
 .weapons p {
@@ -378,11 +403,6 @@ footer {
     position: absolute;
     width: 170px;
     height: 170px;
-    -webkit-transition: all 600ms ease-in-out;
-    -moz-transition: all 600ms ease-in-out;
-    -ms-transition: all 600ms ease-in-out;
-    -o-transition: all 600ms ease-in-out;
-    transition: all 600ms ease-in-out;
     margin-top: -200px;
 }
 
@@ -392,11 +412,6 @@ footer {
     margin: 0px;
     padding: 0px;
     opacity: 0;
-    -webkit-transform-origin: 50% 330%;
-    -moz-transform-origin: 50% 330%;
-    -ms-transform-origin: 50% 330%;
-    -o-transform-origin: 50% 330%;
-    transform-origin: 50% 330%;
 }
 
 .label-b {
@@ -407,47 +422,27 @@ footer {
     position: absolute;
     top: 46px;
     width: 23px;
-    -webkit-transform-origin: 50% 313%;
-    -moz-transform-origin: 50% 313%;
-    -ms-transform-origin: 50% 313%;
-    -o-transform-origin: 50% 313%;
-    transform-origin: 50% 313%;
 }
 
 #content-actions label[for=buildings] {
     background: url('/images/home.png') no-repeat top center;
-    -webkit-transform:rotateZ(0deg);
-    -moz-transform:rotateZ(0deg);
-    -ms-transform:rotateZ(0deg);
-    -o-transform:rotateZ(0deg);
-    transform:rotateZ(0deg);
 }
 
 #content-actions label[for=life] {
     background: url('/images/life.png') no-repeat top center;
-    -webkit-transform:rotateZ(-90deg);
-    -moz-transform:rotateZ(-90deg);
-    -ms-transform:rotateZ(-90deg);
-    -o-transform:rotateZ(-90deg);
-    transform:rotateZ(-90deg);
+    margin-top: 60px;
+    margin-left: -60px;
 }
 
 #content-actions label[for=tiles] {
     background: url('/images/tile.png') no-repeat top center;
-    -webkit-transform:rotateZ(90deg);
-    -moz-transform:rotateZ(90deg);
-    -ms-transform:rotateZ(90deg);
-    -o-transform:rotateZ(90deg);
-    transform:rotateZ(90deg);
+    margin-top: 60px;
+    margin-left: 60px;
 }
 
 #content-actions label[for=level] {
     background: url('/images/user.png') no-repeat top center;
-    -webkit-transform:rotateZ(180deg);
-    -moz-transform:rotateZ(180deg);
-    -ms-transform:rotateZ(180deg);
-    -o-transform:rotateZ(180deg);
-    transform:rotateZ(180deg);
+    margin-top: 120px;
 }
 
 #tooltip-b {
@@ -457,6 +452,19 @@ footer {
 #tooltip-b span {
     color: #FC3E6B;
     font-size: 14pt;
+}
+
+#content-actions-notif {
+    bottom: 0;
+    height: 40px;
+    margin-bottom: 270px;
+    position: absolute;
+    width: 1200px;
+}
+
+#player-alliance a {
+    text-decoration: none;
+    color: #7EBD26;
 }
 
 /* ---------- TOP ACTIONS STYLES ----------  */
@@ -508,11 +516,7 @@ footer {
     margin-top: 47px;
     position: absolute;
     width: 196px;
-    -webkit-transition: left 150ms ease-in-out;
-    -moz-transition: left 150ms ease-in-out;
-    -ms-transition: left 150ms ease-in-out;
-    -o-transition: left 150ms ease-in-out;
-    transition: left 150ms ease-in-out;
+    z-index: 10;
 }
 
 #top-actions li {
@@ -536,15 +540,25 @@ footer {
     padding: 0 10px;
     position: absolute;
     width: 255px;
-    -webkit-transition: left 150ms ease-in-out;
-    -moz-transition: left 150ms ease-in-out;
-    -ms-transition: left 150ms ease-in-out;
-    -o-transition: left 150ms ease-in-out;
-    transition: left 150ms ease-in-out;
 }
 
 .resultShow button {
     padding: 5px !important;
+}
+
+#top-actions-notif {
+    height: 40px;
+    margin-top: 120px;
+    position: absolute;
+    top: 0;
+    width: 1200px;
+}
+
+#top-actions-notif li, #content-actions-notif li {
+    background-color: #FCF5F5;
+    border-left: 5px solid #FF0000;
+    line-height: 50px;
+    padding-left: 15px;
 }
 
 /* ---------- RIGHT ACTIONS STYLES ---------- */
@@ -570,6 +584,12 @@ footer {
     box-shadow: 1px 1px 8px #58595B;
 }
 
+.creator-esc {
+    background-color: #FFFFFF;
+    margin-top: 10px;
+    padding: 5px 0;
+}
+
 .crops p, .buildings p {
     margin: 0;
     text-align: center;
@@ -581,6 +601,96 @@ section {
 	background-color: #FFFFFF;
 	min-height: 600px;
 	box-shadow: 0 0 85px rgba(0, 0, 0, 0.3);
+}
+
+.modal-elements {
+    background-color: #F6F6F6;
+    margin-left: 120px;
+    margin-top: 80px;
+    min-width: 176px;
+    opacity: 0.9;
+    padding: 10px;
+    position: absolute;
+    top: 0;
+    display: none;
+}
+
+.elements-actions {
+    z-index: 30;
+    box-shadow: 1px 1px 4px #58595B;
+}
+
+.action-element {
+    cursor: pointer;
+    float: left;
+    height: 32px;
+    opacity: 1;
+    padding: 0 8px;
+    width: 32px;
+}
+
+.element-actions .action-element:last-child {
+    padding: 0;
+}
+
+.action-water {
+    background-image: url(/images/actions/water.png);
+    background-repeat: no-repeat;
+}
+
+.action-fertilize {
+    background-image: url(/images/actions/fertilize.png);
+    background-repeat: no-repeat;
+}
+
+.action-harvest {
+    background-image: url(/images/actions/harvest.png);
+    background-repeat: no-repeat;
+}
+
+.action-harvest-sail {
+    background-image: url(/images/actions/harvest-sail.png);
+    background-repeat: no-repeat;
+}
+
+.action-sail {
+    background-image: url(/images/actions/sail.png);
+    background-repeat: no-repeat;
+}
+
+.action-txt {
+    text-align: center;
+}
+
+#elements-stocked .action-element {
+    padding: 0 20px 0 0 !important;
+    float: right;
+    background-position: 50px 0;
+    width: 62px;
+}
+
+#modal-c {
+    /*display: none;*/
+}
+
+#modal-b {
+    display: none;
+}
+
+.overlay
+{
+   background-color: #F0F0F0;
+   filter:alpha(opacity=10); /* IE */
+   opacity: 0.1; /* Safari, Opera */
+   -moz-opacity:0.10; /* FireFox */
+   z-index: 20;
+   background-repeat:no-repeat;
+   background-position:center;
+   width: 100%;
+   height: 100%;
+   position:absolute;
+   top: 0px;
+   left: 0px;
 }
 
 /* ---------- BUTTONS STYLES ---------- */
@@ -697,6 +807,10 @@ section {
 
 .txt-green {
     color: #7ebd26;
+}
+
+.twt-red {
+    color: #FF0000;
 }
 
 /* ---------- FORMS STYLES ---------- */

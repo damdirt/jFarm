@@ -50,7 +50,4 @@ module.exports.adapters = {
     //     password    : 'Supinf0',
     //     database    : 'jfarm_dev'
     // }	
-
-   
-
 };

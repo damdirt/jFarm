@@ -39,7 +39,7 @@ jfarm = {
 	,timerInterval: 40
 	,sceneIsReady: 0
 	,levelsize: 5
-	,boundarySize:  0.6
+	,boundarySize:  1.6
 	,zoom: 1
 	,lineWidth: 0
 	,densityMap: null
@@ -77,69 +77,30 @@ jfarm = {
 	,locationCorners: []
 	,currentLocationBaseSheets: []
 	,drawnObj: null
-	,enumAppObjectsObj: {
-		barn: "Barn"
-		,coldstorage: "Cold Storage"
-		,silo: "Silo"
-		,corn: "Corn"
-		,tomatoes: "Tomatoes"
-		,wheat: "Wheat"
+	,enumAppObjects: []
+	,appobjectsRots: { // TODO : retrieve from DB
+		"silo": {alphaD:0,betaD:0,gammaD:0},
+		"barn": {alphaD:0,betaD:0,gammaD:0},
+		"cold storage": {alphaD:0,betaD:0,gammaD:0},
+		"wheat": {alphaD:0,betaD:0,gammaD:0},
+		"corn": {alphaD:0,betaD:0,gammaD:0},
+		"tomatoes": {alphaD:0,betaD:0,gammaD:0}
 	}
-	,enumAppObjects: ["Barn", "Cold Storage", "Silo", "Corn", "Tomatoes", "Wheat"] // TODO : retrieve from DB ???
-	,appobjectsRots: {
-		Silo: {alphaD:0,betaD:0,gammaD:0},
-		Barn: {alphaD:0,betaD:0,gammaD:0},
-		ColdStorage: {alphaD:0,betaD:0,gammaD:0},
-		Wheat: {alphaD:0,betaD:0,gammaD:0},
-		Corn: {alphaD:0,betaD:0,gammaD:0},
-		Tomatoes: {alphaD:0,betaD:0,gammaD:0},
+	,appobjectsCenterp: { // TODO : retrieve from DB
+		"silo": {x:0,y:0,z:0},
+		"barn": {x:-40,y:0,z:0},
+		"cold storage": {x:0,y:-40,z:0}, //jfarm.tileWidth/2 <==> 40
+		"wheat": {x:0,y:0,z:0},
+		"corn": {x:0,y:0,z:0},
+		"tomatoes": {x:0,y:0,z:0}
 	}
 
 	// player 
 	,startp: {x:0,y:0,z:0}
 	,playerFarm: {} // contains all player buildings and crops available on the map
-
-	// playerObjects
-	,playerObjectChanged: false
-	,playerObjectData: {}
-	// contains all available "objects" (data actually) wearable by the player (weapons etc)
-	,playerObjectsData: { 
-		fork: {
-			name: "fork"
-			,centerp: {x:-3,y:2,z:10}
-			,rot: {alphaD:90,betaD:0,gammaD:90}
-			,x: 5
-			,y: 0
-		}
-		,bat: {
-			name: "bat"
-			,centerp: {x:-3,y:5,z:12}
-			,rot: {alphaD:45,betaD:0,gammaD:90}
-			,x: 10
-			,y: 0
-		}
-		,chainsaw: {
-			name: "chainsaw"
-			,centerp: {x:9,y:2,z:9}
-			,rot: {alphaD:0,betaD:0,gammaD:0}
-			,x: 0
-			,y: 9
-		}
-		,ak47: {
-			name: "ak47"
-			,centerp: {x:-3,y:5,z:12}
-			,rot: {alphaD:-45,betaD:0,gammaD:-90}
-			,x: 5
-			,y: 10
-		}
-		,watercan: {
-			name: "watercan"
-			,centerp: {x:-3,y:7,z:8}
-			,rot: {alphaD:30,betaD:0,gammaD:-90}
-			,x: 7
-			,y: 10
-		}
-	}
+	,playerWeaponChanged: false
+	,playerWeaponData: {}
+	
 	// enemies
 	,enemies: {}
 	
@@ -153,6 +114,14 @@ jfarm = {
 		// sheetengine.drawObjectContour = true;
 		var canvasElement = document.getElementById('maincanvas');
 		sheetengine.scene.init(canvasElement, {w:1200,h:1500});
+		var ctx = sheetengine.context
+			,text = "Loading...";
+
+		ctx.save();
+		ctx.font = '14px "century gothic"';
+		ctx.strokeStyle = '#000';
+		ctx.strokeText(text,canvasElement.width/2 - 20, canvasElement.height/2);
+		ctx.restore();
 
 		// set zoom
 		var zoom = jfarm.zoom;
@@ -161,11 +130,6 @@ jfarm = {
 
 		// set tile width
 		sheetengine.scene.tilewidth = jfarm.tileWidth; // default is 300
-
-		
-		// var centerp = {x:0,y:0,z:0};
-		// var centerpuv = sheetengine.transforms.transformPoint(centerp);
-		// sheetengine.scene.center = {x:centerp.x, y:centerp.y, u:centerpuv.u, v:centerpuv.v};
 
 		// jfarm.respawnX & jfarm.respawnY are defined in home.ejs
 		var yardcenter = {
@@ -177,14 +141,20 @@ jfarm = {
 	},
 	sceneReady: function(){
 		
+		// scene is ready, so init object properties
+		jfarm.initObjectProperties(sheetengine.objects);
+
 		//init density map 
 		jfarm.densityMap = new sheetengine.DensityMap(5);
 		jfarm.densityMap.addSheets(sheetengine.sheets); // uncomment if some sheets are created before
 
-		jfarm.definePlayerObjects();
-
-		// we retrieve Player details from server
-		jfarm.requestAjax("/player/" + jfarm.playerId, null, jfarm.definePlayerObj);
+		// we retrieve templates from server
+		// weapons / crop / building / properties
+		jfarm.requestAjax("/templates", null, function(ajaxResponse){
+			jfarm.initTemplates(ajaxResponse);
+			// we retrieve Player details from server
+			jfarm.requestAjax("/player/" + jfarm.playerId, null, jfarm.definePlayerObj);
+		});
 
 		// define scene center
 		sheetengine.scene.setCenter(jfarm.startp);
@@ -193,53 +163,89 @@ jfarm = {
 		var yardpos = sheetengine.scene.getYardFromPos(jfarm.startp);
 		jfarm.setBoundary(yardpos);
 		
-		sheetengine.calc.calculateAllSheets();
-		jfarm.redraw(true);
+		// sheetengine.calc.calculateAllSheets();
+		// jfarm.redraw(true);
 
 		$('#maincanvas').on('click', jfarm.click);
 		jfarm.timer();
 		jfarm.sceneIsReady = 1;
 	},
+	initTemplates: function(ajaxResponse){
+		if(ajaxResponse.success){
+			var templates = ajaxResponse.templates;
+
+			// ui trigger
+			// $('.game').trigger("initTemplatesUI", [templates]); // TODO : place data-attributes in html page
+
+			// weapons
+			jfarm.weaponTpls = templates.weaponTpls;
+			for (var i = 0; i < jfarm.weaponTpls.length; i++) {
+				var img = new Image();
+				img.src = jfarm.weaponTpls[i].img64;
+				jfarm.weaponTpls[i].image = img;	
+				//json parsing of centerp & rot
+				jfarm.weaponTpls[i].centerp = JSON.parse(jfarm.weaponTpls[i].centerp);
+				jfarm.weaponTpls[i].rot = JSON.parse(jfarm.weaponTpls[i].rot);
+			};
+			// buildings
+			jfarm.buildingTpls = templates.buildingTpls;
+			for (var i = 0; i < jfarm.buildingTpls.length; i++) {
+				// we populate a array to find easier building || crop
+				jfarm.enumAppObjects.push(jfarm.buildingTpls[i].name);
+			};
+			// crops
+			jfarm.cropTpls = templates.cropTpls;
+			for (var i = 0; i < jfarm.cropTpls.length; i++) {
+				// we populate a array to find easier building || crop
+				jfarm.enumAppObjects.push(jfarm.cropTpls[i].name);
+			};
+			jfarm.gameProperties = templates.properties;
+
+		} else {
+			console.log(ajaxResponse.message);
+			jfarm.sceneIsReady = 0;
+		}
+	},
 	initObjectProperties: function(objects) {
 		// for (var i=0;i<objects.length;i++) {
 		// 	var obj = objects[i];
-		// 	// these objects are not registered in the density map
-		// 	// wheat, tomatoes, corn 
-		// 	if (obj.name == 'Health potion' || obj.name == 'Key (yellow)' || obj.name == 'Key (red)' || 
-		// 		obj.name == 'Key (blue)' || obj.name == 'Enemy' || obj.name == 'Respawn point') {
-		// 		obj.setCollision(false);
-		// 	}
-		// 	// init enemy objects
-		// 	if (obj.name == 'Enemy') {
-		// 		obj.arm = obj.sheets[0];
-		// 		obj.leg1 = obj.sheets[3];
-		// 		obj.leg2 = obj.sheets[4];
-		// 		obj.leg1.angle = 0;
-		// 		obj.leg2.angle = 0;
+			// these objects are not registered in the density map
+			// wheat, tomatoes, corn 
+			// if (obj.type.toLowerCase() == "crop") {
+			// 	console.log(obj);
+			// 	obj.setCollision(false);
+			// }
+			// // init enemy objects
+			// if (obj.name == 'Enemy') {
+			// 	obj.arm = obj.sheets[0];
+			// 	obj.leg1 = obj.sheets[3];
+			// 	obj.leg2 = obj.sheets[4];
+			// 	obj.leg1.angle = 0;
+			// 	obj.leg2.angle = 0;
 
-		// 		obj.animationState = 0;
-		// 		obj.speed = {x:0,y:0,z:0};
-		// 		obj.health = 100;
-		// 		jfarm.initCharacterSounds(obj);
-		// 	}
-		// 	// set object dimming: these objects will dim other sheets, and other objects will not dim them
-		// 	if (obj.name == 'Enemy' || obj.name == 'Old man' || obj.name == 'Road') {
-		// 		obj.setDimming(true, true);
-		// 	}
-		// 	// these objects will not dim other sheets but they also cannot be dimmed by others
-		// 	if (obj.name == 'Road' || obj.name == 'Health potion' || obj.name == 'Key (yellow)' || obj.name == 'Key (red)' || 
-		// 		obj.name == 'Key (blue)' || obj.name == 'Respawn point' || obj.name == 'Grail') {
-		// 		obj.setDimming(false, true);
-		// 	}
+			// 	obj.animationState = 0;
+			// 	obj.speed = {x:0,y:0,z:0};
+			// 	obj.health = 100;
+			// 	jfarm.initCharacterSounds(obj);
+			// }
+			// // set object dimming: these objects will dim other sheets, and other objects will not dim them
+			// if (obj.name == 'Enemy' || obj.name == 'Old man' || obj.name == 'Road') {
+			// 	obj.setDimming(true, true);
+			// }
+			// // these objects will not dim other sheets but they also cannot be dimmed by others
+			// if (obj.name == 'Road' || obj.name == 'Health potion' || obj.name == 'Key (yellow)' || obj.name == 'Key (red)' || 
+			// 	obj.name == 'Key (blue)' || obj.name == 'Respawn point' || obj.name == 'Grail') {
+			// 	obj.setDimming(false, true);
+			// }
 		// }
 	},
 
 	// player 
 	definePlayerObj: function(playerData) {
 
-		// update ui player labels nly for loged player
-		if(playerData.id = jfarm.playerId)
-			$('#content-actions').trigger('getPlayerData', [playerData]);
+		// update ui player labels only for logged player
+		if(playerData.id == jfarm.playerId)
+			$('.game').trigger('onUIUpdatePlayer', [playerData]);
 
 		// character definition for animation with sheet motion
 		var body = new sheetengine.Sheet({x:0,y:0,z:15}, {alphaD:0,betaD:0,gammaD:0}, {w:11,h:14});
@@ -276,13 +282,13 @@ jfarm = {
 		ctx.fillRect(10,11,1,2);
 
 		// set arm, it's fork by default
-		jfarm.playerObjectData = jfarm.playerObjectsData.fork;
-		var arm = new sheetengine.Sheet(jfarm.playerObjectData.centerp, jfarm.playerObjectData.rot, {w:25,h:25});
+		jfarm.playerWeaponData = jfarm.getWeaponByName("Fork");
+		var arm = new sheetengine.Sheet(jfarm.playerWeaponData.centerp, jfarm.playerWeaponData.rot, {w:25,h:25});
 
-		arm.context.drawImage(jfarm.playerObjectData.image, jfarm.playerObjectData.x, jfarm.playerObjectData.y);
+		arm.context.drawImage(jfarm.playerWeaponData.image, jfarm.playerWeaponData.x, jfarm.playerWeaponData.y);
 		arm.canvasChanged();
-		arm.name = jfarm.playerObjectData.name;
-		jfarm.playerObjectChanged = true;
+		arm.name = jfarm.playerWeaponData.name;
+		jfarm.playerWeaponChanged = true;
 
 		// define player object
 		jfarm.player = new sheetengine.SheetObject(
@@ -408,36 +414,7 @@ jfarm = {
 		var relCenter = {x:sheetengine.scene.tilewidth * sheetengine.scene.yardcenterstart.yardx, y:sheetengine.scene.tilewidth*sheetengine.scene.yardcenterstart.yardy, z:0};
 		return sheetengine.geometry.subPoint(point, relCenter);
 	},
-	// weapons and player objects
-	definePlayerObjects: function(){
-		// FORK
-		var forkImg = new Image();
-		forkImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAZCAYAAADnstS2AAAALElEQVQ4jWNwtDb6zwAFBNmjiilSTAwmXTE6uH9y4v/7JydilxxVPKqY7ooB1c+3tcuPBsEAAAAASUVORK5CYII=";
-		jfarm.playerObjectsData.fork.image = forkImg;
-
-		// BAT
-		var batImg = new Image();
-		batImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAARCAYAAAAYNhYvAAAAqUlEQVQImTXOIQ4CMRAF0G9JuAEexxmWM+DwnACBXolY2hmNBscZdhOStiMRiA3pjOEEkGCLoMiXn5//8Yh+qcJDjr6FJnqZcDHhAhUeTbhYog8sUV/xhAmdTLhoohs0UVeTHjn6bcUFWfzahIsKH2HBNSZcstAe+XqY150d7n07NeGi0W8AAJr4naNf/SA8WnANAMAS9Tm4xR/nMbhZ7VAXgpvgf1+Fhy/N9oRkGdFVpwAAAABJRU5ErkJggg==";
-		jfarm.playerObjectsData.bat.image = batImg;
-		
-		// CHAINSAW
-		var chainsawImg = new Image();
-		chainsawImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAHCAYAAAAIy204AAAAfklEQVQokaXRoQ2AMBCFYUZAIIprHv4UjqGAkjR1hFnYA0HQrPQwkJBSTkCT3365u2Z7k/NqrgtKZTnXBfcmZ/blvWG/wBjzUtJLSQCTVhKMsSCGADh0Tg0Ak2i8ZhBD1/bcllXtRJ/g/VPuE7q2V3udMAYvNIihtXbUSp3wAI0rrQLjqZEtAAAAAElFTkSuQmCC";
-		jfarm.playerObjectsData.chainsaw.image = chainsawImg;
-
-		// AK-47
-		var akImg = new Image();
-		akImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAGCAYAAADOic7aAAAAhUlEQVQYlY3PIQoCYRDF8d8BNGwRLGYxKp7AahA2i0m8gMVk8iJ6AzF4ETF4AA9gMq1lFj7Wxc8Hf3g83swwfGuAdYYFxg10McQMKxxQZbhi3sAtKbyxCb9EH3ecwtcULZ/Yx+ADk8iq+gp2eKHXNpxqhCM6SXbGNHyBJy65Rf+oxPZX4QO++CCk+Lv1qQAAAABJRU5ErkJggg==";
-		jfarm.playerObjectsData.ak47.image = akImg;
-
-		// WATERING CAN
-		var watercanImg = new Image();
-		watercanImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAKCAYAAACE2W/HAAAA6ElEQVQokYWRrU4DURCFT0WDQaExJOtKMCvonTG1ra9o74za25lXaMAgy8PgEQ3hHZq0CodBNSTY5iIWSNhstycZMT/fJDMHAFCW1h9KGoVoyxBtOYwV45SK8fiMxNaktiNZrOrwT1J/L0vrHwVZ/I3EN41yj8W+SP0ZQK/RewAwAqvnvyXquRmk1TUABKmKi8urNYAM4BUU7bELBACepwmr7Vk9B0kzAADJYtUFstgdqR/q3J4G0+l5DaptO0H1TOoHinb/715Se/l9Tjtoe56nSasdP5/9aAODVMVRSwDgdpZuOgca+gaCeIMuwChpKwAAAABJRU5ErkJggg==";
-		jfarm.playerObjectsData.watercan.image = watercanImg;
-
-		
-	},
-	setPlayerObject: function(){
+	setPlayerWeapon: function(){
 		var arm = jfarm.player.arm;
 		arm.context.clearRect(0,0,25, 25);
 
@@ -447,17 +424,16 @@ jfarm = {
 		// arm.context.strokeRect(0,0,25,25);
 
 		// fout la merde 
-		jfarm.player.setSheetPos(arm, sheetengine.geometry.clonePoint(jfarm.playerObjectData.centerp),jfarm.playerObjectData.rot);
+		jfarm.player.setSheetPos(arm, sheetengine.geometry.clonePoint(jfarm.playerWeaponData.centerp),jfarm.playerWeaponData.rot);
 
-		arm.context.drawImage(jfarm.playerObjectData.image, jfarm.playerObjectData.x, jfarm.playerObjectData.y);
+		arm.context.drawImage(jfarm.playerWeaponData.image, jfarm.playerWeaponData.x, jfarm.playerWeaponData.y);
 		arm.canvasChanged();
-		arm.name = jfarm.playerObjectData.name;
-		jfarm.playerObjectChanged = true;
+		arm.name = jfarm.playerWeaponData.name;
+		jfarm.playerWeaponChanged = true;
 	},
 
 	// character movements
 	dist: function(obj1, obj2) {
-
 		return sheetengine.geometry.pointDist(obj1.centerp, obj2.centerp);
 	},
 	characterAtTargetObj: function(obj) {
@@ -526,7 +502,14 @@ jfarm = {
 		obj.finalTarget = null;
 		obj.animationState = 0;
 		jfarm.resetCharacterAnimation(obj);
-		// jfarm.stopFootsteps(obj);
+
+		if(jfarm.clickedObj && jfarm.clickedObj.type == "crop"){
+			console.log("crop");
+			$('#modal-c').trigger('init', [jfarm.clickedObj]);
+			jfarm.player.onCrop = false;
+		} else {
+			$('#modal-c').hide();
+		}
 		
 		if (obj.targetObj) {
 			// turn towards target
@@ -536,7 +519,6 @@ jfarm = {
 	moveCharacter: function(obj){
 		// move towards target
 		var targetp = jfarm.moveTowardsTarget(obj, jfarm.maxmove);
-		
 
 		jfarmio.sendData(obj,'move');
 
@@ -554,8 +536,6 @@ jfarm = {
 			obj.setPosition(targetp);
 			if (obj == jfarm.player)
 				jfarm.moveCamera();
-			
-			// jfarm.checkRoadWalk(obj);
 		}
 		
 		// arrived to target?
@@ -658,30 +638,30 @@ jfarm = {
 			if (!deleted)
 				continue;
 				
-			if (obj.name == 'Enemy') {
-				obj.setPosition(deleted.centerp);
-				obj.setOrientation(deleted.rot);
-				obj.health = deleted.health;
-				obj.killed = deleted.killed;
-			}
-			if (obj.name == 'Health potion') {
-				if (deleted.drunk)
-					obj.hide();
-			}
-			if (obj.name.indexOf('Key') != -1) {
-				if (deleted.picked)
-					obj.hide();
-			}
-			if (obj.name.indexOf('Gate') != -1) {
-				obj.opening = deleted.opening ? 1 : 0;	// opening restarts if it was interrupted when object was deleted
-				obj.opened = deleted.opened;
-				if (obj.opened) {
-					var left = obj.sheets[1];
-					var right = obj.sheets[2];
-					obj.rotateSheet(left, {x:-21,y:0,z:0}, {x:0,y:0,z:1}, -Math.PI/32*20);
-					obj.rotateSheet(right, {x:21,y:0,z:0}, {x:0,y:0,z:1}, Math.PI/32*20);
-				}
-			}
+			// if (obj.name == 'Enemy') {
+			// 	obj.setPosition(deleted.centerp);
+			// 	obj.setOrientation(deleted.rot);
+			// 	obj.health = deleted.health;
+			// 	obj.killed = deleted.killed;
+			// }
+			// if (obj.name == 'Health potion') {
+			// 	if (deleted.drunk)
+			// 		obj.hide();
+			// }
+			// if (obj.name.indexOf('Key') != -1) {
+			// 	if (deleted.picked)
+			// 		obj.hide();
+			// }
+			// if (obj.name.indexOf('Gate') != -1) {
+			// 	obj.opening = deleted.opening ? 1 : 0;	// opening restarts if it was interrupted when object was deleted
+			// 	obj.opened = deleted.opened;
+			// 	if (obj.opened) {
+			// 		var left = obj.sheets[1];
+			// 		var right = obj.sheets[2];
+			// 		obj.rotateSheet(left, {x:-21,y:0,z:0}, {x:0,y:0,z:1}, -Math.PI/32*20);
+			// 		obj.rotateSheet(right, {x:21,y:0,z:0}, {x:0,y:0,z:1}, Math.PI/32*20);
+			// 	}
+			// }
 			delete jfarm.deletedObjects[obj.id];
 		}
 
@@ -704,14 +684,41 @@ jfarm = {
 		};
 	},	
 
+	// harvest, storage and market
+	harvest: function(obj, productivity){
+		// we don't need to pass these info
+		obj.owner = undefined;
+		obj.content = undefined;
+		// first client check
+		console.log(obj);
+		if(obj.objectType == 'crop'){
+			jfarm.requestAjax('/harvesting/harvest',
+				{
+					cropObj: obj,
+					productivity: productivity 
+				}, function(response){
+					if(response.success){
+						jfarm.clickedObj.destroy();
+						jfarm.objDestroyed = true;
+					} else {
+						console.log(err);
+					}
+
+				});
+		} else {
+			console.log("harvest another thing that crop ??? really ? ");
+		}
+	},
 	// drawing
 	redraw: function(full) {
+		console.log("redraw");
 		sheetengine.drawing.drawScene(full);
 		
 		// static drawing
-		if(jfarm.player)
+		if(jfarm.player){
 			jfarm.drawTarget();
-		// jfarm.drawHealth();
+			jfarm.drawUsername();
+		}
 		// jfarm.drawBubble();
 
 		if (jfarm.hoveredObj)
@@ -723,8 +730,12 @@ jfarm = {
 		else {
 			// we highlight hovered basesheet
 			// TODO : player can't reach tile behind buildings because of "&& !jfarm.hoveredObj" condition
-			if(jfarm.hoveredBaseSheet && !jfarm.hoveredObj) 
-				jfarm.highlightHoveredBaseSheet();
+			if(jfarm.hoveredBaseSheet && !jfarm.hoveredObj){
+				if(jfarm.conquer)
+					jfarm.highlightHoveredBaseSheet("#52A8EC");
+				else 
+					jfarm.highlightHoveredBaseSheet();
+			}
 		}
 		
 	},
@@ -751,6 +762,25 @@ jfarm = {
 		ctx.beginPath();
 		ctx.restore();
 	},
+	drawUsername: function() {
+		// for (var i=0;i<sheetengine.objects.length;i++) {
+		// 	var obj = sheetengine.objects[i];
+		// 	// if object have an arm, this is a player
+		// 	if (obj.arm == 'Enemy')
+		// 		jfarm.drawUsernameForObj(obj);
+		// }
+		jfarm.drawUsernameForObj(jfarm.player);
+	},
+	drawUsernameForObj: function(obj){
+		var o = sheetengine.drawing.getPointuv(obj.centerp);
+		var ctx = sheetengine.context;
+		ctx.save();
+		ctx.lineWidth = jfarm.linewidth;
+		ctx.font = '12px "century gothic"';
+		ctx.strokeStyle = '#FFF';
+		ctx.strokeText(obj.name,o.u -20,o.v -30);
+		ctx.restore();
+	},
 	highlightObject: function(obj, strokeStyle) {
 
 		if(obj.cornerYard){
@@ -764,7 +794,6 @@ jfarm = {
 				yardx: yardArr[0],
 				yardy: yardArr[1]
 			};
-
 			var basesheet = jfarm.getBaseSheetFromYard(yard);
 			if(basesheet){
 				// we retrieve corners of hovered object
@@ -790,9 +819,6 @@ jfarm = {
 					ctx.lineTo(puvC1.u, puvC1.v*2);
 					ctx.stroke();
 					ctx.restore();
-
-					// displaying object's details in footer
-					// jfarm.getObjectDetails(obj);
 				}
 			}
 		}
@@ -825,25 +851,44 @@ jfarm = {
 
 		return false;
 	},
-	highlightHoveredBaseSheet: function(){
+	highlightHoveredBaseSheet: function(strokeStyle){
+
+		// arc 
 		var ctx = sheetengine.context;
 		ctx.save();
 		ctx.scale(1, 0.5);
 		ctx.lineWidth = 2;
-  		ctx.strokeStyle = '#000';
-  		var puvC1 = sheetengine.drawing.getPointuv(jfarm.hoveredBaseSheet.corners[0])
-  			,puvC2 = sheetengine.drawing.getPointuv(jfarm.hoveredBaseSheet.corners[1])
-  			,puvC3 = sheetengine.drawing.getPointuv(jfarm.hoveredBaseSheet.corners[2])
-  			,puvC4 = sheetengine.drawing.getPointuv(jfarm.hoveredBaseSheet.corners[3]);
+		ctx.globalAlpha = 0.2;
 
-	  	ctx.beginPath();
-	  	ctx.moveTo(puvC1.u, puvC1.v*2);
-	  	ctx.lineTo(puvC2.u, puvC2.v*2);
-	  	ctx.lineTo(puvC3.u, puvC3.v*2);
-	  	ctx.lineTo(puvC4.u, puvC4.v*2);
-	  	ctx.lineTo(puvC1.u, puvC1.v*2);
-	  	ctx.stroke();
-	  	ctx.restore();
+		// draw arc at static point
+		ctx.strokeStyle = strokeStyle || "#000";
+		ctx.beginPath();
+		var p = sheetengine.drawing.getPointuv(jfarm.hoveredBaseSheet.centerp);
+		ctx.arc(p.u, p.v*2, 15, 0, Math.PI*2);
+		ctx.closePath();
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.restore();
+
+		// tile rectangle
+		// var ctx = sheetengine.context;
+		// ctx.save();
+		// ctx.scale(1, 0.5);
+		// ctx.lineWidth = 2;
+  // 		ctx.strokeStyle = strokeStyle || '#000';
+  // 		var puvC1 = sheetengine.drawing.getPointuv(jfarm.hoveredBaseSheet.corners[0])
+  // 			,puvC2 = sheetengine.drawing.getPointuv(jfarm.hoveredBaseSheet.corners[1])
+  // 			,puvC3 = sheetengine.drawing.getPointuv(jfarm.hoveredBaseSheet.corners[2])
+  // 			,puvC4 = sheetengine.drawing.getPointuv(jfarm.hoveredBaseSheet.corners[3]);
+
+	 //  	ctx.beginPath();
+	 //  	ctx.moveTo(puvC1.u, puvC1.v*2);
+	 //  	ctx.lineTo(puvC2.u, puvC2.v*2);
+	 //  	ctx.lineTo(puvC3.u, puvC3.v*2);
+	 //  	ctx.lineTo(puvC4.u, puvC4.v*2);
+	 //  	ctx.lineTo(puvC1.u, puvC1.v*2);
+	 //  	ctx.stroke();
+	 //  	ctx.restore();
 	},
 	getBasesheetByCenterp: function(centerp) {
 		for (var i = 0; i < sheetengine.basesheets.length; i++) {
@@ -872,23 +917,23 @@ jfarm = {
 		return null;
 	},
 	getDrawingLocationBaseSheets: function(basesheet, obj){
-		switch(jfarm.drawnObj){
-			case jfarm.enumAppObjects[0]: // barn
+		switch(jfarm.drawnObj.name.toLowerCase()){
+			case "barn": // barn
 				return jfarm.getBarnLocationBaseSheets(basesheet);
 			break;
-			case jfarm.enumAppObjects[1]: // cold storage
+			case "cold storage": // cold storage
 				return jfarm.getColdStorageLocationBaseSheets(basesheet); 
 			break;
-			case jfarm.enumAppObjects[2]: // silo
+			case "silo": // silo
 				return [basesheet];
 			break;
-			case jfarm.enumAppObjects[3]: // corn
+			case "corn": // corn
 				return [basesheet];
 			break;
-			case jfarm.enumAppObjects[4]: // tomatoes
+			case "tomatoes": // tomatoes
 				return [basesheet];
 			break;
-			case jfarm.enumAppObjects[5]: // wheat
+			case "wheat": // wheat
 				return [basesheet];
 			break;
 			default:
@@ -936,25 +981,36 @@ jfarm = {
 		return basesheets;
 	},
 	// Data
-	getObjectDetails: function(obj){
-		jfarm.requestAjax("/gameobject/getdetails/"+ obj.idDB+ "/" + obj.type , null, function(response){
-			if(response.success)
-				$("#object-wrapper").trigger("getObjectData", [response.obj]);
-		},
-		null,
-		function(){
-			jfarm.getObjectDetailsDone = true;
-		});
+	getAnyTemplateByName: function(tplName){
+		return jfarm.getCropByName(tplName) || jfarm.getBuildingByName(tplName) || null;
 	},
-	getTileDetails: function(yard){
-		jfarm.requestAjax("/yard/getdetails/"+ yard.yardx + "/"+ yard.yardy, null, function(response){
-			if(response.success)
-				$("#tile-wrapper").trigger("getTileData", [response.yard]);
-		},
-		null,
-		function(){
-			jfarm.getTileDetailsDone = true;
-		});
+	getWeaponByName: function(weaponName){
+		for(var i=0; i < jfarm.weaponTpls.length; i++){
+			if(jfarm.weaponTpls[i].name.toLowerCase() == weaponName.toLowerCase())
+				return jfarm.weaponTpls[i];
+		}
+		return null;
+	},
+	getCropByName: function(cropName){
+		for(var i=0; i < jfarm.cropTpls.length; i++){
+			if(jfarm.cropTpls[i].name.toLowerCase() == cropName.toLowerCase())
+				return jfarm.cropTpls[i];
+		}
+		return null;
+	},
+	getBuildingByName: function(buildingName){
+		for(var i=0; i < jfarm.buildingTpls.length; i++){
+			if(jfarm.buildingTpls[i].name.toLowerCase() == buildingName.toLowerCase())
+				return jfarm.buildingTpls[i];
+		}
+		return null;
+	},
+	getObjectDetails: function(obj, callback, callbackFail, callbackAlways){
+		jfarm.requestAjax("/gameobject/getdetails/"+ obj.idDB+ "/" + obj.type , null, callback, callbackFail, callbackAlways);
+	},
+	getTileDetails: function(yard, callback, callbackFail, callbackAlways){
+		console.log("getDetails");
+		jfarm.requestAjax("/yard/getdetails/"+ yard.yardx + "/"+ yard.yardy, null, callback, callbackFail, callbackAlways);
 	},
 	getPlayerDetails: function(playerId, callback){
 		var id = playerId || jfarm.player.data.id;
@@ -964,8 +1020,8 @@ jfarm = {
 	// location
 	isPossibleToDrawHere: function(basesheet) {
 		// obsolete : replaced by sendNewObject
-		switch(jfarm.drawnObj){
-			case jfarm.enumAppObjects[0]: // barn
+		switch(jfarm.drawnObj.name.toLowerCase()){
+			case "barn": // barn
 				// return false if any of basesheets.free property is true
 				jfarm.currentLocationBaseSheets = jfarm.getBarnLocationBaseSheets(basesheet);
 				for (var i = 0; i < jfarm.currentLocationBaseSheets.length; i++) {
@@ -974,7 +1030,7 @@ jfarm = {
 				};
 				return true;
 			break;
-			case jfarm.enumAppObjects[1]: // cold storage
+			case "cold storage": // cold storage
 				jfarm.currentLocationBaseSheets = jfarm.getColdStorageLocationBaseSheets(basesheet); 
 				for (var i = 0; i < jfarm.currentLocationBaseSheets.length; i++) {
 					if(jfarm.currentLocationBaseSheets[i].free != undefined && !jfarm.currentLocationBaseSheets[i].free)
@@ -982,19 +1038,19 @@ jfarm = {
 				};
 				return true;
 			break;
-			case jfarm.enumAppObjects[2]: // silo
+			case "silo": // silo
 				jfarm.currentLocationBaseSheets = [basesheet];
 				return (basesheet.free != undefined) ? basesheet.free : true;
 			break;
-			case jfarm.enumAppObjects[3]: // corn
+			case "corn": // corn
 				jfarm.currentLocationBaseSheets = [basesheet];
 				return (basesheet.free != undefined) ? basesheet.free : true;
 			break;
-			case jfarm.enumAppObjects[4]: // tomatoes
+			case "tomatoes": // tomatoes
 				jfarm.currentLocationBaseSheets = [basesheet];
 				return (basesheet.free != undefined) ? basesheet.free : true;
 			break;
-			case jfarm.enumAppObjects[5]: // wheat
+			case "wheat": // wheat
 				jfarm.currentLocationBaseSheets = [basesheet];
 				return (basesheet.free != undefined) ? basesheet.free : true;
 			break;
@@ -1004,11 +1060,11 @@ jfarm = {
 		}
 	},
 	getDrawingCenterp: function(centerp) { // TODO gérer l'orientation
-		switch(jfarm.drawnObj){
-			case jfarm.enumAppObjects[0]: // barn
+		switch(jfarm.drawnObj.name.toLowerCase()){
+			case "barn": // barn
 				return {x: centerp.x+(jfarm.tileWidth*3)/2, y: centerp.y, z:null};
 			break;
-			case jfarm.enumAppObjects[1]: // cold storage
+			case "cold storage": // cold storage
 				return {x: centerp.x+jfarm.tileWidth, y: centerp.y - jfarm.tileWidth/2, z:null};
 			break;
 			default:
@@ -1017,23 +1073,23 @@ jfarm = {
 	},
 
 	getLocationCornersuv: function(obj, basesheet){
-		switch(obj){
-			case jfarm.enumAppObjects[0]: // barn
+		switch(obj.toLowerCase()){
+			case "barn": // barn
 				jfarm.locationCorners = jfarm.getBarnLocationCornersuv(basesheet);
 			break;
-			case jfarm.enumAppObjects[1]: // cold storage
+			case "cold storage": // cold storage
 				jfarm.locationCorners = jfarm.getColdStorageLocationCornersuv(basesheet);
 			break;
-			case jfarm.enumAppObjects[2]: // silo
+			case "silo": // silo
 				jfarm.locationCorners = basesheet.corners;
 			break;
-			case jfarm.enumAppObjects[3]: // corn
+			case "corn": // corn
 				jfarm.locationCorners = basesheet.corners;
 			break;
-			case jfarm.enumAppObjects[4]: // tomatoes
+			case "tomatoes": // tomatoes
 				jfarm.locationCorners = basesheet.corners;
 			break;
-			case jfarm.enumAppObjects[5]: // wheat
+			case "wheat": // wheat
 				jfarm.locationCorners = basesheet.corners;
 			break;
 			default:
@@ -1041,28 +1097,27 @@ jfarm = {
 	},
 	getLocationCornersYards: function(obj){
 		jfarm.drawingLocationCornersYards = [];
-		switch(obj){
-			case jfarm.enumAppObjects[0]: // barn
+		switch(obj.toLowerCase()){
+			case "barn": // barn
 				jfarm.drawingLocationCornersYards[0] = jfarm.clickedYard; 
 				jfarm.drawingLocationCornersYards[1] = sheetengine.scene.getYardFromPos(jfarm.currentLocationBaseSheets[3].centerp);
 			break;
-			case jfarm.enumAppObjects[1]: // cold storage
-				console.log(obj);
+			case "cold storage": // cold storage
 				jfarm.drawingLocationCornersYards[0] = jfarm.clickedYard; 
 				jfarm.drawingLocationCornersYards[1] = sheetengine.scene.getYardFromPos(jfarm.currentLocationBaseSheets[0].centerp);
 				jfarm.drawingLocationCornersYards[2] = sheetengine.scene.getYardFromPos(jfarm.currentLocationBaseSheets[4].centerp);
 				jfarm.drawingLocationCornersYards[3] = sheetengine.scene.getYardFromPos(jfarm.currentLocationBaseSheets[5].centerp);
 			break;
-			case jfarm.enumAppObjects[2]: // silo
+			case "silo": // silo
 				jfarm.drawingLocationCornersYards[0] = jfarm.clickedYard;
 			break;
-			case jfarm.enumAppObjects[3]: // corn
+			case "corn": // corn
 				jfarm.drawingLocationCornersYards[0] = jfarm.clickedYard;
 			break;
-			case jfarm.enumAppObjects[4]: // tomatoes
+			case "tomatoes": // tomatoes
 				jfarm.drawingLocationCornersYards[0] = jfarm.clickedYard;
 			break;
-			case jfarm.enumAppObjects[5]: // wheat
+			case "wheat": // wheat
 				jfarm.drawingLocationCornersYards[0] = jfarm.clickedYard;
 			break;
 			default:
@@ -1123,7 +1178,7 @@ jfarm = {
 			ctx.scale(1, 0.5);
 			ctx.lineWidth = 2;
 
-			ctx.strokeStyle = '#CCC';
+			ctx.strokeStyle = '#333';
 			var puvC1 = sheetengine.drawing.getPointuv(jfarm.locationCorners[0])
 				,puvC2 = sheetengine.drawing.getPointuv(jfarm.locationCorners[1])
 				,puvC3 = sheetengine.drawing.getPointuv(jfarm.locationCorners[2])
@@ -1148,13 +1203,13 @@ jfarm = {
 		jfarm.requestAjax("/player/conquer", data, function(response){
 				if(response.success){
 					var basesheets = jfarm.getBaseSheetsFromYardsString(response.yards);
-					console.log(basesheets);
 					for (var i = 0; i < basesheets.length; i++) {
 						basesheets[i].playerId = jfarm.player.data.id;
 						basesheets[i].free = false;
 						basesheets[i].neutral = false;
-						// console.log(basesheets[i]);
+						basesheets[i].color = "#52A8EC";
 					};
+					jfarm.conquerDone = true;
 				} else {
 					alert(response.message);
 				}
@@ -1162,23 +1217,25 @@ jfarm = {
 	},
 	createSelectedObj: function(basesheet){
 
-		var rot = jfarm.appobjectsRots[jfarm.drawnObj.replace(/\s/g, "")] // we retrieve object rot
-			,objc = jfarm.getDrawingCenterp(basesheet.centerp, jfarm.drawnObj)
+		var rot = jfarm.appobjectsRots[jfarm.drawnObj.name.toLowerCase()] // we retrieve object rot
+			,objCenterpStatic= jfarm.appobjectsCenterp[jfarm.drawnObj.name.toLowerCase()] // and static centerp
+			,objc = jfarm.getDrawingCenterp(basesheet.centerp, jfarm.drawnObj.name)
 			,yard = sheetengine.scene.getYardFromPos(objc);
 		
 		if(objc.z == undefined)
 			objc.z = 0;
 
-		jfarm.currentLocationBaseSheets = jfarm.getDrawingLocationBaseSheets(basesheet, jfarm.drawnObj);
+		jfarm.currentLocationBaseSheets = jfarm.getDrawingLocationBaseSheets(basesheet, jfarm.drawnObj.name);
 		if(jfarm.currentLocationBaseSheets.length > 0){
 			jfarm.currentLocationYards = jfarm.getYardsFromBasesheets(jfarm.currentLocationBaseSheets);
 
 			// we run this function to set corners yards of current drawing to jfarm.drawingLocationCornersYards
-			jfarm.getLocationCornersYards(jfarm.drawnObj);
+			jfarm.getLocationCornersYards(jfarm.drawnObj.name);
 
 			var obj = {
-				name: jfarm.drawnObj
-				,centerp: {x:0,y:0,z:0}
+				name: jfarm.drawnObj.name
+				,type: jfarm.drawnObj.type
+				,centerp: objCenterpStatic
 				,rot: { 
 					alphaD: rot.alphaD
 					,betaD: rot.betaD
@@ -1193,7 +1250,7 @@ jfarm = {
 	},
 	sendNewObject: function(obj, yard, yards){
 		var yardsStr = jfarm.getYardsStringFromYards(yards)
-		       ,cornerYardStr = jfarm.clickedYard.yardx + "," + jfarm.clickedYard.yardy;
+		    ,cornerYardStr = jfarm.clickedYard.yardx + "," + jfarm.clickedYard.yardy;
 
 		var data = {
 		       x: yard.yardx,
@@ -1201,7 +1258,7 @@ jfarm = {
 		       objectName: obj.name,
 		       object: obj,
 		       yards: yardsStr,
-		       objectType: obj.type, // TODO
+		       objectType: obj.type,
 		       cornerYard: cornerYardStr// we send our clicked yard for reference
 		};
 		jfarm.requestAjax("/gameobject/create",data,jfarm.drawSelectedObj);
@@ -1213,46 +1270,53 @@ jfarm = {
 			ajaxResponse.centerp.y = parseInt(ajaxResponse.centerp.y);
 			ajaxResponse.centerp.z = parseInt(ajaxResponse.centerp.z);
 
-			var createdObj = null
-				,objc = ajaxResponse.centerp; // we retrieve building centerp in server response
+			// var createdObj = jfarm.dimmedObj
+				// ,objc = ajaxResponse.centerp; // we retrieve building centerp in server response
 
-			switch(jfarm.drawnObj){
-				case jfarm.enumAppObjects[0]: // barn
-					createdObj = jfarm.defineBarn(objc);
-	  				jfarm.currentLocationBaseSheets.forEach(function(elem){ elem.free = false; });
-				break;
-				case jfarm.enumAppObjects[1]: // cold storage
-					createdObj = jfarm.defineColdStorage(objc);
-					jfarm.currentLocationBaseSheets.forEach(function(elem){ elem.free = false; });
-				break;
-				case jfarm.enumAppObjects[2]: // silo
-					createdObj = jfarm.defineSilo(objc);
-					jfarm.currentLocationBaseSheets[0].free = false;
-				break;
-				case jfarm.enumAppObjects[3]: // corn
-					createdObj = jfarm.defineCrops(objc, "Corn", "#fef094", true, "#319704");
-					jfarm.currentLocationBaseSheets[0].free = false;
-				break;
-				case jfarm.enumAppObjects[4]: // tomatoes
-					createdObj = jfarm.defineTomatoesPlants(objc);
-					jfarm.currentLocationBaseSheets[0].free = false;
-				break;
-				case jfarm.enumAppObjects[5]: // wheat
-					createdObj = jfarm.defineCrops(objc, "Wheat", "#fef094");
-					jfarm.currentLocationBaseSheets[0].free = false;
-				break;
-				default:
-			}
-			jfarm.drawnObj = null;
-			if(createdObj){ // in case of default switch
-				// we assign immediately cornerYard to new added object
-				createdObj.type = ajaxResponse.type;
-				createdObj.idDB = ajaxResponse.id; 
-				createdObj.type = ajaxResponse.type;
-				createdObj.cornerYard = ajaxResponse.cornerYard; 
-				jfarm.densityMap.addSheets(createdObj.sheets);
-				jfarm.validateCreationObj = true;
-			} 
+			// switch(jfarm.drawnObj.name.toLowerCase()){
+			// 	case "barn": // barn
+			// 		// createdObj = jfarm.defineBarn(objc);
+	  // 				jfarm.currentLocationBaseSheets.forEach(function(elem){ elem.free = false; });
+			// 	break;
+			// 	case "cold storage": // cold storage
+			// 		// createdObj = jfarm.defineColdStorage(objc);
+			// 		jfarm.currentLocationBaseSheets.forEach(function(elem){ elem.free = false; });
+			// 	break;
+			// 	case "silo": // silo
+			// 		// createdObj = jfarm.defineSilo(objc);
+			// 		jfarm.currentLocationBaseSheets[0].free = false;
+			// 	break;
+			// 	case "corn": // corn
+			// 		// createdObj = jfarm.defineCrops(objc, "Corn", "#fef094", true, "#319704");
+			// 		jfarm.currentLocationBaseSheets[0].free = false;
+			// 	break;
+			// 	case "tomatoes": // tomatoes
+			// 		// createdObj = jfarm.defineTomatoesPlants(objc);
+			// 		jfarm.currentLocationBaseSheets[0].free = false;
+			// 	break;
+			// 	case "wheat": // wheat
+			// 		// createdObj = jfarm.defineCrops(objc, "Wheat", "#fef094");
+			// 		jfarm.currentLocationBaseSheets[0].free = false;
+			// 	break;
+			// 	default:
+			// }
+			// jfarm.drawnObj = null;
+			// // in case of default switch
+			// if(jfarm.dimmedObj){ 
+
+			// ui update 
+			$('.game').trigger('onUIUpdatePlayer', [ajaxResponse.player]);
+			// we update client side new busy basesheets
+			jfarm.currentLocationBaseSheets.forEach(function(elem){ elem.free = false; });
+			// we assign immediately some info to new added object
+			jfarm.dimmedObj.type = ajaxResponse.type;
+			jfarm.dimmedObj.idDB = ajaxResponse.id; 
+			jfarm.dimmedObj.cornerYard = ajaxResponse.cornerYard; 
+			if(jfarm.dimmedObj.type.toLowerCase() == "building")
+				jfarm.densityMap.addSheets(jfarm.dimmedObj.sheets);
+			jfarm.validateCreationObj = true;
+
+			// } 
 		} else {
 			alert(ajaxResponse.message);
 		}
@@ -1449,17 +1513,17 @@ jfarm = {
 		pillierRightEst.context.fillRect(0,0,80,80);
 
 		var silo = new sheetengine.SheetObject(
-		centerp,
-		{alphaD:0,betaD:0,gammaD:0},
-		[sud,est,top,tri1,tri2,pillierLeftSud,pillierLeftEst,pillierBottomSud,pillierBottomEst,pillierRightSud,pillierRightEst],
-		{w:150,h:225,relu:75,relv:190}
-		);
+			centerp,
+			{alphaD:0,betaD:0,gammaD:0},
+			[sud,est,top,tri1,tri2,pillierLeftSud,pillierLeftEst,pillierBottomSud,pillierBottomEst,pillierRightSud,pillierRightEst],
+			{w:170,h:225,relu:65,relv:190}
+			);
 		silo.name = "Silo";
 		silo.centerpdb = {x:0,y:0,z:0};
 
 		return silo;
 	},
-	defineTomatoesPlants: function(centerp){
+	defineTomatoesPlants: function(centerp, dimmed){
 		var coords = [{x:-20,y:20,z:10}, {x:20,y:0,z:10}, {x:20,y:-20,z:10}, {x:-20,y:-20,z:10}, {x:-20,y:0,z:10}, {x:20,y:20,z:10}]
 			,plantsArr = [];
 
@@ -1467,7 +1531,9 @@ jfarm = {
 			var plant = new sheetengine.Sheet(coords[i], {alphaD:0,betaD:0,gammaD:90}, {w:20,h:20})
 				,ctx = plant.context
 				,y = 4;
-				
+			
+			if(dimmed)
+				ctx.globalAlpha = 0.2;
 			ctx.fillStyle = '#3a6e2a';
 			ctx.fillRect(0,0,4,20);
 			// we draw some red tomatoes 
@@ -1490,7 +1556,7 @@ jfarm = {
 								{w:120,h:70,relu:60,relv:40});
 		tomatoes.name = "Tomatoes";
 		tomatoes.centerpdb = {x:0,y:0,z:0};
-		return tomatoes
+		return tomatoes;
 	},
 	defineCrops: function(centerp, name, color, gradient, gradientColor){
 		var rowsArr = []
@@ -1538,82 +1604,92 @@ jfarm = {
 		// if (jfarm.player.killed)
 		// 	return;
 		
-		if (!jfarm.hoveredObj) {
-			// set target location
-			var puv = {
-				u:event.clientX - sheetengine.canvas.offsetLeft + pageXOffset, 
-				v:event.clientY - sheetengine.canvas.offsetTop + pageYOffset
-			};
-			// var pxy = sheetengine.transforms.inverseTransformPoint({u:puv.u + sheetengine.scene.center.u, v:puv.v + sheetengine.scene.center.v});
-			// pxy.x = (pxy.x - sheetengine.scene.center.x) / jfarm.zoom + sheetengine.scene.center.x;
-			// pxy.y = (pxy.y - sheetengine.scene.center.y) / jfarm.zoom + sheetengine.scene.center.y;
+		var x = event.clientX - sheetengine.canvas.offsetLeft + pageXOffset
+			,y = event.clientY - sheetengine.canvas.offsetTop + pageYOffset
+		var puv = {u:x, v:y };
 
-			// get clicked basesheet/tile
-			jfarm.clickedBaseSheet = jfarm.getBaseSheetByPuv(puv);
+		jfarm.clickedBaseSheet = jfarm.getBaseSheetByPuv(puv);
+		jfarm.clickedYard =  sheetengine.scene.getYardFromPos(jfarm.clickedBaseSheet.centerp);
+
+		// console.log(jfarm.clickedYard.yardx + "," + jfarm.clickedYard.yardy);
+		// console.log(yard);
+		// console.log(jfarm.clickedBaseSheet);
+		// get clicked basesheet/tile
+		
+		if (!jfarm.hoveredObj) {
 			if(jfarm.clickedBaseSheet){
-				jfarm.clickedYard =  sheetengine.scene.getYardFromPos(jfarm.clickedBaseSheet.centerp);
-				console.log(jfarm.clickedYard.yardx + "," + jfarm.clickedYard.yardy);
-				// console.log(yard);
-				// console.log(jfarm.clickedBaseSheet);
 				
 				// different gaming mode
 				jfarm.player.targetObj = null;
-
+				jfarm.clickedObj = null;
 				// Drawing
-				if(jfarm.clickedBaseSheet && jfarm.drawnObj)
+				if(jfarm.drawnObj && !jfarm.conquer)
 					jfarm.validatePosObj = true;
-
 				// conquering
-				if(jfarm.conquer){
+				if(jfarm.conquer)
 					jfarm.conquerTerritory([jfarm.clickedBaseSheet]);
-				}
 				// moving
 				if(jfarm.movingPlayer && !jfarm.drawnObj){
-					// get tile details from server
-					// jfarm.getTileDetails(jfarm.clickedYard); // already in timer()
 					jfarm.setTarget(jfarm.player, jfarm.hoveredBaseSheet.centerp);
 				}
 			}
 			
 		} else {
-			// get object details from server
-			if(jfarm.selectingObject){
-				jfarm.getObjectDetails(jfarm.hoveredObj);
-			}
-			// set target object
-			// jfarm.player.targetObj = jfarm.hoveredObj;
-			// if (jfarm.characterAtTargetObj(jfarm.player))
-			// 	jfarm.characterArrived(jfarm.player);
-			// else
-			// 	jfarm.setTarget(jfarm.player, jfarm.player.targetObj.centerp);
+			jfarm.clickedObj = jfarm.hoveredObj;
+			// set target object centerp
+			if(jfarm.clickedObj.type == 'crop')
+				jfarm.setTarget(jfarm.player, jfarm.clickedObj.centerp);
+
+			// if(jfarm.clickedObj.type == "crop"){
+			// 	$('#modal-c').trigger('init', [x,y,jfarm.clickedObj]);
+			// } else {
+			// 	$('#modal-b').trigger('init', [x,y,jfarm.clickedObj]);
+			// }
 		}
 	},
 	mousemove: function(event) {
 		if (!jfarm.sceneIsReady)
 			return;
 		
-		// calculate hovered object
 		var puv = {
 			u:event.clientX - sheetengine.canvas.offsetLeft + pageXOffset, 
 			v:event.clientY - sheetengine.canvas.offsetTop + pageYOffset
 		};
+		
+		// get hovered tile 
+		jfarm.hoveredBaseSheet = jfarm.getBaseSheetByPuv(puv); 
+		if(jfarm.hoveredBaseSheet)
+			jfarm.hoveredYard = sheetengine.scene.getYardFromPos(jfarm.hoveredBaseSheet.centerp);
+
+		// draw current selected object during mousemove
+		if(jfarm.dimmedObj && jfarm.hoveredBaseSheet && jfarm.hoveredBaseSheet != jfarm.preHoveredBaseSheet){
+			if(jfarm.dimmedObj.hidden){
+				jfarm.dimmedObj.show();
+				sheetengine.calc.calculateAllSheets();
+			}
+			console.log("dimmedObj");
+			jfarm.dimmedObj.setPosition(jfarm.getDrawingCenterp(jfarm.hoveredBaseSheet.centerp));
+		}
 
 		// get hovered object
-		if(!jfarm.drawnObj)
+		if(!jfarm.drawnObj && !jfarm.conquer)
 			jfarm.hoveredObj = jfarm.getHoveredObject(puv);
 
-		if (jfarm.hoveredObj){
+		if (jfarm.hoveredObj || jfarm.dimmedObj){
 			$(sheetengine.canvas).css('cursor','pointer');
 		} else {
 			$(sheetengine.canvas).css('cursor','crosshair');
-			// get hovered tile 
-			jfarm.hoveredBaseSheet = jfarm.getBaseSheetByPuv(puv); 
 		}
 	},
 	keyup: function(event){
 		var keyCode = event.keyCode;
 		switch(keyCode){
 			case 27:
+				if(jfarm.dimmedObj){
+					jfarm.dimmedObj.destroy(true);
+					jfarm.dimmedObj = null;
+					jfarm.redraw();
+				}
 				if(jfarm.drawnObj){
 					// remove active class of current drawing
 					$('#creator').trigger("cancelDrawing");
@@ -1622,19 +1698,23 @@ jfarm = {
 				}
 			break;
 			default:
-				break;
 		}
 	},
+	// utils
 	requestAjax: function (url, data, callback, callbackFail, callbackAlways) {
-	  $.ajax({
-	    url: url,
-	    data: data,
-	    cache: false,
-	    dataType: "json"
-	  })
-	  .done(callback)
-	  .fail(callbackFail || function(){ console.log("ajax request failed")})
-	  .always(callbackAlways || null);
+		$.ajax({
+			url: url,
+			data: data,
+			cache: false,
+			dataType: "json"
+			})
+		.done(callback)
+		.fail(callbackFail || function(){ console.log("ajax request failed")})
+		.always(callbackAlways || null);
+	},
+	capitaliseFirstLetter: function(string)
+	{
+	    return string.charAt(0).toUpperCase() + string.slice(1);
 	},
 	// main timer
 	timer: function() {
@@ -1649,12 +1729,18 @@ jfarm = {
 		  	sceneChanged = 1;
 		}
 		// get hovered baseheet details
-		if(jfarm.preHoveredBaseSheet == jfarm.hoveredBaseSheet){
+		if(jfarm.preHoveredBaseSheet == jfarm.hoveredBaseSheet && !jfarm.hoveredObj){
 			// we get tile details if we stay on it more than 1 sec
-			var cond  = jfarm.tileDelayTime + 1000 < new Date().getTime() && !jfarm.getTileDetailsDone;
+			var cond  = jfarm.tileDelayTime + 2000 < new Date().getTime() && !jfarm.getTileDetailsDone;
 			if(cond && jfarm.hoveredBaseSheet){
 				$("#tile-wrapper").trigger("onGettingTileDetails");
-				jfarm.getTileDetails(sheetengine.scene.getYardFromPos(jfarm.hoveredBaseSheet.centerp));
+				jfarm.getTileDetails(jfarm.hoveredYard, function(response){
+					if(response.success)
+						$("#tile-wrapper").trigger("getTileData", [response.yard]);
+				},null,function(response){
+					jfarm.getTileDetailsDone = true;
+					jfarm.loadedYard = response.yard;
+				});
 			}
 		}
 
@@ -1667,12 +1753,31 @@ jfarm = {
 		}
 		if(jfarm.prevHoveredObj == jfarm.hoveredObj){
 			// we get object details if we stay on it more than 1 sec
-			var cond  = jfarm.objectDelayTime + 1000 < new Date().getTime() && !jfarm.getObjectDetailsDone;
+			var cond  = jfarm.objectDelayTime + 2000 < new Date().getTime() && !jfarm.getObjectDetailsDone;
 			if(cond && jfarm.hoveredObj){
+				// ui loading...
 				$("#object-wrapper").trigger("onGettingObjectDetails");
-				jfarm.getObjectDetails(jfarm.hoveredObj);
+				// get object details 
+				jfarm.getObjectDetails(jfarm.hoveredObj, function(response){
+					if(response.success)
+						$("#object-wrapper").trigger("getObjectData", [response.obj]); // ui
+				},null, function(response){
+					jfarm.getObjectDetailsDone = true;
+					jfarm.loadedObj = response.obj;
+				});
+
+				// if it's a crop, we get tile details because it's only on 1 tile
+				if(jfarm.hoveredObj.type == "crop")
+					jfarm.getTileDetails(jfarm.hoveredYard, function(response){
+						if(response.success)
+							$("#tile-wrapper").trigger("getTileData", [response.yard]);
+					});
 			}
 		}
+
+		// use in harvesting callback 
+		if(jfarm.objDestroyed)
+			sceneChanged = 1;
 
 		// player actions
 		if(jfarm.player){
@@ -1682,27 +1787,32 @@ jfarm = {
 				sceneChanged = 1;
 			}
 
-			// player object has changed
-			if(jfarm.player.arm.name != jfarm.playerObjectData.name){
-				jfarm.setPlayerObject();
+			// player weapon has changed
+			if(jfarm.player.arm.name != jfarm.playerWeaponData.name){
+				jfarm.setPlayerWeapon();
 				sceneChanged = 1;
 				// sheetengine.calc.calculateChangedSheets();
 			}
 
-			//console.log(jfarm.player.moved);
 			if(jfarm.player.moved == true && jfarm.player.arrived == false){
 				jfarmio.sendData(jfarm.player, 'move');
 			}
 
-
+			if(jfarm.conquerDone){
+				sheetengine.drawing.drawScene(true);
+				jfarm.conquerDone = false;
+			}
 		}
 		
 
 		// Draw object location on the map
 		if(jfarm.drawnObj && jfarm.hoveredBaseSheet && jfarm.preHoveredBaseSheet != jfarm.hoveredBaseSheet){
 			jfarm.preHoveredBaseSheet = jfarm.hoveredBaseSheet;
-			jfarm.getLocationCornersuv(jfarm.drawnObj, jfarm.hoveredBaseSheet);
-			sceneChanged = 1;
+			jfarm.getLocationCornersuv(jfarm.drawnObj.name, jfarm.hoveredBaseSheet);
+
+			sheetengine.calc.calculateChangedSheets();
+			jfarm.redraw(true);
+			jfarm.dimmedObjMoved = false;
 		}
 
 		// draw object on the map
@@ -1713,41 +1823,11 @@ jfarm = {
 		}
 
 		if(jfarm.validateCreationObj){
-			jfarm.validateCreationObj = true;
-			sceneChanged = 1;	
+			$('#creator').trigger("cancelDrawing"); //ui 
+			jfarm.dimmedObj = null;
+			jfarm.drawnObj = null;
+			jfarm.validateCreationObj = false;
 		}
-		
-		
-		// if (jfarm.player.fighting) {
-		// 	jfarm.doFight(jfarm.player);
-		// 	sceneChanged = 1;
-		// }
-		
-		// // enemy actions
-		// for (var i=0;i<sheetengine.objects.length;i++) {
-		// 	var obj = sheetengine.objects[i];
-		// 	if (obj.name != 'Enemy')
-		// 		continue;
-			
-		// 	if (obj.killed)
-		// 		continue;
-			
-		// 	if (!obj.fighting && !jfarm.player.killed) {
-		// 		var dist = jfarm.dist(obj, jfarm.player);
-		// 		if (dist < 100) {
-		// 			obj.targetObj = jfarm.player;
-		// 			jfarm.setTarget(obj, jfarm.player.centerp);
-		// 		}
-		// 	}
-		// 	if (obj.target) {
-		// 		jfarm.moveCharacter(obj);
-		// 		sceneChanged = 1;
-		// 	}
-		// 	if (obj.fighting) {
-		// 		jfarm.doFight(obj);
-		// 		sceneChanged = 1;
-		// 	}
-		// }
 			
 		if (sceneChanged) {
 			sheetengine.calc.calculateChangedSheets();
