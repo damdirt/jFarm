@@ -42,7 +42,7 @@ jfarm = {
 	,boundarySize:  1.6
 	,zoom: 1
 	,lineWidth: 0
-	,densityMap: null
+	,densityMap: 1
 
 	// orientations 
 	,rotSouthNorth: {alphaD:0,betaD:0,gammaD:0}
@@ -100,7 +100,7 @@ jfarm = {
 	,playerFarm: {} // contains all player buildings and crops available on the map
 	,playerWeaponChanged: false
 	,playerWeaponData: {}
-	
+
 	// enemies
 	,enemies: {}
 	
@@ -515,7 +515,7 @@ jfarm = {
 		// move towards target
 		var targetp = jfarm.moveTowardsTarget(obj, jfarm.maxmove);
 
-		jfarmio.sendData(obj,'move');
+		
 
 		if (jfarm.characterAtTargetObj(obj)) {
 			jfarm.characterArrived(obj);
@@ -529,6 +529,7 @@ jfarm = {
 			jfarm.animateCharacter(obj, obj.animationState);
 			obj.animationState++;
 			obj.setPosition(targetp);
+			jfarmio.sendData(obj,'move');
 			if (obj == jfarm.player)
 				jfarm.moveCamera();
 		}
@@ -783,12 +784,9 @@ jfarm = {
 		ctx.restore();
 	},
 	drawUsername: function() {
-		// for (var i=0;i<sheetengine.objects.length;i++) {
-		// 	var obj = sheetengine.objects[i];
-		// 	// if object have an arm, this is a player
-		// 	if (obj.arm == 'Enemy')
-		// 		jfarm.drawUsernameForObj(obj);
-		// }
+		for(enemy in jfarm.enemies){
+			jfarm.drawUsernameForObj(jfarm.enemies[enemy]);
+		}
 		jfarm.drawUsernameForObj(jfarm.player);
 	},
 	drawUsernameForObj: function(obj){
@@ -1285,7 +1283,6 @@ jfarm = {
     },
 	drawSelectedObj: function(ajaxResponse){
 		if(ajaxResponse.success){
-
 			// ORGINAL OBJECT CENTERP ABOUT PLAYER
 			ajaxResponse.relcenterp.x = parseInt(ajaxResponse.relcenterp.x);
 			ajaxResponse.relcenterp.y = parseInt(ajaxResponse.relcenterp.y);
@@ -1302,6 +1299,7 @@ jfarm = {
 			if(jfarm.dimmedObj.type.toLowerCase() == "building")
 				jfarm.densityMap.addSheets(jfarm.dimmedObj.sheets);
 			jfarm.validateCreationObj = true;
+			// jfarmio.sendObj(jfarm.player, 'newObj', jfarm.dimmedObj.name, ajaxResponse.relcenterp )
 		} else {
 			alert(ajaxResponse.message);
 		}

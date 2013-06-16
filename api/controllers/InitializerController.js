@@ -6,7 +6,9 @@ var InitializerController = {
 	index: function() {
 		global.playingUsers = {}
 		global.loadProperties();
-		Yard.findAll().done(function(err, yards) {
+
+		setTimeout(function() {
+			Yard.findAll().done(function(err, yards) {
 			if (!yards || yards.length == 0) {
 				var i = 0;
 				for (x = 0; x < global.properties.defaultYardNumber; x++) {
@@ -34,6 +36,8 @@ var InitializerController = {
 				}
 			}
 		});
+		}, 2000);
+		
 
 		User.findAll().done(function(err, users) {
 				for (i = 0; i < users.length; i++) {
