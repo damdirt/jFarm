@@ -42,6 +42,7 @@ $(function() {
 	$(".resultShow").hide();
 	$("#top-actions-notif").hide();
 	$("#content-actions-notif").hide();
+	$(".overlay").hide();
 
 	// BUILDINGS
 	$(".showBuildings").on('click', function() {
@@ -159,6 +160,31 @@ $(function() {
 			jfarm[$(elem).data("action")] = false;
 		});
 		jfarm[action] = true;
+	});
+
+	// PLAYER DETAILS
+	$('#content-actions').on('getPlayerData', function(e, player) {
+		if (player.allianceId != null && player.allianceId != 0) {
+			$.ajax({
+				url: "/alliance/" + player.allianceId,
+				dataType: 'json'
+			}).done(function(response) {
+				if (player.allianceId != null && player.allianceId != 0) {
+					$('#player-alliance').text(response.name);
+				};
+				if (player.id != response.ownerId) {
+					$("#player-alliance").append(' ' + '<a href="/player/leaveAlliance" id="leaveAlliance">Leave</a>');
+				};
+			});
+		} else {
+			$('#player-alliance').text("no alliance");
+		}
+		
+		$('#player-data-level').text(player.level);
+		$('#player-money').text(player.money + " ch.");
+		// $('#player-data-life').text(player.);
+		// $('#player-data-tiles').text(player.);
+		// $('#player-data-buildings').text(player.);
 	});
 
 	// TILES 
