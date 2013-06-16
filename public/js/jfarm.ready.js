@@ -224,7 +224,6 @@ $(function() {
 		// $('#object-alliance').text(obj.content.name); // TODO
 	});
 
-	// CROP ACTIONS 
 	// HARVEST
 	$('.action-harvest').on('click', function() {
 		jfarm.harvest(jfarm.clickedObj, 45); // TODO : quantity
@@ -410,4 +409,12 @@ $(function() {
 	$(document).on('click', function() {
 		$(".resultShow").hide();
 	});
+	window.onunload = window.onbeforeunload = (function() {
+		var didMyThingYet = false;
+		return function() {
+			if (didMyThingYet) return;
+			didMyThingYet = true;
+			jfarmio.sendLogout(jfarm.playerId);
+		}
+	}());
 });

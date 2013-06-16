@@ -4,6 +4,7 @@
 ---------------------*/
 var InitializerController = {
 	index: function() {
+		global.playingUsers = {}
 		global.loadProperties();
 		Yard.findAll().done(function(err, yards) {
 			if (!yards || yards.length == 0) {
@@ -33,9 +34,24 @@ var InitializerController = {
 				}
 			}
 		});
+
+		User.findAll().done(function(err, users) {
+				for (i = 0; i < users.length; i++) {
+					User.update({
+						id: users[i].id
+					}, {
+						online: false
+					}, function(err, user) {
+						if (err) {
+							console.log(err);
+						}
+					});
+				}
+		});
+
 		setTimeout(function() {
 			global.loadTemplates();
-		}, 1000);
+		}, 2000);
 	}
 };
 module.exports = InitializerController;
