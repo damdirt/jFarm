@@ -69,7 +69,7 @@ $(function() {
 			}).done(function(response) {
 				$("#modal-b").show();
 				$('#building-maxCapacity').text('Max capacity : ' + response.template.storageCapacity);
-				$("#building-currentCapacity").text('Current capacity : ' + response.template.storageCapacity);
+				$("#building-currentCapacity").text('Current capacity : ');
 				$("#elements-harvesting").html("");
 				console.log(response);
 				for (var i = 0; i < response.harvestings.length; i++) {
@@ -93,7 +93,17 @@ $(function() {
 			url: "/building/storeharvesting/" + harvestingId + "/" + buildingId + "/" + buildingTemplateId,
 			dataType: 'json'
 		}).done(function(response) {
-			
+			$("#building-currentCapacity").text('Current capacity : ');
+			$("#elements-harvesting").html("");
+			$("#elements-stocked").html("");
+			console.log(response);
+			for (var i = 0; i < response.harvestings.length; i++) {
+				$("#elements-harvesting").append('<li class="clear-fix"><div class="pull-left">' + response.harvestings[i].quantity + ' ' + response.harvestings[i].name + '</div><div class="action-element action-harvest" data-harvestingId="' + response.harvestings[i].id + '" data-buildingId="' + buildingId + '" data-buildingTemplateId="' + response.building.buildingTemplateId + '"></div></li>');
+			};
+			for (var i = 0; i < response.storedItems.length; i++) {
+				$("#elements-stocked").append('<li class="clear-fix"><div class="pull-left">' + response.storedItems[i].quantity + ' ' + response.storedItems[i].name + '</div><div class="action-element action-sell"></div></li>');
+			};
+			console.log(response);
 		});
 	});
 
@@ -268,7 +278,9 @@ $(function() {
 
 	// HARVEST
 	$('.action-harvest').on('click', function() {
-		jfarm.harvest(jfarm.clickedObj, 45); // TODO : quantity
+		jfarm.getObjectDetails(jfarm.clickedObj, function(response){
+			jfarm.harvest(response.obj, 45); // TODO : quantity
+		});
 	});
 	// WATER 
 	$('.action-water').on('click', function() {
