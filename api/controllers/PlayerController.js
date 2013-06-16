@@ -102,8 +102,7 @@ var PlayerController = {
 							}
 						}, {
 							neutral: false,
-							playerId: req.session.player.id,
-							free: false
+							playerId: req.session.player.id
 						}, function(err, yards) {
 							// Error handling
 							if (err) {
@@ -207,36 +206,34 @@ var PlayerController = {
 	leaveAlliance: function(req, res) {
 		if (req.isAjax) {
 			var playerId = req.session.player.id;
-			if (req.session.player.allianceId) {
-				Player.update({
-					id: playerId
-				}, {
-					allianceId: 0
-				}, function(err, player) {
-					// Error handling
-					if (err) {
-						res.end(JSON.stringify({
-							'success': false,
-							'message': 'error occured during leave player',
-							player: {},
-							'error': err
-						}));
-					} else {
-						req.session.player.allianceId = 0;
-						res.end(JSON.stringify({
-							'success': true,
-							'message': 'You leaved from your alliance successfully !',
-							player: req.session.player,
-							'error': null
-						}));
-					}
-				});
-			}
+			Player.update({
+				id: playerId
+			}, {
+				allianceId: 0
+			}, function(err, player) {
+				// Error handling
+				if (err) {
+					res.end(JSON.stringify({
+						'success': false,
+						'message': 'error occured during leave player',
+						'player': {},
+						'error': err
+					}));
+				} else {
+					req.session.player.allianceId = 0;
+					res.end(JSON.stringify({
+						'success': true,
+						'message': 'You leaved from your alliance successfully !',
+						'player': req.session.player,
+						'error': null
+					}));
+				}
+			});
 		} else {
 			res.end(JSON.stringify({
 				'success': false,
 				'message': 'req failed',
-				player: player,
+				'player': req.session.player,
 				'error': null
 			}));
 		}

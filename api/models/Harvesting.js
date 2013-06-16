@@ -5,7 +5,7 @@
 module.exports = {
 	attributes	: {
 		name: 'TEXT',
-		productivty: 'INT',
+		productivity: 'INT',
 		playerId: 'INT',
 		cropTemplateId: 'INT'
 	}

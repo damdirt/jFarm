@@ -18,7 +18,22 @@ $(function() {
 	$('.game').on('onUIUpdatePlayer', function(e, player){
 		if(player){
 			$('#player-data-level').text(player.level);
-			$('#player-money').text(player.money);
+			$('#player-money').text(player.money + " ch.");
+			if (player.allianceId != null && player.allianceId != 0) {
+				$.ajax({
+					url: "/alliance/" + player.allianceId,
+					dataType: 'json'
+				}).done(function(response) {
+					if (player.allianceId != null && player.allianceId != 0) {
+						$('#player-alliance').text(response.name);
+					};
+					if (player.id != response.ownerId) {
+						$("#player-alliance").append(' ' + '<a href="/player/leaveAlliance" id="leaveAlliance">Leave</a>');
+					};
+				});
+			} else {
+				$('#player-alliance').text("no alliance");
+			}
 		} else {
 			console.log("No player");
 		}
@@ -27,7 +42,7 @@ $(function() {
 	$(".resultShow").hide();
 	$("#top-actions-notif").hide();
 	$("#content-actions-notif").hide();
-	
+
 	// BUILDINGS
 	$(".showBuildings").on('click', function() {
 		$('#top-actions').hide();
@@ -70,6 +85,37 @@ $(function() {
 		jfarm.getPlayerDetails(null, function(player){
 			// we check if player has enough money for crop/building
 			if(player.money >= jfarm.drawnObj.price){
+
+				if(jfarm.dimmedObj){
+					jfarm.dimmedObj.destroy(true);
+					jfarm.redraw();
+				}
+				// to draw object at mouse position
+				var objc = {x:0,y:0,z:0};
+				switch(jfarm.drawnObj.name.toLowerCase()){
+					case "barn": // barn
+						jfarm.dimmedObj = jfarm.defineBarn(objc); 				
+					break;
+					case "cold storage": // cold storage
+						jfarm.dimmedObj = jfarm.defineColdStorage(objc);						
+					break;
+					case "silo": // silo
+						jfarm.dimmedObj = jfarm.defineSilo(objc);
+					break;
+					case "corn": // corn
+						jfarm.dimmedObj = jfarm.defineCrops(objc, "Corn", "#fef094", true, "#319704");
+					break;
+					case "tomatoes": // tomatoes
+						jfarm.dimmedObj = jfarm.defineTomatoesPlants(objc);
+					break;
+					case "wheat": // wheat
+						jfarm.dimmedObj = jfarm.defineCrops(objc, "Wheat", "#fef094");
+					break;
+					default:
+				}
+				jfarm.dimmedObj.hide();
+
+				// ui
 				$('.crop, .building').each(function(index, elem){
 					var $elem = $(elem);
 					if($elem.data('value').toLowerCase() === jfarm.drawnObj.name.toLowerCase())
@@ -115,43 +161,16 @@ $(function() {
 		jfarm[action] = true;
 	});
 
-	// PLAYER DETAILS
-	$('#content-actions').on('getPlayerData', function(e, player) {
-		console.log(player);
-		if (player.allianceId != null && player.allianceId != 0) {
-			// console.log(player);
-			$.ajax({
-				url: "/alliance/" + player.allianceId,
-				dataType: 'json'
-			}).done(function(response) {
-				if (player.allianceId != null && player.allianceId != 0) {
-					$('#player-alliance').text(response.name);
-				};
-				if (player.id != response.ownerId) {
-					$("#player-alliance").append(' ' + '<a href="/player/leaveAlliance" id="leaveAlliance">Leave</a>');
-				};
-			});
-		} else {
-			$('#player-alliance').text("no alliance");
-		}
-		
-		$('#player-data-level').text(player.level);
-		$('#player-money').text(player.money + " ch.");
-		// $('#player-data-life').text(player.);
-		// $('#player-data-tiles').text(player.);
-		// $('#player-data-buildings').text(player.);
-	});
-
 	// TILES 
 	$("#tile-wrapper").on("onGettingTileDetails", function(e) {
 		$(this).find('.tile-property-value').html("loading...");
 	});
 	$("#tile-wrapper").on("getTileData", function(e, tile) {
-		$('#tile-owner').text(tile.player ? tile.player.name : "");
-		$('#tile-fertility').text(tile.fertility);
-		$('#tile-humidity').text(tile.humidity); // TODO
-		$('#tile-state').text(tile.neutral ? "neutral" : "no");
 		$('#tile-free').text( !! tile.free ? "yes" : "no");
+		$('#tile-state').text(tile.neutral ? "neutral" : "owned");
+		$('#tile-owner').text(tile.player ? tile.player.name : "");
+		$('#tile-humidity').text(tile.humidity + " %"); // TODO
+		$('#tile-fertility').text(tile.fertility + " %");
 	});
 
 	// OBJECTS 
@@ -170,10 +189,27 @@ $(function() {
 		// $('#object-alliance').text(obj.content.name); // TODO
 	});
 
+	$('#modal-c').on('init', function(e, mouseX, mouseY, obj){
+		$(this).show();
+		// console.log(mouseY);
+		// console.log(mouseX);
+		// console.log(obj);
+	});
+
+	// HARVEST
+	$('.action-harvest').on('click', function(){
+		// if(jfarm.loadedObj)
+		// 	jfarm.harvest(jfarm.loadedObj, 45); // TODO : productivity
+		// else 
+		jfarm.getObjectDetails(jfarm.clickedObj,function(response){
+			jfarm.harvest(response.obj, 45); // TODO : productivity
+		});
+	});
+
 	// SEARCH ALLIANCE
 	$("#searchA").on('keyup', function(e) {
 		$(".results").show();
-		if(e.keyCode == 16)
+		if(e.keyCode == 16) // shift 
 			return;
 		$(".resultsA").html("");
 		var kw = $("#searchA").val();
@@ -317,10 +353,9 @@ $(function() {
 
 	// AJAX PLAYER LEAVE ALLIANCE
 	$(document).on('click', '#leaveAlliance', function() {
-		var $form = $(this);
-		jfarm.requestAjax($form.attr('href'),$form.serialize(),function(response) {
-			// console.log(response);
-			$('#content-actions').trigger('getPlayerData', [response.player]);
+		var $link = $(this);
+		jfarm.requestAjax($link.attr('href'),null,function(response) {
+			$('#content-actions').trigger('onUIUpdatePlayer', [response.player]);
 			$("#content-actions-notif").fadeIn();
 			$("#content-actions-notif").html("<li>" + response.message + "</li>");
 			setTimeout(function() {

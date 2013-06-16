@@ -1,6 +1,82 @@
 <div id="canvas-wrapper">
 	<canvas id="maincanvas" width="1200" height="460" onmousemove="jfarm.mousemove(event);"></canvas>
 </div>
+<div class="modal">
+	<div id="modal-tabs" class="clear-fix">
+		<ul class="tabs">
+            <li>
+                <span class="tab-link current">Weapons</span>
+            </li>
+            <li>
+                <span class="tab-link">Autre</span>
+            </li>
+        </ul>
+	</div>
+	<div id="modal-tabs-content">
+        <div class="tab-content">
+			<h3>Weapons</h3>
+			<div class="weapons clear-fix">
+				<div class="img pull-left">
+					<img src="images/weapons/fourche.png" alt="Fork" data-name="fork" class="weapon">
+					<p>Fork</p>
+				</div>
+				<div class="img pull-left">
+					<img src="images/weapons/bat.png" alt="Bat" data-name="bat" class="weapon">
+					<p>Bat</p>
+				</div>
+				<div class="img pull-left">
+					<img src="images/weapons/tronconneuse.png" alt="Chainsaw" data-name="chainsaw" class="weapon">
+					<p>Chainsaw</p>
+				</div>
+				<div class="img pull-left">
+					<img src="images/weapons/ak47.png" alt="AK47" data-name="ak47" class="weapon">
+					<p>AK47</p>
+				</div>
+			</div>
+			<h3>Accessories</h3>
+			<div class="clear-fix">
+				<div class="img pull-left">
+					<img src="images/weapons/arrosoir.png" alt="accessories" data-name="watering can" class="accessory">
+					<p>Watering can</p>
+				</div>
+			</div>
+        </div>
+        <div class="tab-content">
+        	
+        </div>
+    </div>
+</div>
+<div id="modal-c" class="modal-elements">
+	<div>
+		<!-- <span><strong>Free :</strong></span><br />
+		<span><strong>State :</strong></span><br />
+		<span><strong>Owner :</strong></span><br />
+		<span><strong>Humidity :</strong></span><br />
+		<span><strong>Fertility :</strong></span>
+		<hr> -->
+		<div class="element-actions clear-fix">
+			<div class="action-element action-water"></div>
+			<div class="action-element action-fertilize"></div>
+			<div class="action-element action-harvest"></div>
+			<div class="action-element action-harvest-sail"></div>
+		</div>
+	</div>
+</div>
+<div id="modal-b" class="modal-elements">
+	<div id="">
+		<span><strong>Storability :</strong></span><br />
+		<span><strong>Superficy :</strong></span><br />
+		<span><strong>Power consumption :</strong></span><br />
+		<hr>
+		<div id="elements-stocked">
+			<li class="clear-fix"><div class="objElement pull-left"></div><div class="action-element action-sail"></div></li> <!-- élément stocké + prix -->
+		</div>
+		<hr>
+		<div class="elements-actions clear-fix">
+			<div class="action-element action-harvest"></div>
+		</div>
+	</div>
+</div>
 <div id="top-actions" class="borders-action clear-fix">
 	<div class="block pull-left clear-fix">
 		<div class="title-t pull-left txt-blue">
@@ -90,8 +166,7 @@
 			</ul>
 		</div>
 	</div>
-	<hr>
-	<span class="txt-green">ESC to cancel</span>
+	<div class="creator-esc txt-green">ESC to cancel</div>
 </div>
 <div id="content-actions-notif"></div>
 <div id="content-actions" class="borders-action clear-fix">
@@ -143,34 +218,6 @@
 	        </div>
 		</div>
 		<div class="block pull-right w500 clear-fix">
-			<div class="modal">
-				<h3>Weapons</h3>
-				<div class="weapons clear-fix">
-					<div class="img pull-left">
-						<img src="images/weapons/fourche.png" alt="Fork" data-name="fork" class="weapon">
-						<p>Fork</p>
-					</div>
-					<div class="img pull-left">
-						<img src="images/weapons/bat.png" alt="Bat" data-name="bat" class="weapon">
-						<p>Bat</p>
-					</div>
-					<div class="img pull-left">
-						<img src="images/weapons/tronconneuse.png" alt="Chainsaw" data-name="chainsaw" class="weapon">
-						<p>Chainsaw</p>
-					</div>
-					<div class="img pull-left">
-						<img src="images/weapons/ak47.png" alt="AK47" data-name="ak47" class="weapon">
-						<p>AK47</p>
-					</div>
-				</div>
-				<h3>Accessories</h3>
-				<div class="clear-fix">
-					<div class="img pull-left">
-						<img src="images/weapons/arrosoir.png" alt="accessories" data-name="watering can" class="accessory">
-						<p>Watering can</p>
-					</div>
-				</div>
-			</div>
 			<div class="pull-left">
 				<div class="title-b"><%= player.name %></div>
 				<canvas id="mapcanvas" width="220" height="220"></canvas>
@@ -190,7 +237,7 @@
 				</div>
 				<div class="content-b">
 					<div class="clear-fix">
-						<button type="button" class="btn-flat btn-flat-green pull-right popup-r">Weapons </button>
+						<button type="button" class="btn-flat btn-flat-green pull-right popup-r">Inventory </button>
 						<button type="button" class="btn-flat btn-flat-green pull-right popup-t">Alliances </button>
 					</div>
 					<div class="min-block" id="player-wrapper">

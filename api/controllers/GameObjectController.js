@@ -27,13 +27,12 @@ var GameObjectController = {
 					};
 					yardsReq.push(obj)
 				}
-				console.log(yardsReq);
-
 				// we check if logged player belongs all sent yards
 				Yard.findAll({
 					where: {
 						or: yardsReq,
-						playerId: req.session.player.id
+						playerId: req.session.player.id,
+						free: true
 					}
 				}).done(function(err, yards) {
 
