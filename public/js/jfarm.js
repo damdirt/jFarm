@@ -685,6 +685,7 @@ jfarm = {
 		obj.owner = undefined;
 		obj.content = undefined;
 		// first client check
+		console.log(obj);
 		if(obj.objectType == 'crop'){
 			jfarm.requestAjax('/harvesting/harvest',
 				{
@@ -1285,43 +1286,10 @@ jfarm = {
 	drawSelectedObj: function(ajaxResponse){
 		if(ajaxResponse.success){
 
-			ajaxResponse.centerp.x = parseInt(ajaxResponse.centerp.x);
-			ajaxResponse.centerp.y = parseInt(ajaxResponse.centerp.y);
-			ajaxResponse.centerp.z = parseInt(ajaxResponse.centerp.z);
-
-			// var createdObj = jfarm.dimmedObj
-				// ,objc = ajaxResponse.centerp; // we retrieve building centerp in server response
-
-			// switch(jfarm.drawnObj.name.toLowerCase()){
-			// 	case "barn": // barn
-			// 		// createdObj = jfarm.defineBarn(objc);
-	  // 				jfarm.currentLocationBaseSheets.forEach(function(elem){ elem.free = false; });
-			// 	break;
-			// 	case "cold storage": // cold storage
-			// 		// createdObj = jfarm.defineColdStorage(objc);
-			// 		jfarm.currentLocationBaseSheets.forEach(function(elem){ elem.free = false; });
-			// 	break;
-			// 	case "silo": // silo
-			// 		// createdObj = jfarm.defineSilo(objc);
-			// 		jfarm.currentLocationBaseSheets[0].free = false;
-			// 	break;
-			// 	case "corn": // corn
-			// 		// createdObj = jfarm.defineCrops(objc, "Corn", "#fef094", true, "#319704");
-			// 		jfarm.currentLocationBaseSheets[0].free = false;
-			// 	break;
-			// 	case "tomatoes": // tomatoes
-			// 		// createdObj = jfarm.defineTomatoesPlants(objc);
-			// 		jfarm.currentLocationBaseSheets[0].free = false;
-			// 	break;
-			// 	case "wheat": // wheat
-			// 		// createdObj = jfarm.defineCrops(objc, "Wheat", "#fef094");
-			// 		jfarm.currentLocationBaseSheets[0].free = false;
-			// 	break;
-			// 	default:
-			// }
-			// jfarm.drawnObj = null;
-			// // in case of default switch
-			// if(jfarm.dimmedObj){ 
+			// ORGINAL OBJECT CENTERP ABOUT PLAYER
+			ajaxResponse.relcenterp.x = parseInt(ajaxResponse.relcenterp.x);
+			ajaxResponse.relcenterp.y = parseInt(ajaxResponse.relcenterp.y);
+			ajaxResponse.relcenterp.z = parseInt(ajaxResponse.relcenterp.z);
 
 			// ui update 
 			$('.game').trigger('onUIUpdatePlayer', [ajaxResponse.player]);
@@ -1334,8 +1302,6 @@ jfarm = {
 			if(jfarm.dimmedObj.type.toLowerCase() == "building")
 				jfarm.densityMap.addSheets(jfarm.dimmedObj.sheets);
 			jfarm.validateCreationObj = true;
-
-			// } 
 		} else {
 			alert(ajaxResponse.message);
 		}
@@ -1632,6 +1598,7 @@ jfarm = {
 		jfarm.clickedYard =  sheetengine.scene.getYardFromPos(jfarm.clickedBaseSheet.centerp);
 
 		$('#modal-c').hide();
+		$('#modal-b').hide();
 
 		// console.log(jfarm.clickedYard.yardx + "," + jfarm.clickedYard.yardy);
 		// console.log(yard);
@@ -1661,7 +1628,7 @@ jfarm = {
 			if(jfarm.clickedObj.type == 'crop'){
 				jfarm.setTarget(jfarm.player, jfarm.clickedObj.centerp);
 			} else {
-				$('game').trigger('onBuildingClick', [jfarm.clickedObj.id]);
+				$('.game').trigger('onBuildingClick', [jfarm.clickedObj.id]);
 			}
 		}
 	},

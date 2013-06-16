@@ -40,7 +40,7 @@ var HarvestingController = {
 			if (req.param('cropObj') && req.param('quantity')) {
 
 				var cropParam = req.param('cropObj'),
-					quantityParam = req.param('quantity');
+					quantityParam = parseInt(req.param('quantity'));
 
 				CropTemplate.find({
 					id: cropParam.cropTemplateId
@@ -53,8 +53,10 @@ var HarvestingController = {
 							playerId: req.session.player.id
 						}).done(function(err, harvesting) {
 							if (!err) {
+
+								console.log(cropParam.id);
 								// we delete harvested crop
-								Crop.destroy(cropParam.cropTemplateId).done(function(err) {
+								Crop.destroy(cropParam.id, function(err) {
 									if (!err) {
 										res.end(JSON.stringify({
 											success: true,
@@ -69,7 +71,7 @@ var HarvestingController = {
 											error: null
 										}));
 									}
-								})
+								});
 							} else {
 								res.end(JSON.stringify({
 									success: false,

@@ -226,7 +226,9 @@ $(function() {
 
 	// HARVEST
 	$('.action-harvest').on('click', function() {
-		jfarm.harvest(jfarm.clickedObj, 45); // TODO : quantity
+		jfarm.getObjectDetails(jfarm.clickedObj, function(response){
+			jfarm.harvest(response.obj, 45); // TODO : quantity
+		});
 	});
 	// WATER 
 	$('.action-water').on('click', function() {

@@ -104,7 +104,7 @@ var BuildingController = {
 									.done(function(err, harvesting) {
 									if (!err) {
 										// we check quantity/capacity
-										if (harvesting.capacity + building.currentStorageCapacity < tpl.storageCapacity) {
+										if (harvesting.quantity + building.currentStorageCapacity < tpl.storageCapacity) {
 
 											// CREATION OF THE STORAGE ITEM
 											StorageItem.create({
@@ -116,7 +116,7 @@ var BuildingController = {
 											}).done(function(err, item) {
 												if (!err) {
 													// we destroy old harvesting
-													Harvesting.destroy(harvestingIdParam).done(function(err) {
+													Harvesting.destroy(harvestingIdParam, function(err) {
 														if (!err) {
 															res.end(JSON.stringify({
 																success: true,
