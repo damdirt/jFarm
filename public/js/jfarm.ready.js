@@ -69,8 +69,9 @@ $(function() {
 			}).done(function(response) {
 				$("#modal-b").show();
 				$('#building-maxCapacity').text('Max capacity : ' + response.template.storageCapacity);
-				$("#building-currentCapacity").text('Current capacity : ');
+				$("#building-currentCapacity").text('Current capacity : ' + response.building.currentStorageCapacity);
 				$("#elements-harvesting").html("");
+				$("#elements-stocked").html("");
 				console.log(response);
 				for (var i = 0; i < response.harvestings.length; i++) {
 					$("#elements-harvesting").append('<li class="clear-fix"><div class="pull-left">' + response.harvestings[i].quantity + ' ' + response.harvestings[i].name + '</div><div class="action-element action-harvest" data-harvestingId="' + response.harvestings[i].id + '" data-buildingId="' + buildingId + '" data-buildingTemplateId="' + response.building.buildingTemplateId + '"></div></li>');
@@ -88,23 +89,36 @@ $(function() {
 		harvestingId = $('#modal-b .action-harvest').attr('data-harvestingId');
 		buildingId = $('#modal-b .action-harvest').attr('data-buildingId');
 		buildingTemplateId = $('#modal-b .action-harvest').attr('data-buildingTemplateId');
-		console.log(buildingTemplateId);
-		$.ajax({
-			url: "/building/storeharvesting/" + harvestingId + "/" + buildingId + "/" + buildingTemplateId,
-			dataType: 'json'
-		}).done(function(response) {
-			$("#building-currentCapacity").text('Current capacity : ');
-			$("#elements-harvesting").html("");
-			$("#elements-stocked").html("");
+		harvestingToDel = $(this).parent();
+		if (harvestingId && buildingId && buildingTemplateId) {
+			$.ajax({
+				url: "/building/storeharvesting/" + harvestingId + "/" + buildingId + "/" + buildingTemplateId,
+				dataType: 'json'
+			}).done(function(response) {
+				var harvestingQuantity = response.item.quantity,
+					currentCapacity = response.building.currentStorageCapacity,
+					maxCapacity = response.template.storageCapacity;
+				if (harvestingQuantity + currentCapacity < maxCapacity) {
+					$("#building-currentCapacity").text('Current capacity : ' + response.building.currentStorageCapacity);
+					$("#elements-stocked").html("");
+					console.log(response);
+					harvestingToDel.hide();
+					for (var i = 0; i < response.storedItems.length; i++) {
+						$("#elements-stocked").append('<li class="clear-fix"><div class="pull-left">' + response.storedItems[i].quantity + ' ' + response.storedItems[i].name + '</div><div class="action-element action-sell"></div></li>');
+					};
+				} else {
+					$("#content-actions-notif").trigger('launch', [response.message]);
+				}
+				
+			});
+		} else {
 			console.log(response);
-			for (var i = 0; i < response.harvestings.length; i++) {
-				$("#elements-harvesting").append('<li class="clear-fix"><div class="pull-left">' + response.harvestings[i].quantity + ' ' + response.harvestings[i].name + '</div><div class="action-element action-harvest" data-harvestingId="' + response.harvestings[i].id + '" data-buildingId="' + buildingId + '" data-buildingTemplateId="' + response.building.buildingTemplateId + '"></div></li>');
-			};
-			for (var i = 0; i < response.storedItems.length; i++) {
-				$("#elements-stocked").append('<li class="clear-fix"><div class="pull-left">' + response.storedItems[i].quantity + ' ' + response.storedItems[i].name + '</div><div class="action-element action-sell"></div></li>');
-			};
-			console.log(response);
-		});
+		}
+	});
+
+	$('#modal-b .action-harvest').on('click', function() {
+		harvest = $(this);
+		harvest.hide();
 	});
 
 	$('.game').on('onUIUpdateTile', function(e, tile) {

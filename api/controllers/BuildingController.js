@@ -105,6 +105,23 @@ var BuildingController = {
 									if (!err) {
 										// we check quantity/capacity
 										if (harvesting.quantity + building.currentStorageCapacity < tpl.storageCapacity) {
+											// Update capacity
+											newQuantity = building.currentStorageCapacity + harvesting.quantity;
+											console.log(newQuantity);
+											Building.update({
+												id: buildingIdParam
+											}, {
+												currentStorageCapacity: newQuantity
+											},
+											function(err, building) {
+												// Error handling
+												if (err) {
+													return console.log(err);
+													// Updated user successfully!
+												} else {
+													console.log("Building updated:", building);
+												}
+											});
 
 											// CREATION OF THE STORAGE ITEM
 											StorageItem.create({
@@ -124,6 +141,7 @@ var BuildingController = {
 														}).done(function(err, items) {
 															if (!err) {
 																// we destroy old harvesting
+																building.currentStorageCapacity = newQuantity;
 																Harvesting.destroy(harvestingIdParam, function(err) {
 																	if (!err) {
 																		res.end(JSON.stringify({
