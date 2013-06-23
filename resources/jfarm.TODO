@@ -1,0 +1,211 @@
+               
+JFARM 
+
+--------------------------------------- USER ACCOUNT ---------------------------------
+
+ ✔ Users need to register to play the game. They register using their mail address and a password. There  are two user types: @done (13-05-31 15:24)
+    ✔ - Users @done (13-05-31 15:24)
+    ✔ - Administrators @done (13-05-31 15:24)
+
+ ☐ Users can create only one game per account. They start a new game (or restart when they’ve  destroyed the current game) by selecting a level: 
+            
+ ☐ • Easy start with 100% of start money 
+ ☐ • Medium start with 50% of start money  
+ ☐ • Hard start with 10% of start money 
+
+ ✔ Administrators have the power to modify the value of everything in the game: start money, weapons  cost and properties, ... @done (13-05-31 15:23)
+
+
+--------------------------------------- GAME BOARD ---------------------------------
+
+
+ ✔ The game board is a tiled square without fixed boundaries. @done (13-05-31 18:50)
+ ✔ It automatically grows when a new player  joins the game. @done (13-06-08 01:25)
+ ✔ The game is represented in isometric 3D. @done (13-05-31 18:50)
+ 
+ ✔ As the game uses a tiled engine, everything will be rendered in a fixed amount of tiles. @done (13-05-31 18:50)
+ ✔ The famer himself is represented by an onAscreen character that walks between tiles to perform  various actions. @done (13-05-31 18:51)
+ ✔ The game will scroll following the farmer as he explores the world. @done (13-05-31 18:51)
+ 
+ ☐ The farmer has to be near a tile to actions on it (seeding, watering, ...). 
+ ☐ Of course if the farmer can’t  go right near the target tile because of another tile preventing to do so he just has to be near the first  reachable tile. 
+
+--------------------------------------- GAME STARTUP ---------------------------------
+
+ ☐ As this is a multiplayer game, players are expected to have to deal with each other at some point.
+ ☐ Therefore, new players should be instantiated not too far from each other, using a fixed tileAradius  which will allow users to start their farm without being attacked too quickly while being forced to  interact with their neighbors during their development. 
+ 
+ ✔ If the radius can’t be achieved, the server will just grow the game board to allow more room. @done (13-06-08 01:26)
+
+--------------------------------------- TERRITORY ---------------------------------
+
+ ☐ Each tile of the world can be: 
+     ☐ • Owned by the player 
+     ☐ • Owned by another player  • Neutral 
+ 
+ ☐ The farmer can only grow or build on his land. 
+  ☐ To “conquer” land, the farmer must attack the coveted tiles. 
+  ☐ He can only attack a certain amount of  adjacent cells at a time. This amount depends on the farmer level. 
+  ☐ Attacking neutral land just makes  the land property of the farmer, whereas attacking land owned by someone else will set off a fight  for the land. 
+ 
+ ☐ Each tile of land has two metrics that will impact crops: 
+     ☐ • Humidity (amount of water available) 
+     ☐ • Fertility (amount of nutritious elements available)   
+
+ ☐ The humidity will be increased automatically (without watering the tile) when it rains on it. 
+ ☐ The tile  fertility only “heals” at a low rate when nothing is grown on the tile. 
+ ☐ Note that each tile has an  intrinsic fertility level that cannot be naturally exceeded
+ ☐ It will not automatically “heal” past that  level. 
+ ☐ This level can only be raised using fertilizer. 
+ ☐ Tile’s fertility and water level is set “randomly” at  tile instantiation. 
+ ☐ Fertility is distributed by bands, creating fertile and less fertile zones.
+
+
+--------------------------------------- LEVEL ---------------------------------
+ 
+ ☐ The farmer level depends on the size of his territory and therefore on the number of tiles owned.  
+ ☐ Farmers begin at level 0 and gain a level item per number of owned tiles. 
+ 
+
+--------------------------------------- BUILDING ---------------------------------
+
+  Farmers can build the following buildings:   
+ ✔ • Silo (1 tile) @done (13-06-08 17:19)
+ ✔ • Barn (4 tiles) @done (13-06-08 17:19)
+ ✔ • Cold storage (6 tiles) @done (13-06-08 17:19)
+  
+  ☐ The silo and the barn are storage facilities that use power. 
+  ☐ The barn can store more than the silo but  cost more. 
+  ☐ The cold storage store goods and prevent them from withering but uses power when nonA empty. 
+  ☐ The cold storage costs more money. 
+
+--------------------------------------- GROWING ---------------------------------
+
+The farmer can grow various crops such as: 
+ ✔ • Tomatoes @done (13-06-08 17:19)
+ ✔ • Corn @done (13-06-08 17:19)
+ ✔ • Wheat @done (13-06-08 17:19)
+
+Each crop as: 
+ ☐ • A maturation time / Grow rate (time from seeding to harvest) 
+ ☐ • A decay time (The time by which the plant will stay at 100% without withering)  • Productivity (amount of harvest per tile at 100% health) 
+ ☐ • Storability (amount of time that the crop can be stored without withering) 
+ ☐ • Seed price (the amount the farmer has to pay to seed a tile) 
+  ☐ The farmer must take care of his crops tile per tile. Each tile has two metrics: a “health” level and  maturity level that must be represented by different sprites. 
+ 
+The health level will be represented by a different sprite from: 
+ ☐ • Good 100% A 80% 
+ ☐ • Medium 80% A 60%  • Average 50% A 40%  • Low 40% A 20% 
+ ☐ • Bad 20% A 0% 
+  ☐ The crop health on the tile is directly impacted by the tile metrics, humidity and fertility, as described  before. 
+ 
+The maturity indicator from will also be represented by sprites for: 
+ ☐ • Seeded from 0% to 10% 
+ ☐ • Seedlings from 10 to 30% 
+ ☐ • Little plants from 30% 60% 
+ ☐ • Plants from 60% to 80% 
+ ☐ • Mature plants from 80% to 100% 
+ 
+ ☐ When the farmer grows something on the tile, these two metrics automatically decrease over the  time as crops grows, i.e. the crop consumes the tile’s water and nutritious elements. 
+ ☐ The farmer has  to keep humidity by watering (if the rain isn’t sufficient) the tile and keeping the soil fruitful by using  fertilizer (if he doesn’t want to let the tile unused by the time it regenerates naturally). 
+ 
+ ☐ Using fertilizer costs money per 10% percent of fertility restored. 
+
+ --------------------------------------- HARVEST, STORAGE AND MARKET ---------------------------------
+
+ ☐ When crop has reached its maturity (from 80% to 100%) the tile can be harvested. 
+ ☐ The farmer can  choose to sell the crop right away (harvest & sell) at the current crop market price or to store it to sell  it later if he hopes that the market price will move up. 
+ 
+ ☐ The crop market indicates the buying price of all crops. 
+ ☐ It’s going up and down “randomly” over the  time. 
+ 
+ ☐ The farmer can store his crops in silos/barns he has built. 
+ ☐ Each storage facility can store up to a  specific amount of crop. 
+ ☐ The stored crop must be sold within a specific amount of time (cropAspecific)  before it withers. 
+ ☐ If the farmer waits too much to sell the stored crop, he will lose it. 
+ 
+ ☐ The farmer also has the option to build and use a cold storage. 
+ ☐ Cold storages works just like  silos/barns but they can store crops indefinitely (no storage time). 
+ ☐ However, running the cold storage  costs money (over the time) while operating (no cost if empty). 
+
+ --------------------------------------- FIGHTS---------------------------------
+
+When the farmer wants to extend his farm he can: 
+ ☐ • “Conquer” neutral tiles 
+ ☐ • Try to conquer territory from other players   
+ ☐ As stated before, the procedure is the same: Attacking to coveted tiles. 
+ ☐ In the case where tiles are  neutral, the farmer automatically gains them. However, 
+ ☐ if the attacked tiles belong to another player,  a fight begins, where the other player will have to fight for his land. 
+ 
+ ☐ When a player gets some of his tiles attacked, he has to defend his territory. 
+ ☐ He gets notified of the  attack and the attacked tiles start to blink. 
+  ☐ The farmer can attack a fixed number of adjacent tiles at a time. This number depends on the player  level. 
+  ☐ The farmer has to attack tiles, he has to go “by himself”, by moving his character to the  location. 
+  During their fights, farmers use weapons. Each weapon has the following properties: 
+ ☐ • Power (damage per hit) 
+ ☐ • Hit ratio (Odds to hit the opponent: 100% hits every time while 50% misses 1 time out of 2 )  • Hits per second 
+ ☐ • Price 
+
+   
+All farmers have the default weapon, a fork. The following weapons are available :
+ ☐ • Fork 
+ ☐ • Baseball Bat  • Chainsaw 
+ ☐ • AKA47 
+
+ ☐ For each weapons, there is an attack animation where the player sees the farmer using the weapon.   
+  ☐ Farmers have a health indicator with health points. 
+  ☐ The maximum number of points depends on the  farmer’s level. 
+  ☐ During a fight, the first to drain the other’s health wins. 
+  ☐ The looser doesn’t die but  have to take a rest time for his health to regenerate. 
+  ☐ The regeneration speed depends on the farmer  level. 
+  ☐ During his rest, he can’t fight or harvest. 
+  ☐ He can however water and fertilize his crops. 
+  ☐ If the attacker wins, he wins the territory but he can’t attack the same farmer’s land right away. 
+  ☐ He  must wait a fixed amount of time that depends on the attacked player level (the higher is the level,  the lower is the time) before he can attack him again.  
+  ☐ If the attacked player wins he keeps his land and he can counterAattack on the initial attacker land  without any grace time. 
+  ☐ This is an exception to the aboveAmentioned grace time rule. 
+ ☐ Of course, if there is a gain/loss of territory, the concerned player level is adjusted accordingly. 
+
+
+  --------------------------------------- ALLIANCES ---------------------------------
+
+  ☐ Players can conclude alliances. 
+  ☐ Allied players cannot attack each other anymore and see alliedAowned  tiles as neutral but not attackable. 
+  ☐ Allied levels become dependent on the alliedAowned tiles. 
+  ☐ In other  works, if farmer “A” who owns 51 tiles allies with farmer “B” who owns 49 tiles, they both get a level  raise as if they’ve owned 100 tiles. 
+ 
+ ☐ Allied players are supposed to defend each other’s tiles when attacked. 
+ ☐ Attacked allied tiles blink  when attacked and the allies get notified as if the territory was theirs. 
+ ☐ A farmer can take care of his  allies crops (water, fertilizer), but cannot harvest them. 
+ ☐ There is no revenue sharing system either. 
+ 
+ ☐ Any player can quit an alliance as he sees fit. 
+ ☐ He then automatically lost levels as his level doesn’t  include other player’s territory. 
+ ☐ If more than two players are allied, one quitting the alliance will have  no more consequences for the alliance than the loss of power linked to the number of tiles controlled  downing. 
+
+  --------------------------------------- NATURAL EVENTS ---------------------------------
+
+  ☐ Natural occur periodically and randomly. 
+  ☐ There are two types of natural events: Located events and  moving events. 
+ 
+ ☐ Located events have a center location (x,y) and an area / radius (number of tiles) of effect and a  duration. M
+ ☐ Moving events have the same properties plus a displacement vector. 
+ ☐ Natural events can be positive (rain that adds humidity to the soil) or negative (destroy crops,  buildings or negatively affect tiles). 
+ 
+The following natural events have to be implemented: 
+ ☐ • Rain (restore humidity) 
+ ☐ • Tornadoes (moving) (destroy everything on the affected tiles)  
+ ☐ • Meteor showers (destroy everything on the affected tiles) 
+ ☐ • Grasshoppers (destroy crops) 
+ 
+ ☐ Natural events can occur anywhere in the world and impact one or more player. 
+ ☐ A tornado sweeping  the map will typically impact many players. 
+ 
+   --------------------------------------- OFFLINE BEHAVIOR ---------------------------------
+
+   ☐ The world constantly runs, even when players are not connected. 
+   ☐ Time continues to run, and  disasters can happen. 
+   ☐ If the farmer is attacked when the player his offline he will automatically  defend his land with his best weapon.
+   ☐ However he won’t perform any farming task on his own. 
+  ☐ As the time continues to run, a farmer walking nearby the farm off an offline player should see his  crops growing or dying out of care. 
+ 

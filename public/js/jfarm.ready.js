@@ -116,7 +116,7 @@ $(function() {
 						console.log("Hey dude, this building doesn't belong to you");
 					}
 				} else {
-					console.log(response.message);
+					$("#content-actions-notif").trigger('launch', [response.message]);
 				}
 			});
 		} else {
@@ -133,7 +133,7 @@ $(function() {
 					console.log("Hey dude, this building doesn't belong to you");
 				}
 			} else {
-				console.log(response.message);
+				$("#content-actions-notif").trigger('launch', [response.message]);
 			}
 		});
 	});

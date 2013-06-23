@@ -39,12 +39,14 @@ var DashboardController = {
 				req.socket.broadcast.emit('data', data);
 				break;
 			case 'logout':
-				console.log("logout");
-				console.log(data.playerId);
 				if (global.playingUsers.hasOwnProperty('e' + data.playerId)) {
 					global.playingUsers['e' + data.playerId] = undefined;
 					req.socket.broadcast.emit('logout', data);
 				}
+				break;
+			case 'newObj':
+					console.log("server successfuly received request");
+					req.socket.broadcast.emit('newobj', data);
 				break;
 		}
 	}

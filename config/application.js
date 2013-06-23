@@ -16,6 +16,6 @@ module.exports = {
 	// The downside?  Harder to debug, and the server takes longer to start.
 	environment: 'development',
 	log: {
-		level: 'verbose'
+		level: 'debug'
 	}
 };

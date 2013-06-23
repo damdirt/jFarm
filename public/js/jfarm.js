@@ -46,8 +46,7 @@ sheetengine.SheetObject.prototype.getString = function() {
 };
 
 jfarm = {
-	appid: '4f244f4db41abbfd2c00018c' //"jfarm"
-	,
+	appid: '4f244f4db41abbfd2c00018c',
 	timerInterval: 40,
 	sceneIsReady: 0,
 	levelsize: 5,
@@ -174,16 +173,10 @@ jfarm = {
 	}
 
 	// player 
-	,
-	startp: {
-		x: 0,
-		y: 0,
-		z: 0
-	},
-	playerFarm: {} // contains all player buildings and crops available on the map
-	,
-	playerWeaponChanged: false,
-	playerWeaponData: {}
+	,startp: {x:0,y:0,z:0}
+	,playerFarm: {} // contains all player buildings and crops available on the map
+	,playerWeaponChanged: false
+	,playerWeaponData: {}
 
 	// enemies
 	,
@@ -567,7 +560,7 @@ jfarm = {
 		newPlayer.name = obj.player.name;
 		newPlayer.data = obj.player;
 
-		// set object dimming for player: character will dim other sheets, and other objects will not dim the character
+		// set object dimming for playefr: character will dim other sheets, and other objects will not dim the character
 		newPlayer.setDimming(true, true);
 		sheetengine.calc.calculateAllSheets();
 		return newPlayer;
@@ -580,13 +573,16 @@ jfarm = {
 			enemy.setPosition(centerp);
 			enemy.setOrientation(data.rot);
 			if (moved) {
-				enemy.animationState = data.animationState;
-				jfarm.animateCharacter(enemy, enemy.animationState);
+				//enemy.animationState = data.animationState;
+				//jfarm.animateCharacter(enemy, enemy.animationState);
+				//enemy.animationState++;
+				jfarm.animateCharacter(enemy, enemy.animationState++);
+				
 				sheetengine.calc.calculateChangedSheets();
 				jfarm.redraw();
 			}
 		} else {
-			jFarm.newEnemy(data);
+			jfarm.newEnemy(data);
 		}
 	},
 	recvLogout: function(id) {
@@ -741,8 +737,6 @@ jfarm = {
 		// move towards target
 		var targetp = jfarm.moveTowardsTarget(obj, jfarm.maxmove);
 
-		jfarmio.sendData(obj, 'move');
-
 		if (jfarm.characterAtTargetObj(obj)) {
 			jfarm.characterArrived(obj);
 			return;
@@ -755,6 +749,7 @@ jfarm = {
 			jfarm.animateCharacter(obj, obj.animationState);
 			obj.animationState++;
 			obj.setPosition(targetp);
+			jfarmio.sendData(obj,'move');
 			if (obj == jfarm.player)
 				jfarm.moveCamera();
 		}
@@ -1055,12 +1050,9 @@ jfarm = {
 		ctx.restore();
 	},
 	drawUsername: function() {
-		// for (var i=0;i<sheetengine.objects.length;i++) {
-		// 	var obj = sheetengine.objects[i];
-		// 	// if object have an arm, this is a player
-		// 	if (obj.arm == 'Enemy')
-		// 		jfarm.drawUsernameForObj(obj);
-		// }
+		for(enemy in jfarm.enemies){
+			jfarm.drawUsernameForObj(jfarm.enemies[enemy]);
+		}
 		jfarm.drawUsernameForObj(jfarm.player);
 	},
 	drawUsernameForObj: function(obj) {
@@ -1629,16 +1621,17 @@ jfarm = {
 			objectType: obj.type,
 			cornerYard: cornerYardStr // we send our clicked yard for reference
 		};
-		jfarm.requestAjax("/gameobject/create", data, jfarm.drawSelectedObj);
-	},
-	drawSelectedObj: function(ajaxResponse) {
-		if (ajaxResponse.success) {
+		jfarm.requestAjax("/gameobject/create",data,jfarm.drawSelectedObj);
+    },
+	drawSelectedObj: function(ajaxResponse){
+		if(ajaxResponse.success){
 
 			// ORGINAL OBJECT CENTERP ABOUT PLAYER
 			ajaxResponse.relcenterp.x = parseInt(ajaxResponse.relcenterp.x);
 			ajaxResponse.relcenterp.y = parseInt(ajaxResponse.relcenterp.y);
 			ajaxResponse.relcenterp.z = parseInt(ajaxResponse.relcenterp.z);
 
+			console.log(ajaxResponse);
 			// ui update 
 			$('.game').trigger('onUIUpdatePlayer', [ajaxResponse.player]);
 			// we update client side new busy basesheets
@@ -1652,6 +1645,8 @@ jfarm = {
 			if (jfarm.dimmedObj.type.toLowerCase() == "building")
 				jfarm.densityMap.addSheets(jfarm.dimmedObj.sheets);
 			jfarm.validateCreationObj = true;
+			jfarmio.sendObj(jfarm.player, 'newObj', jfarm.dimmedObj.name, ajaxResponse.centerp, ajaxResponse.id, ajaxResponse.type )
+			console.log("New Object Created");
 		} else {
 			alert(ajaxResponse.message);
 		}
