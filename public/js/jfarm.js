@@ -366,7 +366,7 @@ jfarm = {
 		newPlayer.name = obj.player.name;
 		newPlayer.data = obj.player;
 
-		// set object dimming for player: character will dim other sheets, and other objects will not dim the character
+		// set object dimming for playefr: character will dim other sheets, and other objects will not dim the character
 		newPlayer.setDimming(true, true);
 		sheetengine.calc.calculateAllSheets();
 		return newPlayer;
@@ -379,13 +379,16 @@ jfarm = {
 			enemy.setPosition(centerp);
 			enemy.setOrientation(data.rot);
 			if (moved) {
-				enemy.animationState = data.animationState;
-				jfarm.animateCharacter(enemy, enemy.animationState);
+				//enemy.animationState = data.animationState;
+				//jfarm.animateCharacter(enemy, enemy.animationState);
+				//enemy.animationState++;
+				jfarm.animateCharacter(enemy, enemy.animationState++);
+				
 				sheetengine.calc.calculateChangedSheets();
 				jfarm.redraw();
 			}
 		} else {
-			jFarm.newEnemy(data);
+			jfarm.newEnemy(data);
 		}
 	},
 	recvLogout: function(id) {
@@ -1288,6 +1291,7 @@ jfarm = {
 			ajaxResponse.relcenterp.y = parseInt(ajaxResponse.relcenterp.y);
 			ajaxResponse.relcenterp.z = parseInt(ajaxResponse.relcenterp.z);
 
+			console.log(ajaxResponse);
 			// ui update 
 			$('.game').trigger('onUIUpdatePlayer', [ajaxResponse.player]);
 			// we update client side new busy basesheets
@@ -1299,7 +1303,8 @@ jfarm = {
 			if(jfarm.dimmedObj.type.toLowerCase() == "building")
 				jfarm.densityMap.addSheets(jfarm.dimmedObj.sheets);
 			jfarm.validateCreationObj = true;
-			// jfarmio.sendObj(jfarm.player, 'newObj', jfarm.dimmedObj.name, ajaxResponse.relcenterp )
+			jfarmio.sendObj(jfarm.player, 'newObj', jfarm.dimmedObj.name, ajaxResponse.centerp, ajaxResponse.id, ajaxResponse.type )
+			console.log("New Object Created");
 		} else {
 			alert(ajaxResponse.message);
 		}

@@ -77,7 +77,7 @@ $(function() {
 					$("#elements-harvesting").append('<li class="clear-fix"><div class="pull-left">' + response.harvestings[i].quantity + ' ' + response.harvestings[i].name + '</div><div class="action-element action-harvest" data-harvestingId="' + response.harvestings[i].id + '" data-buildingId="' + buildingId + '" data-buildingTemplateId="' + response.building.buildingTemplateId + '"></div></li>');
 				};
 				for (var i = 0; i < response.storedItems.length; i++) {
-					$("#elements-stocked").append('<li class="clear-fix"><div class="pull-left">' + response.storedItems[i].quantity + ' ' + response.storedItems[i].name + '</div><div class="action-element action-sell"></div></li>');
+					$("#elements-stocked").append('<li class="harvesting-line clear-fix"><div class="pull-left">' + response.storedItems[i].quantity + ' ' + response.storedItems[i].name + '</div><div class="action-element action-sell"></div></li>');
 				};
 			});
 		} else {

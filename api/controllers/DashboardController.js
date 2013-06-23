@@ -46,9 +46,10 @@ var DashboardController = {
 					req.socket.broadcast.emit('logout', data);
 				}
 				break;
-			// case 'newObj':
-			// 		req.socket.broadcast.emit('newObj', data);
-			// 	break;
+			case 'newObj':
+					console.log("server successfuly received request");
+					req.socket.broadcast.emit('newobj', data);
+				break;
 		}
 	}
 };
