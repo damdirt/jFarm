@@ -150,6 +150,15 @@ module.exports.routes = {
 		controller: 'player',
 		action: 'setNbTilesAndLevel'
 	},
+	'/player/:id/harvestings': {
+		controller: 'player',
+		action: 'harvestings'
+	},
+	'/player/:id/buildings': {
+		controller: 'player',
+		action: 'buildings'
+	},
+
 
 	//-------------------- END PLAYER ------------------------
 

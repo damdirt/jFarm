@@ -61,64 +61,113 @@ $(function() {
 	});
 
 	// DISPLAY BUILDING POPUP DETAILS
-	$('.game').on('onBuildingClick', function(e, buildingId) {
-		if (buildingId) {
-			$.ajax({
-				url: "/building/getstoragedetails/" + buildingId,
-				dataType: 'json'
-			}).done(function(response) {
-				$("#modal-b").show();
-				$('#building-maxCapacity').text('Max capacity : ' + response.template.storageCapacity);
-				$("#building-currentCapacity").text('Current capacity : ' + response.building.currentStorageCapacity);
-				$("#elements-harvesting").html("");
-				$("#elements-stocked").html("");
-				console.log(response);
-				for (var i = 0; i < response.harvestings.length; i++) {
-					$("#elements-harvesting").append('<li class="clear-fix"><div class="pull-left">' + response.harvestings[i].quantity + ' ' + response.harvestings[i].name + '</div><div class="action-element action-harvest" data-harvestingId="' + response.harvestings[i].id + '" data-buildingId="' + buildingId + '" data-buildingTemplateId="' + response.building.buildingTemplateId + '"></div></li>');
-				};
-				for (var i = 0; i < response.storedItems.length; i++) {
-					$("#elements-stocked").append('<li class="clear-fix"><div class="pull-left">' + response.storedItems[i].quantity + ' ' + response.storedItems[i].name + '</div><div class="action-element action-sell"></div></li>');
-				};
+	$('.game').on('onBuildingClick', function(e, buildingObj) {
+		if (buildingObj) {
+			jfarm.getObjectDetails(buildingObj, function(response) {
+				if (response.success) {
+					// we check if this building belongs to logged player
+					if (response.obj.owner.id == jfarm.player.data.id) {
+						jfarm.requestAjax("/building/getstoragedetails/" + response.obj.id, null, function(response) {
+							$("#modal-b").show();
+							$('#building-name span').text(response.template.name);
+							$('#building-maxCapacity span').text(response.template.storageCapacity);
+							$("#building-currentCapacity span").text(response.building.currentStorageCapacity);
+							$("#elements-harvesting, #elements-stored").html("");
+
+							// stored items templating
+							$("#elements-stored").append($('<div/>').addClass("txt-blue").html("Stored items :"));
+							$('<ul/>').appendTo($("#elements-stored"));
+							var sList = $("#elements-stored ul");
+							for (var i = 0; i < response.storedItems.length; i++) {
+								var li = $('<li/>')
+									.addClass('clear-fix')
+									.appendTo(sList);
+								var divText = $('<div/>')
+									.addClass('pull-left')
+									.html(response.storedItems[i].quantity + ' ' + response.storedItems[i].name)
+									.appendTo(li);
+								var divAction = $('<div/>')
+									.addClass('action-element action-sell')
+									.appendTo(li);
+							};
+
+							// harvestings templating
+							$("#elements-harvesting").append($('<div/>').addClass("txt-blue").html("Harvestings :"));
+							$('<ul/>').appendTo($("#elements-harvesting"));
+							var hList = $("#elements-harvesting ul");
+							for (var i = 0; i < response.harvestings.length; i++) {
+								var li = $('<li/>')
+									.addClass('clear-fix')
+									.appendTo(hList);
+								var divText = $('<div/>')
+									.addClass('pull-left')
+									.html(response.harvestings[i].quantity + ' ' + response.harvestings[i].name)
+									.appendTo(li);
+								var divAction = $('<div/>')
+									.addClass('action-element action-harvest')
+									.attr('data-harvestingid',response.harvestings[i].id)
+									.attr('data-buildingid',response.building.id)
+									.attr('data-buildingtemplateid',response.building.buildingTemplateId)
+									.appendTo(li);
+							};
+
+						});
+					} else {
+						console.log("Hey dude, this building doesn't belong to you");
+					}
+				} else {
+					console.log(response.message);
+				}
 			});
 		} else {
-			console.log(response);
+			console.log("onBuildingClick : no buildingObj passed");
 		}
 	});
-	
-	$(document).on('click', '#modal-b .action-harvest' , function(e, harvestingId, buildingId, buildingTemplateId) {
-		harvestingId = $('#modal-b .action-harvest').attr('data-harvestingId');
-		buildingId = $('#modal-b .action-harvest').attr('data-buildingId');
-		buildingTemplateId = $('#modal-b .action-harvest').attr('data-buildingTemplateId');
-		harvestingToDel = $(this).parent();
+
+	$('.game').on('onCharacterArrivedAtCrop', function(e, cropObj) {
+		jfarm.getObjectDetails(cropObj, function(response) {
+			if (response.success) {
+				if (response.obj.ownerId == jfarm.player.data.id) {
+					$('#modal-c').show();
+				} else {
+					console.log("Hey dude, this building doesn't belong to you");
+				}
+			} else {
+				console.log(response.message);
+			}
+		});
+	});
+
+	$(document).on('click', '#modal-b .action-harvest', function(e) {
+		var $this = $(this),
+			harvestingId = $this.data('harvestingid'),
+			buildingId = $this.data('buildingid'),
+			buildingTemplateId = $this.data('buildingtemplateid'),
+			harvestingToDel = $(this).parent();
+
 		if (harvestingId && buildingId && buildingTemplateId) {
 			$.ajax({
 				url: "/building/storeharvesting/" + harvestingId + "/" + buildingId + "/" + buildingTemplateId,
 				dataType: 'json'
 			}).done(function(response) {
-				var harvestingQuantity = response.item.quantity,
-					currentCapacity = response.building.currentStorageCapacity,
-					maxCapacity = response.template.storageCapacity;
-				if (harvestingQuantity + currentCapacity < maxCapacity) {
-					$("#building-currentCapacity").text('Current capacity : ' + response.building.currentStorageCapacity);
-					$("#elements-stocked").html("");
-					console.log(response);
-					harvestingToDel.hide();
+				if (response.success) {
+					var harvestingQuantity = response.item.quantity,
+						currentCapacity = response.building.currentStorageCapacity,
+						maxCapacity = response.template.storageCapacity;
+					$("#building-currentCapacity span").text(response.building.currentStorageCapacity);
+					$("#elements-stored").html("");
+					harvestingToDel.remove();
 					for (var i = 0; i < response.storedItems.length; i++) {
-						$("#elements-stocked").append('<li class="clear-fix"><div class="pull-left">' + response.storedItems[i].quantity + ' ' + response.storedItems[i].name + '</div><div class="action-element action-sell"></div></li>');
+						$("#elements-stored").append('<li class="clear-fix"><div class="pull-left">' + response.storedItems[i].quantity + ' ' + response.storedItems[i].name + '</div><div class="action-element action-sell"></div></li>');
 					};
 				} else {
 					$("#content-actions-notif").trigger('launch', [response.message]);
 				}
-				
+
 			});
 		} else {
 			console.log(response);
 		}
-	});
-
-	$('#modal-b .action-harvest').on('click', function() {
-		harvest = $(this);
-		harvest.hide();
 	});
 
 	$('.game').on('onUIUpdateTile', function(e, tile) {
@@ -127,9 +176,8 @@ $(function() {
 		$('#tile-owner').text(tile.player ? tile.player.name : "");
 		$('#tile-humidity').text(tile.humidity + " %"); // TODO
 		$('#tile-fertility').text(tile.fertility + " %");
+		$('#tile-health').text((parseInt(tile.fertility, 10) + parseInt(tile.humidity, 10)) / 2 + " %");
 	});
-
-	$('.game').on('onUIUpdatingTile', function(e, tile) {});
 
 	$(".resultShow").hide();
 	$("#top-actions-notif").hide();
@@ -258,17 +306,6 @@ $(function() {
 		jfarm[action] = true;
 	});
 
-	// PLAYER DETAILS
-	// $('#content-actions').on('getPlayerData', function(e, player) {
-
-
-	// 	$('#player-data-level').text(player.level);
-	// 	$('#player-money').text(player.money + " ch.");
-	// 	// $('#player-data-life').text(player.);
-	// 	// $('#player-data-tiles').text(player.);
-	// 	// $('#player-data-buildings').text(player.);
-	// });
-
 	// TILES 
 	$("#tile-wrapper").on("onGettingTileDetails", function(e) {
 		$(this).find('.tile-property-value').html("loading...");
@@ -277,11 +314,7 @@ $(function() {
 	// OBJECTS 
 	$('#object-wrapper').on('onGettingObjectDetails', function(e) {
 		$(this).find('.object-property-value').html("loading...");
-		$('#tile-owner').text("...");
-		$('#tile-fertility').text("...");
-		$('#tile-humidity').text("..."); // TODO
-		$('#tile-state').text("...");
-		$('#tile-free').text("...");
+		$('.tile-property-value').text("...");
 	});
 	$("#object-wrapper").on("getObjectData", function(e, obj) {
 		$(this).find('.title-b').text(jfarm.capitaliseFirstLetter(obj.objectType));
@@ -292,8 +325,8 @@ $(function() {
 
 	// HARVEST
 	$('.action-harvest').on('click', function() {
-		jfarm.getObjectDetails(jfarm.clickedObj, function(response){
-			jfarm.harvest(response.obj, 45); // TODO : quantity
+		jfarm.getObjectDetails(jfarm.currentCrop, function(response) {
+			jfarm.harvest(response.obj);
 		});
 	});
 	// WATER 

@@ -2146,7 +2146,8 @@ var sheetengine = (function() {
         basesheet.free = !!yard.free;
         basesheet.neutral = !!yard.neutral;
         basesheet.playerId = !!yard.playerId;
-        basesheet.fertility = !!yard.fertility;
+        basesheet.fertility = parseInt(yard.fertility,10);
+        basesheet.humidity = parseInt(yard.humidity,10);
         // end own jfarm process
 
         var sheets;

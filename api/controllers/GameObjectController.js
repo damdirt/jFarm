@@ -113,7 +113,7 @@ var GameObjectController = {
 												Player.update({
 													id: req.session.player.id
 												}, {
-													money: req.session.player.money - tpl.price
+													money: req.session.player.money
 												}, function(err, player) {
 													if (err) {
 														res.end(JSON.stringify({
@@ -165,7 +165,7 @@ var GameObjectController = {
 												Player.update({
 													id: req.session.player.id
 												}, {
-													money: req.session.player.money - tpl.price
+													money: req.session.player.money
 												}, function(err, player) {
 													console.log(player);
 													if (err) {

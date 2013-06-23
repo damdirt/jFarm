@@ -48,7 +48,6 @@ var PlayerController = {
 			console.log(startMoney);
 			var playerMoney = parseFloat((levelMoney * startMoney) / 100);
 			console.log(playerMoney);
-			
 
 			Player.update({
 				name: req.session.player.name
@@ -70,16 +69,16 @@ var PlayerController = {
 		}
 
 	},
-	conquer: function(req,res){
+	conquer: function(req, res) {
 		if (!req.isAjax) {
 			res.redirect('/');
 		} else {
-			if(req.param("yards")){
-				var yardsReq = []
-					,coordsArr = req.param("yards").split(';');
+			if (req.param("yards")) {
+				var yardsReq = [],
+					coordsArr = req.param("yards").split(';');
 				for (i = 0; i < coordsArr.length; i++) {
-					var coord = coordsArr[i].split(',')
-						,yard = {
+					var coord = coordsArr[i].split(','),
+						yard = {
 							'x': coord[0],
 							'y': coord[1]
 						}
@@ -91,10 +90,10 @@ var PlayerController = {
 						or: yardsReq,
 						free: true
 					}
-				}).done(function(err, yards){
+				}).done(function(err, yards) {
 
 					// All yards are free if we pass here, we can create an object :)
-					if(yards.length == yardsReq.length){
+					if (yards.length == yardsReq.length) {
 
 						Yard.update({
 							where: {
@@ -123,7 +122,7 @@ var PlayerController = {
 						var playerId = req.session.player.id;
 						Yard.findAll({
 							playerId: playerId
-						}).done(function(err, yards){
+						}).done(function(err, yards) {
 							var nbTilesPlayer = yards.length;
 							var levelPlayer = nbTilesPlayer / 5;
 							Player.update({
@@ -263,7 +262,7 @@ var PlayerController = {
 			var playerId = req.session.player.id;
 			Yard.findAll({
 				playerId: playerId
-			}).done(function(err, yards){
+			}).done(function(err, yards) {
 				var nbTilesPlayer = yards.length;
 				var levelPlayer = nbTilesPlayer / 5;
 				Player.update({
@@ -275,19 +274,19 @@ var PlayerController = {
 					// Error handling
 					if (err) {
 						res.end(JSON.stringify({
-						'success': false,
-						'message': 'req failed',
-						'player': req.session.player,
-						'error': null
-					}));
+							'success': false,
+							'message': 'req failed',
+							'player': req.session.player,
+							'error': null
+						}));
 					} else {
 						req.session.player.nbTiles = nbTilesPlayer;
 						res.end(JSON.stringify({
-						'success': true,
-						'message': 'req failed',
-						'player': req.session.player,
-						'error': null
-					}));
+							'success': true,
+							'message': 'req failed',
+							'player': req.session.player,
+							'error': null
+						}));
 					}
 				});
 			});
@@ -298,6 +297,56 @@ var PlayerController = {
 				'player': req.session.player,
 				'error': null
 			}));
+		}
+	},
+	harvestings: function(req, res) {
+		if (req.isAjax) {
+			var playerId = req.param("id");
+			if (playerId) {
+				Harvesting.findAll({
+					playerId: playerId
+				}).done(function(err, harvestings) {
+					res.end(JSON.stringify({
+						'success': true,
+						'message': 'player\'s harvestings',
+						'items': harvestings,
+						'error': null
+					}));
+				});
+			} else {
+				res.end(JSON.stringify({
+					'success': false,
+					'message': 'parameter(s) missing',
+					'error': null
+				}));
+			}
+		} else {
+			res.redirect('/');
+		}
+	},
+	buildings: function(req, res) {
+		if (req.isAjax) {
+			var playerId = req.param("id");
+			if (playerId) {
+				Building.findAll({
+					ownerId: playerId
+				}).done(function(err, buildings) {
+					res.end(JSON.stringify({
+						'success': true,
+						'message': 'player\'s buildings',
+						'items': buildings,
+						'error': null
+					}));
+				});
+			} else {
+				res.end(JSON.stringify({
+					'success': false,
+					'message': 'parameter(s) missing',
+					'error': null
+				}));
+			}
+		} else {
+			res.redirect('/');
 		}
 	}
 };

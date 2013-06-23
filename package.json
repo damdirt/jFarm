@@ -4,7 +4,9 @@
     "version": "0.0.0",
     "description": "a Sails application",
     "dependencies": {
-        "sails": "0.8.9"
+        "sails": "0.8.9",
+        "password-hash": "1.2.1",
+        "sails-mysql": "0.7.8"
     },
     "scripts": {
         "start": "node app.js",

@@ -6,6 +6,7 @@ lib-cov
 *.out
 *.pid
 *.gz
+.DS_Store
 
 *.sublime-project
 *.sublime-workspace

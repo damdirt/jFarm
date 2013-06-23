@@ -8,8 +8,6 @@ var DashboardController = {
 	home: function(req, res) {
 
 		var user = req.session.user;
-
-
 		req.socket.on('disconnect', function() {
 			console.log("logout");
 		});

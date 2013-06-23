@@ -182,7 +182,7 @@ var BuildingController = {
 										} else {
 											res.end(JSON.stringify({
 												success: false,
-												message: "Storage item quantity is too important",
+												message: "Storage item quantity is too important for this building",
 												error: err
 											}));
 										}

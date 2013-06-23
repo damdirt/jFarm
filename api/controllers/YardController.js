@@ -14,8 +14,8 @@ var YardController = {
 			});
 
 			if (req.param('x') && req.param('y')) {
-				var xParam = parseInt(req.param('x'));
-				var yParam = parseInt(req.param('y'));
+				var xParam = parseInt(req.param('x'),10);
+				var yParam = parseInt(req.param('y'),10);
 
 				Yard.find({
 					x: xParam,
@@ -28,55 +28,64 @@ var YardController = {
 							'error': err
 						}));
 					} else {
-						var fertility = (yard.fertility + 10 < 100) ? yard.fertility + 10 : 100;
-						Yard.update({
-							x: xParam,
-							y: yParam
-						}, {
-							fertility: fertility
-						}, function(err, yardUpdated) {
-							if (err) {
-								res.end(JSON.stringify({
-									'success': false,
-									'message': 'no yard at this position',
-									'error': err
-								}));
-							} else {
-								// we udpate player's money (fertilizer costs 10ch.)
-								req.session.player.money = req.session.player.money - 10;
-								Player.update(
-									req.session.player.id, {
-									money: req.session.player.money
-								}, function(err) {
-									if (err) {
-										res.end(JSON.stringify({
-											'success': false,
-											'message': 'error during player\'s money updating',
-											'error': err
-										}));
-									} else {
-										yard.values = undefined;
-										yard.fertility = fertility;
-										Player.find({
-											id: yard.playerId
-										}).done(function(err, player) {
-											if (!player) {
-												yard.player = null;
-											} else {
-												player.values = undefined;
-												yard.player = player;
-											}
+						if (yard.fertility < 100) {
+							var fertility = (yard.fertility + 10 < 100) ? yard.fertility + 10 : 100;
+							Yard.update({
+								x: xParam,
+								y: yParam
+							}, {
+								fertility: fertility
+							}, function(err, yardUpdated) {
+								if (err) {
+									res.end(JSON.stringify({
+										'success': false,
+										'message': 'no yard at this position',
+										'error': err
+									}));
+								} else {
+									// we udpate player's money (fertilizer costs 10ch.)
+									req.session.player.money = req.session.player.money - 10;
+									Player.update(
+										req.session.player.id, {
+										money: req.session.player.money
+									}, function(err) {
+										if (err) {
 											res.end(JSON.stringify({
-												'success': true,
-												'message': 'Tile\'s fertility updated to ' + fertility + " %",
-												'error': null,
-												'yard': yard,
+												'success': false,
+												'message': 'error during player\'s money updating',
+												'error': err
 											}));
-										});
-									}
-								});
-							}
-						});
+										} else {
+											yard.values = undefined;
+											yard.fertility = fertility;
+											Player.find({
+												id: yard.playerId
+											}).done(function(err, player) {
+												if (!player) {
+													yard.player = null;
+												} else {
+													player.values = undefined;
+													yard.player = player;
+												}
+												res.end(JSON.stringify({
+													'success': true,
+													'message': 'Tile\'s fertility updated to ' + fertility + " %",
+													'error': null,
+													'yard': yard,
+												}));
+											});
+										}
+									});
+								}
+							});
+						} else {
+							res.end(JSON.stringify({
+								'success': false,
+								'message': 'yard\'s fertility maximum reached',
+								'error': null
+							}));
+						}
+
 					}
 				});
 			} else {

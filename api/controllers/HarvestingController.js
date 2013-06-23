@@ -58,12 +58,28 @@ var HarvestingController = {
 								// we delete harvested crop
 								Crop.destroy(cropParam.id, function(err) {
 									if (!err) {
-										res.end(JSON.stringify({
-											success: true,
-											message: "Harvesting created",
-											error: null,
-											harvesting: harvesting
-										}));
+										// we put to free harvested yard
+										Yard.update({
+											x: cropParam.x,
+											y: cropParam.y
+										}, {
+											free: true
+										}, function(err, yard) {
+											if (!err) {
+												res.end(JSON.stringify({
+													success: true,
+													message: "Harvesting created",
+													error: null,
+													harvesting: harvesting
+												}));
+											} else {
+												res.end(JSON.stringify({
+													success: false,
+													message: "Error during updating yard free field (crop destroy)",
+													error: null
+												}));
+											}
+										});
 									} else {
 										res.end(JSON.stringify({
 											success: false,

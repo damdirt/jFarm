@@ -166,10 +166,34 @@ $(function() {
 	$("#modal-tabs-content .tab-content:not(:first)").hide();
 	$("#modal-tabs .tab-link").on('click', function() {
 		var tab = $(this),
-			index = tab.parent().index(),
+			index = tab.index(),
+			// isLoad = tab.hasClass('load'),
+			// isLoaded = tab.hasClass('loaded'),
 			content = $("#modal-tabs-content .tab-content").eq(index),
 			contents = content.siblings();
 
+		// if(isLoad && !isLoaded){
+		// 	var dataUrl = tab.data('url')
+		// 		,url = "/player/" + jfarm.player.data.id + "/" + dataUrl;
+		// 	if(jfarm){
+		// 		jfarm.requestAjax(url, null, function(response) {
+		// 			if (response.success) {
+		// 				var items = response.items;
+							
+		// 				if()
+		// 					// harvestings templating
+		// 					$("#elements-harvesting").append('<div class="txt-blue">Harvestings :</div>')
+		// 					for (var i = 0; i < response.harvestings.length; i++) {
+		// 						$("#elements-harvesting").append('<li class="clear-fix"><div class="pull-left">' + response.harvestings[i].quantity + ' ' + response.harvestings[i].name + '</div><div class="action-element action-harvest" data-harvestingId="' + response.harvestings[i].id + '" data-buildingId="' + response.building.id + '" data-buildingTemplateId="' + response.building.buildingTemplateId + '"></div></li>');
+		// 					};
+		// 			} else {
+		// 				console.log(response.message);
+		// 			}
+		// 		});
+		// 	}
+		// } else {
+
+		// }
 		tab.addClass("current")
 			.siblings().removeClass('current');
 		content.show();
