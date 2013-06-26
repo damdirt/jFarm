@@ -9,6 +9,7 @@ var jfarmio = {
 		socket.on('login', jfarmio.recvLogin);
 		socket.on('logout', jfarmio.recvLogout);
 		socket.on('newobj', jfarmio.newObj);
+		socket.on('harvest', jfarmio.recvHarvest);
 	},
 
 	newObj: function(data) {
@@ -51,6 +52,15 @@ var jfarmio = {
 	recvLogout: function(data) {
 		console.log(data);
 		jfarm.recvLogout(data.playerId);
+	},
+
+	recvHarvest: function(data){
+		console.log("harvest");
+		var cropToDestroy = jfarm.getCropObjByIdDB(data.cropId);
+		if(cropToDestroy){
+			cropToDestroy.destroy();
+			jfarm.redraw();
+		}
 	},
 
 	sendLogout: function(id) {
@@ -100,6 +110,18 @@ var jfarmio = {
 		}, function(response) {
 			console.log("send new object");
 		});
+	},
+
+	sendHarvest: function(cropId, action) {
+		socket.request('/io/action', {
+			data: {
+				action: action,
+				cropId: cropId
+			}
+		}, function(response) {
+			console.log("crop harvested");
+		});
 	}
+
 
 }

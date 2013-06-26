@@ -961,6 +961,7 @@ jfarm = {
 							jfarm.currentCrop.destroy();
 							jfarm.objDestroyed = true;
 							jfarm.getBaseSheetFromYard(jfarm.currentCropYard).free = true;
+							jfarmio.sendHarvest(jfarm.currentCrop.idDB, "harvest");
 						} else {
 							console.log(err);
 						}
@@ -1316,6 +1317,13 @@ jfarm = {
 			if (jfarm.buildingTpls[i].name.toLowerCase() == buildingName.toLowerCase())
 				return jfarm.buildingTpls[i];
 		}
+		return null;
+	},
+	getCropObjByIdDB: function(id){
+		for (var i = 0; i < sheetengine.objects.length; i++) {
+			if(sheetengine.objects[i].idDB == id)
+				return sheetengine.objects[i];
+		};
 		return null;
 	},
 	getObjectDetails: function(obj, callback, callbackFail, callbackAlways) {
@@ -2409,6 +2417,7 @@ jfarm = {
 		if (jfarm.objDestroyed){
 			sceneChanged = 1;
 			jfarm.objDestroyed = false;
+
 		}
 
 		// player actions

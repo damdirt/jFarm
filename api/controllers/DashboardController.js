@@ -48,6 +48,9 @@ var DashboardController = {
 					console.log("server successfuly received request");
 					req.socket.broadcast.emit('newobj', data);
 				break;
+			case 'harvest':
+					req.socket.broadcast.emit('harvest', data);
+					break;
 		}
 	}
 };
